@@ -109,6 +109,36 @@
 - LexisNexis — « Inventaire : mesures conservatoires après décès » (procès-verbal, minute, expédition, apposition des scellés) : https://www.lexisnexis.com/blogs/fr-juridique/b/droit-notarial/posts/synthese-inventaire-mesures-conservatoires-apres-deces
 - DGFiP — « Successions vacantes : le notaire, partenaire du Domaine » (délai de six mois, constat de vacance) : https://www.impots.gouv.fr/sites/default/files/media/3_Documentation/depliants/parte_successions_vacantes_notaire_partenaire_domaine.pdf
 
+### HANDOFF — Narration & Contenu (17 oct. 2026, fin de session 1)
+
+**Ce qui marche**
+- `docs/items_master.csv` : **60 objets** (4 extérieur / 10 entrée / 16 cuisine / 14 salon / 12 bureau / 4 cave), 8 fantômes, 8 colonnes exactes. C'est la source de vérité : tout le reste est dérivé de ce fichier.
+- `game/data/items/` : **60 `.tres` ItemData** valides, `scene` et `anchors` vides (Niveau). Un `.tres` par id, `id = nom de fichier`, indices 1-60 uniques.
+- `game/data/documents/` : **10 `.tres` DocumentData** (post-it Besnard, inventaire 1973 + page « 181. Jean-Paul », 3 lettres de Lucienne, photo de famille, cassette répondeur 1973, registre 1847, lettre Besnard, inventaire 1912). `sets_flags` et `reveals_items` renseignés.
+- `game/data/rules/` : **18 HouseRule** + `README.md` (tableau, ancres attendues, événements, sons). Seuils 20 / 30 / 45 / 52.
+- `game/data/strings/fr.csv` : **192 clés** (`UI_*` préservées, `ITEM_*` 120, `DOC_*` 20, `SUB_*` 30, `ENDING_*` 15, `INV_*` 2). Aucun point d'exclamation dans tout le contenu.
+- `game/data/strings/subtitles.md` : 30 sous-titres avec durée (14 car./s) et contexte d'émission.
+- `check.sh` vert après chaque commit ; deux pushs sur `agent/narration` (`d3f2dee`, `35c6908`). Validation data faite hors `tools/` : 0 id/indice dupliqué, 0 clé manquante, 0 condition pointant un document inexistant.
+
+**Ce qui reste (V1)**
+- Rien de bloquant côté contenu : les 9 tâches R sont livrées pour le périmètre 60 objets / 10 documents. Reste à **valider la liste maîtresse** (Architecte) puis à **intégrer** : charges Systèmes (règles + flags) et Niveau (ancres) ci-dessous.
+- Si le planning glisse : les 3 lettres de Lucienne peuvent être réduites à 1, et les 8 règles de déplacement à 4, sans casser la fin.
+- V2 : les 212 objets, les 32 fantômes, les 45 documents et les fins Gardienne/Quatre ne sont **pas** commencés (hors périmètre Halloween).
+
+**Pièges connus**
+1. **`fr.csv` n'est pas enregistré dans `project.godot`** (`locale/translations` vide) : `tr()` renvoie les clés. Le `.translation` se génère bien à l'import ; il manque une ligne côté Architecte. Tant que ce n'est pas fait, l'UI affichera `ITEM_KITCHEN_CLOCK_STOPPED_LABEL` à l'écran.
+2. **Qui révèle les fantômes ?** `ItemData.reveal_condition` n'est évalué par personne dans les stubs. Proposition : HouseDirector sur `doc_read` / `progress` / `item_checked`. Tant que ce n'est pas tranché, les fantômes n'apparaissent pas — le jeu reste finissable sur 52 objets réels (la Présence et les fins ne dépendent pas d'eux).
+3. **`!item_checked:<id>`** est utilisé par 4 règles de déplacement mais **n'est pas dans ARCHITECTURE §6**. Si le parser le rejette, ces règles ne tirent pas : aucun crash, mais la maison ne bouge plus les objets non photographiés.
+4. **Ne jamais renommer un `item_id`** : il est le nom du `.tres`, l'ancre future, la clé `fr.csv` et la cible des conditions. Un renommage = 4 fichiers à reprendre à la main.
+5. Les corps de documents sont **une seule clé** contenant des `\n` et du BBCode `[i]`/`[b]` : la visionneuse UI doit rendre le BBCode, sinon les annotations manuscrites s'affichent en clair. `pages` n'est qu'indicatif.
+6. L'inventaire 1973 est **généré depuis la liste maîtresse** : si un libellé change dans le CSV, il faut régénérer le document (les deux doivent rester mot pour mot identiques, c'est le principe de l'énigme).
+
+**Décisions prises seul (à valider)**
+- La fin *Inventaire clos* écrit **« 61. Camille »** (PLAN §2), pas 213 : numéro sérialisé via `INV_LINE_FORMAT`, jamais figé.
+- La fin *Cendres* se joue au **poêle de la cave** (PLAN §2), pas à la cheminée du salon (STORY_BIBLE §5).
+- Les 8 fantômes = 3 personnes comptées + 3 objets-messages + 2 photo_only. Aucun `phantom_kind = "moved"` en V1 (les déplacements sont déjà couverts par les règles).
+- Le fantôme `hall_ring_1951` est une alliance gravée « M. V. » : c'est un objet-message de Lucienne, pas une personne comptée.
+
 ## Module UI `[UI]` — `scenes/ui/`, `assets/fonts`
 
 | ID | Tâche | Jalon | Statut |
