@@ -53,7 +53,7 @@
 |---|---|---|---|
 | S-1 | GameState complet + to/from_save_dict | M1 | TODO |
 | S-2 | InventoryManager : chargement de `data/items/*.tres`, check/reveal/film, progression, signaux | M1 | DONE |
-| S-3 | HouseDirector : moteur de règles (HouseRule), parser du mini-langage de condition, attention (montée/descente), actions (`move_item`, `event`, `attention`, `presence`, `sfx`) | M1 | TODO |
+| S-3 | HouseDirector : moteur de règles (HouseRule), parser du mini-langage de condition, attention (montée/descente), actions (`move_item`, `event`, `attention`, `presence`, `sfx`) | M1 | DONE |
 | S-4 | DocumentLibrary | M1 | TODO |
 | S-5 | SaveManager : JSON, auto-save à `player_entered_room`, versionnage | M2 | TODO |
 | S-6 | main.tscn : séquence de démarrage (menu → chargement maison → spawn joueur → UI), gestion des fins (`ending_reached` → scène de fin) | M2 | TODO |
@@ -62,6 +62,7 @@
 
 ### Notes Systèmes
 
+- **S-3** (2026-10-17) — HouseDirector : parser complet (tous prédicats §6 + négation `!` universelle, `item_present:`, `presence:`, `&&`/`||`/parenthèses ; invalide = `push_error` + `false`), moteur de règles (9 triggers, 5 actions, `once`/`cooldown`, validation douce au chargement), attention (+3/flash, +6×bruit, −1.5/s après 20 s d'immobilité, valeurs calables), révélation des fantômes sur `document_read`/`item_checked`/`inventory_progress`/`player_entered_room`. Les 18 règles de `data/rules/` se chargent et se déclenchent. DocumentLibrary applique `sets_flags`/`reveals_items` au `mark_found` (demande Narration). Vérifié par `scenes/main/test_systems.tscn` (62 assertions).
 - **S-2** (2026-10-17) — Chargement `data/items/` robuste (ids vides/dupliqués → erreur sans crash, tri par `list_index` dans `get_items_in_room`), garde-fous `check_item`/`reveal_item`/photo nulle. À toute la liste cochée : `inventory_line_added(total+1, &"INV_LINE_ADDED_CAMILLE")` (« 61. Camille », numéro sérialisé via `INV_LINE_FORMAT` côté UI).
 
 ## Module Niveau `[Niveau]` — `scenes/house/`, `scenes/items/`, `assets/models|textures`
@@ -196,6 +197,8 @@
 - `[Narration → Systèmes]` (2026-10-17) **DocumentLibrary doit appliquer les données.** Sur `mark_found()` : appliquer `DocumentData.sets_flags` (`GameState.set_flag`) et `DocumentData.reveals_items` (`InventoryManager.reveal_item`). Le stub actuel ne le fait pas ; sinon 5 fantômes ne se révèlent que par `reveal_condition`.
 - `[Narration → Systèmes]` (2026-10-17) **Chargement des règles.** Personne ne charge `res://data/rules/*.tres` aujourd'hui : il faut un `_ready()` dans HouseDirector qui instancie et `register_rule()` chaque `.tres` (18 fichiers V1). Prévu en S-3 normalement — je le note pour ne pas l'oublier.
 - `[Narration → Systèmes]` (2026-10-17) **Négation `!item_checked:<id>` demandée.** ARCHITECTURE §6 ne documente que `!flag:<nom>`. Quatre règles de déplacement en dépendent (`r07` à `r10`, plus `r11`). Si vous refusez, dites-le et je convertirai en règles `flagged` déclenchées par un compteur `GameState.add_counter`.
+**Réponses Systèmes (2026-10-17, S-3)** aux demandes Narration : révélation des fantômes par HouseDirector **OK** ; chargement `data/rules/` + `register_rule()` **OK** ; DocumentLibrary applique `sets_flags`/`reveals_items` **OK** ; négation `!item_checked:` **OK** (et `!` sur tout prédicat). Le séquenceur (S-7) respecte les seuils de règles 20/30/45/52 (événements narratifs portés par les règles) et pilote `act_changed` sur 20/45 (phases V1) + fin à 60.
+
 - `[Narration → Audio]` (2026-10-17) **Ids SFX utilisés par les règles V1** (à exister, sinon AudioManager dégrade) : `drawer_open`, `clock_chime_distant`, `phone_ring`, `breath_low`, `door_close_upstairs`, `paper_turn`, `chair_drag_upstairs`, `hall_light_out`, `cellar_light_flicker`, `upstairs_chair`, `footsteps_above`. Un seul `play_sfx` par id.
 - `[Narration → Niveau]` (2026-10-17) **Ancres exigées par les règles** (en plus de la convention `a_<item>` du README des règles) : `hall_anchor_console`, `kitchen_anchor_sink`, `kitchen_anchor_preserves`, `living_anchor_fireplace`, `study_anchor_shelves`. Un `move_item` vers une ancre absente doit être ignoré avec `push_error`, jamais planter.
 - `[Narration → UI]` (2026-10-17) **Sous-titres et fins.** Clés `SUB_*` (30) : `EventBus.subtitle_requested.emit(&"...", durée)` — durées fournies dans `game/data/strings/subtitles.md`. Écrans de fin : `ENDING_CLOSED_*` / `ENDING_ASHES_*` ; la dernière ligne de chaque fin est séparée (`..._LINE_NAME`) pour être composée comme une ligne d'inventaire via `INV_LINE_FORMAT`. Corps BBCode (`[i]`, `[b]`).
@@ -203,7 +206,7 @@
 - `[Narration → UI]` (2026-10-17) **Ligne « 61. Camille ».** Le numéro est **sérialisé** (`InventoryManager.progress().x`) et non figé : je livre `INV_LINE_ADDED_CAMILLE` = `Camille` (sans numéro) et `INV_LINE_FORMAT` = `{index}. {name}`. Le carnet affiche via `inventory_line_added(line_index, text_key)`. — POUR INFO
 - `[Narration → Systèmes]` (2026-10-17) **Ids de documents** référencés par les `reveal_condition` et les règles (à créer par R-3/R-5, contrats à respecter) : `hall_postit_besnard`, `study_inventory_1973`, `study_letter_besnard`, `kitchen_letter_lucienne_1`, `kitchen_letter_lucienne_2`, `living_letter_lucienne_3`, `living_photo_family`, `hall_tape_1973`, `cellar_register_1847`, `study_deed_1912`. — POUR INFO
 
-- `[Architecte → Systèmes]` (17/10) Le parser de conditions doit supporter la **négation `!` sur tout prédicat** (`!item_checked:id`, utilisé par 4 règles) + `item_present:id` et `presence:state`. Seuils réels des règles : **20 / 30 / 45 / 52** (lire `game/data/rules/README.md`). — TODO
+- `[Architecte → Systèmes]` (17/10) Le parser de conditions doit supporter la **négation `!` sur tout prédicat** (`!item_checked:id`, utilisé par 4 règles) + `item_present:id` et `presence:state`. Seuils réels des règles : **20 / 30 / 45 / 52** (lire `game/data/rules/README.md`). — **DONE** (Systèmes S-3 : négation universelle + `item_present:` + `presence:` supportés ; seuils lus dans `data/rules/`)
 - `[Architecte → UI]` (17/10) Les corps de documents (`body_key`) contiennent `\n` et du BBCode `[i]`/`[b]` : visionneuse = RichTextLabel avec bbcode_enabled. `pages` indicatif. — TODO
 - `[Architecte → Niveau]` (17/10) Les 60 `item_id` de `docs/items_master.csv` sont **définitifs** : ne jamais renommer. Remplir `scene` et `anchors` de chaque ItemData (seuls champs autorisés pour Niveau dans data/items/), créer les ancres dans les rooms. Objet interactif `cellar_stove` dans la cave (fin Cendres). — TODO
 - `[Architecte → Gameplay]` (17/10) L'interaction longue « brûler » cible `cellar_stove` et émet `player_interacted(&"cellar_stove", &"burn")`. — TODO

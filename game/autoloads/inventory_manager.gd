@@ -113,6 +113,15 @@ func _register_item(item: ItemData) -> void:
 	_items[item.id] = item
 
 
+## Remise à zéro complète pour la scène de test Systèmes (usage interne uniquement).
+func _reset_for_tests() -> void:
+	_items.clear()
+	_checked.clear()
+	_revealed.clear()
+	_film = STARTING_FILM
+	_final_line_added = false
+
+
 ## Quand toute la liste est cochée, une ligne de plus s'écrit seule (fin « Inventaire clos »).
 func _maybe_add_final_line() -> void:
 	if _final_line_added or _items.is_empty() or _checked.size() < _items.size():
