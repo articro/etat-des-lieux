@@ -24,6 +24,10 @@ var _held_time: float = 0.0
 var _holding: bool = false
 var _progress_bar: ProgressBar = null
 var _player: PlayerController = null
+# Dernière cible diffusée sur EventBus.interact_target_changed.
+var _emitted_id: StringName = &""
+var _emitted_kind: StringName = &""
+var _emitted_once: bool = false
 
 
 func _ready() -> void:
@@ -110,6 +114,11 @@ func current_duration() -> float:
 	return _duration
 
 
+## Cible actuellement diffusée sur interact_target_changed (tests, debug).
+func emitted_target_id() -> StringName:
+	return _emitted_id
+
+
 # --- Résolution de la cible ---------------------------------------------------
 
 ## Décrit une cible d'interaction ; dictionnaire vide si aucune cible.
@@ -164,11 +173,30 @@ func _set_target(node: Node) -> void:
 	_clear_highlight(_target)
 	_cancel_hold()
 	_target = described_node
-	_target_id = described.get("id", &"") as StringName
-	_kind = described.get("kind", &"use") as StringName
-	_duration = float(described.get("duration", 0.0))
+	if described.is_empty():
+		# Plus rien sous le réticule : le contrat veut (&"", &"") — pas le
+		# kind par défaut de l'interaction.
+		_target_id = &""
+		_kind = &""
+		_duration = 0.0
+	else:
+		_target_id = described.get("id", &"") as StringName
+		_kind = described.get("kind", &"use") as StringName
+		_duration = float(described.get("duration", 0.0))
 	if _target != null and _target.has_method(&"set_highlight"):
 		_target.call(&"set_highlight", true)
+	_emit_target_changed()
+
+
+## Diffuse la cible survolée (réticule contextuel, UI). (&"", &"") = rien.
+## On ne l'émet que si le couple (id, kind) change réellement.
+func _emit_target_changed() -> void:
+	if _emitted_once and _emitted_id == _target_id and _emitted_kind == _kind:
+		return
+	_emitted_once = true
+	_emitted_id = _target_id
+	_emitted_kind = _kind
+	EventBus.interact_target_changed.emit(_target_id, _kind)
 
 
 func _emit_interaction(id: StringName, kind: StringName) -> void:
