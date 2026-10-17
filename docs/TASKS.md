@@ -29,6 +29,7 @@
 | A0-3 | Dépôt GitHub `articro/etat-des-lieux`, push initial, 6 branches agents | DONE |
 | A0-7 | Intégration Narration session 1 (60 objets, 10 docs, 18 règles) sur main, traduction enregistrée | DONE |
 | A0-8 | Intégration Narration session 2 (relecture, itch_textes.md) | DONE |
+| A0-11 | Validation N-1 (plan maison) + consignes dimensions/ancres | DONE |
 | A0-10 | Intégration Systèmes session 1 (S-2→S-8, 79 assertions) ; playtest utilisateur J1 : feeling validé | DONE |
 | A0-9 | Intégration Gameplay session 1 (G-1→G-10, 73 tests) + décisions (coverage 0.04, settings_changed, post-process unique) | DONE |
 | A0-4 | Version Godot = **4.7.2**, `config/features` ajusté, check headless OK | DONE |
@@ -350,6 +351,16 @@
 - `[Architecte → UI]` (17/10) Systèmes a documenté le protocole menu ↔ main dans `docs/TASKS.md` (section Systèmes) : signaux `new_game_requested`, `continue_requested`, `options_requested`, `quit_requested` sur `scenes/ui/main_menu.tscn`, `scenes/ui/hud.tscn`, `scenes/ui/ending_screen.tscn` avec `set_ending_id(id)`. Respecter ces noms. — TODO
 
 - `[Niveau → Architecte]` (2026-10-17) **Validation N-1 / emplacement du plan.** Le plan V1 (6 zones) est livré en `game/scenes/house/plan_maison.png` + source SVG. La tâche N-1 demande une image dans `docs/`, alors que le périmètre Niveau n'autorise que `docs/anchors.md` et la règle générale interdit les autres modifications de docs. Merci de valider le schéma et de confirmer si l'Architecte peut le recopier dans `docs/plan_maison.png` avant le blockout N-2. — EN ATTENTE
+
+- `[Architecte → Niveau]` (17/10) **N-1 VALIDÉ.** Plan copié par l'Architecte dans `docs/plan_maison.png` (tu gardes la source SVG chez toi). Précisions pour N-2 et suivants :
+  - **Dimensions indicatives** (la maison doit sembler réelle, pas « jeu vidéo ») : hall/couloir 3 × 9 m ; cuisine 4,5 × 4,5 m ; salon 5 × 5 m ; bureau 4 × 4,5 m ; cave 6 × 4 m, hauteur 2,1 m (oppressant) ; cour ≈ 14 × 9 m. Plafonds rez-de-chaussée **2,6 m**, portes 0,9 × 2,1 m, couloir ≥ 1,4 m de large (capsule joueur 1,75 m / accroupi 1,10 m).
+  - **Escalier condamné** : visible depuis la porte d'entrée, planche clouée + mot ; marches qui montent dans le noir (hors zone jouable, mais **la Présence sera photographiée là en phase 2** → prévoir un `Marker3D` `hall_anchor_stairs_top`).
+  - **Ligne de vue longue** dans le couloir (porte d'entrée → fond) pour les événements hors-champ.
+  - **Cave** : trappe cuisine + échelle/escalier raide ; le **poêle** `cellar_stove` au fond avec metadata `interact_id/interact_kind="burn"/interact_duration=8.0` ; `Marker3D` `cellar_anchor_presence_spawn` au point le plus éloigné de l'échelle (instancier `res://scenes/player/presence.tscn` là) ; le **registre 1847** sur une table près du poêle.
+  - **Téléphone + répondeur** dans le hall (console) : c'est là que sonne l'événement `phone_rings` (45 objets).
+  - Les 5 ancres exigées par les règles (`hall_anchor_console`, `kitchen_anchor_sink`, `kitchen_anchor_preserves`, `living_anchor_fireplace`, `study_anchor_shelves`) + une ancre par objet (60) nommées `<room>_anchor_<objet>`. Documente tout dans `docs/anchors.md` (autorisé, c'est ton fichier) et remplis `ItemData.anchors[0]` + `scene` dans `data/items/*.tres` (seuls champs autorisés).
+  - Ordre : N-2 (hall + bureau) → N-3 → N-4 → **push dès que house.tscn se lance seul**, même moche. Le reste des pièces ensuite.
+  — DONE (validation)
 
 ## Journal des décisions
 
