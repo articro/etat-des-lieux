@@ -13,6 +13,8 @@ const UI_ENDING_SCENE := "res://scenes/ui/ending_screen.tscn"
 const MENU_SIGNALS: Array[String] = [
 	"new_game_requested", "continue_requested", "options_requested", "quit_requested",
 ]
+## Réglages : l'UI expose un singleton `/root/Settings` avec `apply_all()` (ARCHITECTURE §7).
+const SETTINGS_NODE := "/root/Settings"
 
 @onready var _game_root: Node = $GameRoot
 @onready var _menu_layer: CanvasLayer = $MenuLayer
@@ -20,10 +22,14 @@ const MENU_SIGNALS: Array[String] = [
 
 var _playing: bool = false
 var _ending_shown: bool = false
+var _player: Node3D = null
+var _player_start := Transform3D.IDENTITY
 
 
 func _ready() -> void:
 	EventBus.ending_reached.connect(_on_ending_reached)
+	EventBus.player_caught.connect(_on_player_caught)
+	_apply_settings()
 	_show_menu()
 	var p := InventoryManager.progress()
 	print("État des lieux — démarrage. Objets chargés : %d, films : %d" % [p.y, InventoryManager.film_count()])
@@ -116,8 +122,15 @@ func _start_game(from_save: bool) -> void:
 	# La maison et le joueur d'abord : ils doivent être dans l'arbre avant le
 	# rattrapage post-chargement (game_loaded) pour appliquer les événements.
 	_instance_optional(HOUSE_SCENE, _game_root)
-	_instance_optional(PLAYER_SCENE, _game_root)
+	var player_node := _instance_optional(PLAYER_SCENE, _game_root)
+	if player_node is Node3D:
+		_player = player_node as Node3D
+		_player_start = _player.global_transform
+	else:
+		_player = null
+		push_warning("Main : joueur absent ou non Node3D — player_caught dégradé.")
 	_instance_optional(UI_HUD_SCENE, _game_root)
+	_apply_settings()
 	_playing = true
 	if from_save:
 		var err := SaveManager.load_game()
@@ -125,6 +138,31 @@ func _start_game(from_save: bool) -> void:
 			push_warning("Main : échec du chargement de la sauvegarde (%s)." % error_string(err))
 	else:
 		EventBus.save_requested.emit()
+
+
+# --- Réglages (ARCHITECTURE §7) ---
+
+func _apply_settings() -> void:
+	var settings := get_node_or_null(SETTINGS_NODE)
+	if settings != null and settings.has_method("apply_all"):
+		settings.call("apply_all")
+	else:
+		push_warning("Main : %s.apply_all() introuvable (UI non livrée) — réglages non appliqués." % SETTINGS_NODE)
+
+
+# --- Player caught (GDD §4.4) ---
+
+## La Présence attrape le joueur : retour à l'entrée et une ligne de plus sur la liste.
+func _on_player_caught() -> void:
+	if not _playing:
+		return
+	if _player != null and is_instance_valid(_player):
+		if _player is CharacterBody3D:
+			(_player as CharacterBody3D).velocity = Vector3.ZERO
+		_player.global_transform = _player_start
+	else:
+		push_warning("Main : player_caught sans joueur à téléporter.")
+	InventoryManager._check_random_unchecked()
 
 
 # --- Fin ---

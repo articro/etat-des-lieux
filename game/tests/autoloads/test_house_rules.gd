@@ -127,3 +127,18 @@ func test_sequencer_event_dedup_with_rules() -> void:
 	for i: int in range(1, 21):
 		InventoryManager.check_item(StringName("t%02d" % i), PhotoData.new())
 	assert_int(_events.count(&"act1_drawer_opens")).is_equal(1)
+
+
+func test_move_replayed_on_load() -> void:
+	HouseDirector.register_rule(_make_rule(&"r", "room_left", "hall", "", ["move_item:t01:living:anchor_replay"]))
+	EventBus.player_left_room.emit(&"hall")
+	assert_int(_moves.size()).is_equal(1)
+	var saved := HouseDirector.to_save_dict()
+	HouseDirector.from_save_dict({})
+	_moves.clear()
+	HouseDirector.from_save_dict(saved)
+	# from_save_dict ne réémet pas : le rejeu est porté par game_loaded (SaveManager).
+	EventBus.game_loaded.emit()
+	assert_int(_moves.size()).is_equal(1)
+	if _moves.size() == 1:
+		assert_that(_moves[0]["anchor"]).is_equal(&"anchor_replay")

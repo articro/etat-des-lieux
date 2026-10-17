@@ -95,3 +95,12 @@ func test_save_roundtrip() -> void:
 	InventoryManager.from_save_dict(d)
 	assert_bool(InventoryManager.is_checked(&"t01")).is_true()
 	assert_that(InventoryManager.progress()).is_equal(Vector2i(1, 3))
+
+
+func test_check_random_unchecked() -> void:
+	assert_bool(InventoryManager.check_item(&"t01", PhotoData.new())).is_true()
+	assert_bool(InventoryManager._check_random_unchecked()).is_true()
+	assert_that(InventoryManager.progress()).is_equal(Vector2i(2, 3))
+	assert_bool(InventoryManager._check_random_unchecked()).is_true()
+	assert_that(InventoryManager.progress()).is_equal(Vector2i(3, 3))
+	assert_bool(InventoryManager._check_random_unchecked()).is_false()
