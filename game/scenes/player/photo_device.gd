@@ -69,10 +69,19 @@ func _ready() -> void:
 		_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
 		if _photo_camera != null:
 			_photo_camera.current = true
+	EventBus.pause_toggled.connect(_on_pause_toggled)
 	if _photo_camera == null:
 		push_warning("PhotoDevice : SubViewport de capture absent — photos sans texture.")
 	if _flash == null:
 		push_warning("PhotoDevice : FlashBulb absent — pas de lumière de flash.")
+
+
+## En pause : on baisse l'appareil (sinon il resterait levé après reprise, le
+## relâchement du clic droit n'étant plus capté quand la souris est visible).
+func _on_pause_toggled(paused: bool) -> void:
+	if paused:
+		aim(false)
+		_reviewing = false
 
 
 func _find_player() -> PlayerController:
