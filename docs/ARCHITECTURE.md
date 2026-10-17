@@ -96,6 +96,7 @@ signal notebook_opened()
 signal notebook_closed()
 signal pause_toggled(paused: bool)
 signal subtitle_requested(text_key: StringName, duration: float)
+signal settings_changed(key: StringName, value: Variant)   # options : "mouse_sensitivity" (float), "fov" (float), "volume_master"/"volume_sfx"/"volume_music" (float 0..1), "subtitles" (bool), "fullscreen" (bool), "flashlight_strong" (bool)
 
 # --- Sauvegarde ---
 signal save_requested()
@@ -249,6 +250,17 @@ Mini-langage de condition (implémenté dans `house_director.gd`, fonction `eval
 ### Objets dans les pièces
 - Chaque `rooms/<room_id>.tscn` contient un nœud `Anchors` avec des `Marker3D` nommés, et un nœud `Items` où les `Item` sont instanciés **au chargement** par `house.gd` à partir de `InventoryManager.get_items_in_room()`. Le Niveau ne place pas les objets à la main : il place les **ancres**. Le lien objet↔ancre par défaut est dans `ItemData.anchors[0]`.
 - Nœud `Item` (`scenes/items/item.gd`) : `class_name Item extends Node3D`, `@export var data: ItemData`, groupe `"items"`, expose `func is_in_frustum(cam: Camera3D) -> float` (couverture écran estimée).
+
+### Options / réglages
+- L'UI (menu Options) persiste les réglages dans `user://settings.cfg` (ConfigFile) et émet `EventBus.settings_changed(key, value)` à chaque changement **et une fois pour chaque clé au démarrage** (`main.tscn` appelle `Settings.apply_all()` côté UI).
+- Les consommateurs (Player : sensibilité, FOV, lampe forte ; AudioManager : volumes ; etc.) écoutent ce signal. Pas d'API directe UI → Player.
+
+### Post-process
+- **Un seul** post-process, instancié par `player.tscn` (`scenes/fx/post_process.tscn`, CanvasLayer 3). `main.tscn` et l'UI n'en ajoutent jamais un second.
+
+### Interaction (convention metadata, V1)
+- Tout nœud interactif porte des metadata : `interact_id` (StringName), `interact_kind` (StringName : "open", "pickup", "read", "use", "burn"), optionnel `interact_duration` (float, s), optionnel `document_id` (StringName → lecture). Zéro dépendance de script entre modules.
+- Zones de pièce : `Area3D` monitorable, `metadata/room_id`, collision layer 4.
 
 ## 8. Performance (budgets)
 

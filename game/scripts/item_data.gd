@@ -14,4 +14,4 @@ extends Resource
 @export var anchors: Array[StringName] = []
 @export var scene: PackedScene
 @export var photo_variant_scene: PackedScene
-@export_range(0.0, 1.0, 0.01) var min_photo_coverage: float = 0.15
+@export_range(0.0, 1.0, 0.005) var min_photo_coverage: float = 0.04

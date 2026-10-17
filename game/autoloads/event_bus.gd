@@ -35,6 +35,7 @@ signal notebook_opened()
 signal notebook_closed()
 signal pause_toggled(paused: bool)
 signal subtitle_requested(text_key: StringName, duration: float)
+signal settings_changed(key: StringName, value: Variant)   # émis par UI (options) ; écouté par Player, AudioManager…
 
 # --- Sauvegarde ---
 signal save_requested()
