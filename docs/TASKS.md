@@ -337,14 +337,67 @@
 
 | ID | Tâche | Jalon | Statut |
 |---|---|---|---|
-| D-1 | AudioManager : bus (Master/SFX/Ambiance/Music/UI), one-shots 3D, couches de soundscape, musique | M1 | TODO |
-| D-2 | Sons de l'appareil photo (le plus important du jeu) : déclencheur, moteur, flash charge, photo qui sort | M1 | TODO |
-| D-3 | Pas par matériau (bois, carrelage, moquette, gravier), souffle, sac | M1 | TODO |
-| D-4 | Soundscape maison (3 couches × intensité) + extérieur | M2 | TODO |
-| D-5 | Banque « sons domestiques au mauvais endroit » pour la Présence (~25) | M2 | TODO |
-| D-6 | 3 morceaux (piano salon, fin acte 2, générique) — libres de droits ou générés | M4 | TODO |
-| D-7 | Voix de Camille (TTS qualité ou comédienne) — après R-6 | M4 | TODO |
-| D-8 | Mixage final, CREDITS | M4 | TODO |
+| D-1 | AudioManager : bus (Master/SFX/Ambiance/Music/UI), one-shots 3D, couches de soundscape, musique | M1 | **DONE** |
+| D-2 | Sons de l'appareil photo (le plus important du jeu) : déclencheur, moteur, flash charge, photo qui sort | M1 | **DONE** |
+| D-3 | Pas par matériau (bois, carrelage, moquette, gravier), souffle, sac | M1 | **DONE** |
+| D-4 | Soundscape maison (3 couches × intensité) + extérieur | M2 | **DONE** |
+| D-5 | Banque « sons domestiques au mauvais endroit » pour la Présence (~25) | M2 | **DONE** (10 sons + impact + nappe) |
+| D-6 | 3 morceaux (piano salon, fin acte 2, générique) — libres de droits ou générés | M4 | **DONE** (périmètre V1 : 1 musique de fin = 2 variantes, PLAN §1) |
+| D-7 | Voix de Camille (TTS qualité ou comédienne) — après R-6 | M4 | **HORS V1** (PLAN §1 : sous-titres seulement) |
+| D-8 | Mixage final, CREDITS | M4 | **EN COURS** (mix statique + CREDITS faits ; écoute de contrôle à J10-J11) |
+
+**Notes par tâche**
+
+- **D-1** — `audio_manager.gd` réécrit (API ARCHITECTURE §5 inchangée). Bus créés **par code** via
+  `AudioServer` (pas de `default_bus_layout.tres`, qui appartient à l'Architecte) ; Ambiance et UI
+  **envoient vers SFX** pour que le curseur `volume_sfx` couvre l'appareil photo. Pools de 16
+  joueurs 2D + 12 joueurs 3D, cache de flux, chargement paresseux, tween de fondu, low-pass Master
+  pour la pause/le contact. Écoute : settings_changed, player_noise, player_entered_room,
+  player_interacted, player_caught, house_attention_changed, presence_state_changed, flash_fired,
+  photo_taken, photo_developed, item_checked, notebook_*, pause_toggled, ending_reached.
+- **D-2** — 8 sons : déclencheur (clac à 10 ms, pas de latence perçue), flash (étincelle + corps +
+  grésillement + queue de salle), moteur (engage → ronronne 1 s → crache le papier → butée),
+  **charge du flash** (sifflement 1 150 → 5 600 Hz qui accélère, coupé net sur un clic « prêt »),
+  lever/baisser, déclenchement à vide (creux, sans moteur), photo prête. Relais `flash_fired` /
+  `photo_taken` **avec anti-doublon** : fonctionne avec ou sans Gameplay.
+- **D-3** — 5 matériaux × 4 variantes (wood, tile, carpet, gravel, stone), souffle (intervalle
+  5,4 s → 2,7 s selon l'attention), sac en cuir tous les 5-8 pas. Convention `metadata/surface`
+  documentée dans `docs/audio_conventions.md` §5 (rayon physique + repli par pièce).
+- **D-4** — 5 nappes bouclées sans couture : `house_base`, `house_unease` (attention 20→45),
+  `house_dread` (45→70), `exterior`, `presence`. Craquements et tuyaux tirés au hasard **en 3D
+  autour du joueur** (4-11 m), intervalles 14-26 s au calme → 5-11 s à l'angoisse.
+- **D-5** — les 10 sons domestiques demandés par Narration existent tous (chaise tirée, pas à
+  l'étage, porte, téléphone, robinet, pages du carnet, respiration, lumière, cave) + `caught_impact`
+  (choc sourd + acouphène, aucun cri). Les ids `*_upstairs` / `*_above` sont joués 3,1 m au-dessus
+  du joueur même quand la règle n'a pas de position.
+- **D-6** — 2 musiques de 66 s (piano synthétisé + bourdon + nappe qui s'ouvre) : `music_ending_closed`
+  (mineure non résolue) et `music_ending_ashes` (majeure, s'apaise).
+- **D-8** — CREDITS.md : tout l'audio est **synthétisé** (CC0, aucun asset tiers, scripts dans
+  `assets/audio/_src/`). Mixage « statique » : un niveau en dB par entrée, tous dans
+  `_build_registers()`. Reste l'écoute de contrôle (casque + enceintes de portable) au jalon J10-J11.
+
+### HANDOFF — Audio (17 oct. 2026, session 1)
+
+- **Fait** : D-1 à D-6 + CREDITS. 67 fichiers OGG (1,6 Mo), 52 ids tous disponibles,
+  `bash game/tools/check.sh` **vert**, `bash game/tests/audio/run_headless.sh` **vert**
+  (joue les 52 ids, vérifie les 5 matériaux et la dégradation). Doc : `docs/audio_conventions.md`.
+- **Reste** : (1) écoute de contrôle du mixage à J10-J11 (D-8) — corriger = changer un dB dans le
+  registre. (2) Ancrer éventuellement 2 ou 3 sons dans l'espace (téléphone de l'entrée, trappe de
+  la cave) : le contrat ne permet pas de passer une position depuis une règle, voir la demande
+  inter-modules ci-dessous. (3) Si Niveau veut d'autres matériaux (`metal`, `water`), il suffit
+  d'ajouter `footstep_<valeur>` — me le dire.
+- **Pièges connus** :
+  1. **Le soundscape démarre au premier `player_entered_room`**, pas au `_ready()` de l'autoload :
+     sinon on entend la maison pendant le menu principal, et surtout Godot signale
+     « resources still in use at exit » → **`tools/check.sh` échoue pour tout le monde**.
+     Règle générale pour les autres autoloads : ne rien laisser *en lecture* à la fermeture.
+  2. `AudioManager._exit_tree()` rend tous les flux ; ne pas le retirer (même raison).
+  3. Un pas est ignoré s'il arrive moins de **0,11 s** après le précédent : en test, il faut
+     espérer les émissions de `player_noise` (piège dans lequel je suis tombé).
+  4. `AudioEffectLowPassFilter` s'appelle ainsi en 4.7 (plus `AudioEffectLowPass`).
+  5. `sf.write()` de soundfile **plante** (segfault libsndfile) au-delà de ~2²¹ échantillons :
+     écrire par blocs de 10 s (déjà fait dans `_src/common.py`).
+  6. `DisplayServer.get_name()` vaut **`"headless"`** en 4.7 headless (pas `"dummy"`).
 
 ## Module QA / Intégration `[QA]` — `tests/`, `tools/`, branche `main`
 
@@ -436,6 +489,46 @@
 
 - `[Architecte → tous]` (17/10) **Intégration UI S1 + Systèmes S2 + Gameplay S2 sur main** : 92/103/104 tests verts. Décisions sur les demandes UI : (a) nouveau signal `EventBus.interact_target_changed(target_id, kind)` — **Gameplay** l'émet depuis l'Interactor à chaque changement de cible (et `(&"", &"")` quand plus rien), UI branche `Reticle.set_context()`. (b) **Systèmes** : ajouter `InventoryManager.all_items() -> Array[ItemData]` (triés par list_index) au contrat (fait dans ARCHITECTURE §5) ; vider `main.gd::_on_options()` ; **supprimer l'appel/warning `/root/Settings.apply_all()`** — c'est `UiSettings.apply_all()` côté UI, appelé par le menu et le HUD, main n'a rien à faire. (c) `ui_strings.csv` séparé : accepté. (d) Carnet 2D en surcouche, mark_read à l'ouverture, pause = paused + signal, reload_current_scene pour « Revenir au menu » : validés. — DONE
 - `[Architecte → Audio]` (17/10) Ids UI à faire exister : `notebook_open`, `notebook_close`, `notebook_page`, `pencil_check`, `photo_thumb`, `menu_move`, `menu_select`, `typewriter_line`. — TODO
+
+- `[Audio → Niveau]` (2026-10-17) **Convention `metadata/surface`.** Pour que les pas sonnent
+  juste, poser `metadata/surface` (StringName) sur chaque `StaticBody3D` de sol — ou sur un parent
+  (l'AudioManager remonte 4 niveaux). Valeurs V1 : `wood`, `tile`, `carpet`, `gravel`, `stone`.
+  Sans métadonnée : repli par pièce (exterior→gravel, cellar→stone, hall/kitchen→tile,
+  living→carpet, study→wood, sinon wood). Rien ne casse si ce n'est pas fait. Détail :
+  `docs/audio_conventions.md` §5. — **À FAIRE (Niveau)**
+- `[Audio → Gameplay]` (2026-10-17) **Les 6 ids de l'appareil photo existent** (`camera_raise`,
+  `camera_shutter`, `camera_flash`, `photo_slide`, `camera_dry`, `flashlight_click`) : ce n'est plus
+  du dégradé. `camera_raise` sert à lever **et** à baisser (l'AudioManager alterne). Rappel du
+  contrat pas : `player_noise(0.25, pos)` marche / `0.85` course ; **un pas à moins de 0,11 s du
+  précédent est ignoré** (garde anti-mitraille). — POUR INFO
+- `[Audio → Narration / Systèmes]` (2026-10-17) **Les 11 ids `sfx:` des règles V1 existent tous**
+  (`drawer_open`, `clock_chime_distant`, `phone_ring`, `breath_low`, `door_close_upstairs`,
+  `paper_turn`, `chair_drag_upstairs`, `hall_light_out`, `cellar_light_flicker`, `upstairs_chair`,
+  `footsteps_above`). Les ids `*_upstairs` / `*_above` / `*_distant` sont automatiquement placés en
+  3D par rapport au joueur (3,1 m au-dessus). — POUR INFO
+- `[Audio → Architecte]` (2026-10-17) **Trois décisions prises seule, à valider.** (a) Les bus
+  Ambiance et UI **envoient vers SFX** : comme Gameplay joue l'appareil photo via `play_ui`, le
+  curseur `volume_sfx` doit le couvrir. (b) Le soundscape démarre au premier `player_entered_room`
+  et non au `_ready()` de l'autoload (sinon la maison s'entend pendant le menu, **et** Godot
+  signale « resources still in use at exit » → `tools/check.sh` rouge pour tout le monde).
+  (c) D-7 (voix de Camille) est **hors V1** : PLAN_HALLOWEEN §1 dit « sous-titres seulement ».
+  — **À VALIDER**
+- `[Audio → Architecte]` (2026-10-17) **Ancrer un son dans l'espace depuis une règle.** Le contrat
+  (`HouseRule.actions`, `sfx:<id>`) ne permet pas de donner une position : `play_sfx(id)` est appelé
+  sans argument. J'ai contourné avec une table de placement interne (les sons d'étage sont placés
+  3,1 m au-dessus). Si la Narration veut le téléphone **dans l'entrée** ou un bruit **à la trappe de
+  la cave** quelle que soit la pièce du joueur, il faudrait étendre la syntaxe
+  (`sfx:phone_ring@hall_anchor_console`) — je ne touche pas au contrat, je demande. — **À TRANCHER**
+- `[Audio → UI]` (2026-10-17) **Options audio.** Émettre `settings_changed` avec les clés
+  `volume_master`, `volume_sfx`, `volume_music` (float 0..1) — c'est tout ce que l'AudioManager
+  écoute. `volume_sfx` couvre aussi l'ambiance et les sons en main (appareil photo). Une valeur à 0
+  est acceptée (silence). Penser à émettre chaque clé une fois au démarrage (ARCHITECTURE §7).
+  — **À FAIRE (UI, U-6)**
+- `[Audio → QA]` (2026-10-17) **Test headless du module Audio livré** :
+  `bash game/tests/audio/run_headless.sh` (installe Godot si besoin, importe, joue les 52 ids,
+  vérifie les 5 matériaux, émet tous les signaux, vérifie la dégradation, échoue sur la moindre
+  erreur). Pour `validate_data.gd` (Q-2) : `AudioManager.sfx_is_available(&"id")` permet de vérifier
+  que chaque `sfx:` des règles résout bien vers un fichier. — **À FAIRE (QA)**
 
 ## Journal des décisions
 
