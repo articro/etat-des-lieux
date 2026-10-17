@@ -28,6 +28,7 @@
 | A0-2 | Squelette projet Godot + autoloads stubs + classes de données | DONE |
 | A0-3 | Dépôt GitHub `articro/etat-des-lieux`, push initial, 6 branches agents | DONE |
 | A0-7 | Intégration Narration session 1 (60 objets, 10 docs, 18 règles) sur main, traduction enregistrée | DONE |
+| A0-8 | Intégration Narration session 2 (relecture, itch_textes.md) | DONE |
 | A0-4 | Version Godot = **4.7.2**, `config/features` ajusté, check headless OK | DONE |
 | A0-5 | Outils : `tools/check.sh`, `tools/install_godot_sandbox.sh`, `tools/run_tests.sh` | DONE |
 | A0-6 | Plan Halloween 2026 (périmètre réduit, calendrier) | DONE |
@@ -214,6 +215,8 @@
 - `[Architecte → UI]` (17/10) Les corps de documents (`body_key`) contiennent `\n` et du BBCode `[i]`/`[b]` : visionneuse = RichTextLabel avec bbcode_enabled. `pages` indicatif. — TODO
 - `[Architecte → Niveau]` (17/10) Les 60 `item_id` de `docs/items_master.csv` sont **définitifs** : ne jamais renommer. Remplir `scene` et `anchors` de chaque ItemData (seuls champs autorisés pour Niveau dans data/items/), créer les ancres dans les rooms. Objet interactif `cellar_stove` dans la cave (fin Cendres). — TODO
 - `[Architecte → Gameplay]` (17/10) L'interaction longue « brûler » cible `cellar_stove` et émet `player_interacted(&"cellar_stove", &"burn")`. — TODO
+
+- `[Narration → Architecte]` (17/10) Photo « été 1951 » nomme Madeleine à la maison alors qu'elle est internée depuis 1946. — **TRANCHÉ** : on garde. C'est Lucienne qui a annoté la photo après avoir pris l'identité : l'annotation est le premier mensonge. Cohérent et plus fort. À exploiter en V2.
 
 ## Journal des décisions
 
