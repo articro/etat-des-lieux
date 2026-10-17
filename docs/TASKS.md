@@ -29,6 +29,7 @@
 | A0-3 | Dépôt GitHub `articro/etat-des-lieux`, push initial, 6 branches agents | DONE |
 | A0-7 | Intégration Narration session 1 (60 objets, 10 docs, 18 règles) sur main, traduction enregistrée | DONE |
 | A0-8 | Intégration Narration session 2 (relecture, itch_textes.md) | DONE |
+| A0-10 | Intégration Systèmes session 1 (S-2→S-8, 79 assertions) ; playtest utilisateur J1 : feeling validé | DONE |
 | A0-9 | Intégration Gameplay session 1 (G-1→G-10, 73 tests) + décisions (coverage 0.04, settings_changed, post-process unique) | DONE |
 | A0-4 | Version Godot = **4.7.2**, `config/features` ajusté, check headless OK | DONE |
 | A0-5 | Outils : `tools/check.sh`, `tools/install_godot_sandbox.sh`, `tools/run_tests.sh` | DONE |
@@ -324,6 +325,10 @@
 - `[Architecte → tous]` (17/10) **Décisions sur les demandes Gameplay** : (a) `min_photo_coverage` par défaut passe de 0.15 à **0.04** dans `ItemData` (les 60 .tres mis à jour mécaniquement par l'Architecte ; `hall_ring_1951` et `kitchen_key_l` à 0.01 car très petits — Narration : ajuster au cas par cas si besoin). (b) **Options** : nouveau signal `EventBus.settings_changed(key, value)` (ARCHITECTURE §4 et §7) — UI émet, Player/Audio écoutent. (c) **Post-process unique** dans player.tscn : Systèmes, `main.tscn` n'en ajoute pas. (d) Présence dans `scenes/player/` : validé. (e) Conventions metadata d'interaction et zones de pièce : officialisées dans ARCHITECTURE §7. — DONE
 - `[Architecte → Systèmes]` (17/10) `main.tscn` : instancier `res://scenes/player/player.tscn` (pas de post-process supplémentaire), puis `house.tscn` dès que Niveau livre ; au démarrage appeler l'application des réglages UI (voir ARCHITECTURE §7 Options). Écouter `player_caught` → téléporter le joueur à l'entrée + cocher un objet aléatoire non coché (GDD §4.4). — TODO
 - `[Architecte → Audio]` (17/10) Ids SFX à faire exister en priorité : `camera_raise`, `camera_shutter`, `camera_flash`, `photo_slide`, `flashlight_click` (+ ceux listés par Gameplay ci-dessus). — TODO
+
+- `[Architecte → Gameplay]` (17/10, playtest utilisateur) **Bug Échap** : la touche Échap n'affiche pas la souris. Attendu : Échap bascule `Input.mouse_mode` CAPTURED ↔ VISIBLE **et** émet `pause_toggled`. Le reste du feeling (flash, développement, déplacements, grain) validé par l'utilisateur en F6 sur `test_room.tscn` : « tout marche ». — TODO
+- `[Architecte → Niveau]` (17/10) **Noms d'ancres déjà référencés par les règles de Narration** (doivent exister dans les rooms, sinon `item_moved` est ignoré) : `hall_anchor_console`, `kitchen_anchor_preserves`, `kitchen_anchor_sink`, `living_anchor_fireplace`, `study_anchor_shelves`. Convention : `<room>_anchor_<nom>`. Les autres ancres (position initiale des 60 objets) sont à ton choix, à documenter dans `docs/anchors.md` et à écrire dans `ItemData.anchors[0]`. — TODO
+- `[Architecte → UI]` (17/10) Systèmes a documenté le protocole menu ↔ main dans `docs/TASKS.md` (section Systèmes) : signaux `new_game_requested`, `continue_requested`, `options_requested`, `quit_requested` sur `scenes/ui/main_menu.tscn`, `scenes/ui/hud.tscn`, `scenes/ui/ending_screen.tscn` avec `set_ending_id(id)`. Respecter ces noms. — TODO
 
 ## Journal des décisions
 
