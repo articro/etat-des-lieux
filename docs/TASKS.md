@@ -26,7 +26,8 @@
 |---|---|---|
 | A0-1 | GDD, Story Bible, Architecture, Briefs | DONE |
 | A0-2 | Squelette projet Godot + autoloads stubs + classes de données | DONE |
-| A0-3 | Dépôt GitHub `articro/etat-des-lieux`, push initial | EN COURS (attente token) |
+| A0-3 | Dépôt GitHub `articro/etat-des-lieux`, push initial, 6 branches agents | DONE |
+| A0-7 | Intégration Narration session 1 (60 objets, 10 docs, 18 règles) sur main, traduction enregistrée | DONE |
 | A0-4 | Version Godot = **4.7.2**, `config/features` ajusté, check headless OK | DONE |
 | A0-5 | Outils : `tools/check.sh`, `tools/install_godot_sandbox.sh`, `tools/run_tests.sh` | DONE |
 | A0-6 | Plan Halloween 2026 (périmètre réduit, calendrier) | DONE |
@@ -185,8 +186,8 @@
 
 > Format : `[De → Vers] (date) Description. — Statut`
 
-- `[Narration → Architecte]` (2026-10-17) `game/data/strings/fr.csv` **n'est pas enregistré** dans `project.godot` (`locale/translations=PackedStringArray()` vide) : `tr()` renverra les clés brutes. Le `.import` du CSV génère bien `fr.fr.translation`. Il faut ajouter `res://data/strings/fr.fr.translation` dans `internationalization/locale/translations`. Hors périmètre Narration. — À FAIRE (Architecte)
-- `[Narration → Systèmes]` (2026-10-17) **Qui évalue `ItemData.reveal_condition` ?** ARCHITECTURE §6 la définit mais aucune API ne la traite : `InventoryManager.reveal_item()` est appelé sans condition. Proposition : HouseDirector évalue toutes les `reveal_condition` des fantômes non révélés sur les triggers `doc_read`, `progress`, `item_checked` et `act_changed`, et appelle `InventoryManager.reveal_item()`. En attendant, aucun fantôme n'apparaît : le jeu reste finissable sur 52 objets réels. — À TRANCHER
+- `[Narration → Architecte]` (2026-10-17) `game/data/strings/fr.csv` **n'est pas enregistré** dans `project.godot` (`locale/translations=PackedStringArray()` vide) : `tr()` renverra les clés brutes. Le `.import` du CSV génère bien `fr.fr.translation`. Il faut ajouter `res://data/strings/fr.fr.translation` dans `internationalization/locale/translations`. Hors périmètre Narration. — **DONE** (Architecte, 17/10 : enregistré, tr() vérifié headless)
+- `[Narration → Systèmes]` (2026-10-17) **Qui évalue `ItemData.reveal_condition` ?** ARCHITECTURE §6 la définit mais aucune API ne la traite : `InventoryManager.reveal_item()` est appelé sans condition. Proposition : HouseDirector évalue toutes les `reveal_condition` des fantômes non révélés sur les triggers `doc_read`, `progress`, `item_checked` et `act_changed`, et appelle `InventoryManager.reveal_item()`. En attendant, aucun fantôme n'apparaît : le jeu reste finissable sur 52 objets réels. — **TRANCHÉ (Architecte)** : oui, HouseDirector évalue les `reveal_condition` (ARCHITECTURE §6 mis à jour, paragraphe « Révélation »). Tâche S-3 pour Systèmes.
 - `[Narration → Systèmes]` (2026-10-17) **Seuil de la cave.** PLAN_HALLOWEEN §2 dit « à 45 objets : le téléphone sonne, la trappe s'ouvre » et « les 8 derniers objets » se trouvent dans la cave. Avec la répartition validée (cave = 4 objets réels), il reste 8 objets au moment où il en manque 8 **si** 52 sont cochés (56 réels + 8 fantômes = 60, donc 52 cochés = 4 réels + 4 fantômes restants). Je livre les règles à `progress 45` (téléphone/répondeur, trappe) conformément au PLAN, et je **ne change pas** la répartition. La règle `cellar_door` reste à 45. — POUR INFO
 - `[Narration → Systèmes]` (2026-10-17) **DocumentLibrary doit appliquer les données.** Sur `mark_found()` : appliquer `DocumentData.sets_flags` (`GameState.set_flag`) et `DocumentData.reveals_items` (`InventoryManager.reveal_item`). Le stub actuel ne le fait pas ; sinon 5 fantômes ne se révèlent que par `reveal_condition`.
 - `[Narration → Systèmes]` (2026-10-17) **Chargement des règles.** Personne ne charge `res://data/rules/*.tres` aujourd'hui : il faut un `_ready()` dans HouseDirector qui instancie et `register_rule()` chaque `.tres` (18 fichiers V1). Prévu en S-3 normalement — je le note pour ne pas l'oublier.
@@ -197,6 +198,11 @@
 - `[Narration → Niveau]` (2026-10-17) **Ancres.** Les 60 `ItemData.anchors` sont vides et `scene` est vide : c'est Niveau qui fournit les `Marker3D`. Proposition de convention (à documenter dans `docs/anchors.md`) : `a_<item_id sans préfixe de pièce>` (ex. `a_clock_stopped` pour `kitchen_clock_stopped`), et pour les objets déplacés par les règles, les ancres citées dans `data/rules/*.tres` sont : `living_anchor_fireplace`, `study_anchor_desk`, `hall_anchor_console`, `kitchen_anchor_table`, `cellar_anchor_shelves`. Liste exacte dans les `.tres` de règles. — À FAIRE (Niveau)
 - `[Narration → UI]` (2026-10-17) **Ligne « 61. Camille ».** Le numéro est **sérialisé** (`InventoryManager.progress().x`) et non figé : je livre `INV_LINE_ADDED_CAMILLE` = `Camille` (sans numéro) et `INV_LINE_FORMAT` = `{index}. {name}`. Le carnet affiche via `inventory_line_added(line_index, text_key)`. — POUR INFO
 - `[Narration → Systèmes]` (2026-10-17) **Ids de documents** référencés par les `reveal_condition` et les règles (à créer par R-3/R-5, contrats à respecter) : `hall_postit_besnard`, `study_inventory_1973`, `study_letter_besnard`, `kitchen_letter_lucienne_1`, `kitchen_letter_lucienne_2`, `living_letter_lucienne_3`, `living_photo_family`, `hall_tape_1973`, `cellar_register_1847`, `study_deed_1912`. — POUR INFO
+
+- `[Architecte → Systèmes]` (17/10) Le parser de conditions doit supporter la **négation `!` sur tout prédicat** (`!item_checked:id`, utilisé par 4 règles) + `item_present:id` et `presence:state`. Seuils réels des règles : **20 / 30 / 45 / 52** (lire `game/data/rules/README.md`). — TODO
+- `[Architecte → UI]` (17/10) Les corps de documents (`body_key`) contiennent `\n` et du BBCode `[i]`/`[b]` : visionneuse = RichTextLabel avec bbcode_enabled. `pages` indicatif. — TODO
+- `[Architecte → Niveau]` (17/10) Les 60 `item_id` de `docs/items_master.csv` sont **définitifs** : ne jamais renommer. Remplir `scene` et `anchors` de chaque ItemData (seuls champs autorisés pour Niveau dans data/items/), créer les ancres dans les rooms. Objet interactif `cellar_stove` dans la cave (fin Cendres). — TODO
+- `[Architecte → Gameplay]` (17/10) L'interaction longue « brûler » cible `cellar_stove` et émet `player_interacted(&"cellar_stove", &"burn")`. — TODO
 
 ## Journal des décisions
 

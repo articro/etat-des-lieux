@@ -7,4 +7,4 @@ extends Node
 func _ready() -> void:
 	var p := InventoryManager.progress()
 	_label.text = "ÉTAT DES LIEUX — M0\nAutoloads OK — objets chargés : %d / films : %d" % [p.y, InventoryManager.film_count()]
-	print("État des lieux — projet initialisé. Objets : %d" % p.y)
+	print("État des lieux — projet initialisé. Objets : %d — tr(UI_NEW_GAME) = %s" % [p.y, tr("UI_NEW_GAME")])

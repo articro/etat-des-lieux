@@ -42,7 +42,8 @@ window/stretch/aspect="expand"
 [internationalization]
 
 locale/fallback="fr"
-locale/translations=PackedStringArray()
+locale/translations=PackedStringArray("res://data/strings/fr.fr.translation")
+locale/test="fr"
 
 [physics]
 

@@ -223,8 +223,13 @@ class_name HouseRule extends Resource
 @export var cooldown: float = 0.0
 ```
 
-Mini-langage de condition (implémenté dans `house_director.gd`, testé par QA) :
-`checked>=N`, `act==N`, `attention>N`, `flag:name`, `!flag:name`, `doc_read:id`, `item_checked:id`, `room:id`, combinés par `&&` et `||`, parenthèses autorisées.
+Mini-langage de condition (implémenté dans `house_director.gd`, fonction `evaluate_condition`) :
+- Prédicats : `checked>=N` (aussi `>`, `<`, `<=`, `==`), `act==N`, `attention>N`, `flag:name`, `doc_read:id`, `item_checked:id`, `item_present:id`, `room:id`, `presence:state`.
+- **Négation `!` autorisée devant n'importe quel prédicat** (`!item_checked:id`, `!doc_read:id`, `!flag:name`).
+- Combinaison par `&&` et `||`, parenthèses autorisées. Chaîne vide = `true`.
+- Syntaxe invalide → `push_error` + `false`, jamais de crash.
+
+**Révélation des objets fantômes** : c'est **HouseDirector** qui évalue `ItemData.reveal_condition` de tous les fantômes non révélés, à chaque `document_read`, `item_checked`, `inventory_progress` et `player_entered_room`, et appelle `InventoryManager.reveal_item(id)` quand la condition devient vraie. (Narration ne fait que déclarer la condition.)
 
 ## 7. Flux clés
 
