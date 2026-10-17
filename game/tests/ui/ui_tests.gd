@@ -44,6 +44,7 @@ func _ready() -> void:
 	await _test_menu()
 	await _test_endings()
 	await _test_input_priority()
+	await _test_save_reload()
 
 	_report()
 
@@ -129,6 +130,9 @@ func _test_notebook() -> void:
 	_check(notebook.current_tab() == NotebookUi.TAB_PHOTOS, "onglet Photos sélectionné")
 	notebook.select_tab(NotebookUi.TAB_LIST)
 	_check(notebook.current_tab() == NotebookUi.TAB_LIST, "retour à l'onglet Liste")
+	var column := notebook.get_node("Sheet/Margin/Column/Pages/ListScroll/ListColumn") as VBoxContainer
+	await get_tree().process_frame
+	_check(column != null and column.size.y > 200.0, "liste mise en page (%.0f px de haut)" % (column.size.y if column != null else 0.0))
 	notebook.close()
 	_check(not notebook.is_open() and not UiState.notebook_open, "le carnet se referme")
 	notebook.queue_free()
@@ -299,6 +303,36 @@ func _test_endings() -> void:
 			_check(ashes_texts[ashes_texts.size() - 2].begins_with("1."), "la fin Cendres repart à la ligne 1 (%s)" % ashes_texts[ashes_texts.size() - 2])
 		ashes.queue_free()
 		await get_tree().process_frame
+
+
+# --- Rattrapage après chargement d'une sauvegarde ---
+
+func _test_save_reload() -> void:
+	print("[Sauvegarde → carnet]")
+	var notebook := await _instance(NOTEBOOK_SCENE) as NotebookUi
+	if notebook == null:
+		return
+	var first := InventoryManager.check_item(&"hall_mirror", _fake_photo(&"hall"))
+	var second := InventoryManager.check_item(&"study_desk", _fake_photo(&"study"))
+	_check(first and second, "deux objets cochés via l'API publique")
+	await _wait(0.4)
+	_check(
+		notebook.is_line_checked(&"hall_mirror") and notebook.is_line_checked(&"study_desk"),
+		"les deux coches sont dans le carnet"
+	)
+	_check(SaveManager.save_game() == OK, "sauvegarde écrite (SaveManager)")
+	EventBus.photo_developed.emit(_fake_photo(&"hall"))
+	await get_tree().process_frame
+	_check(notebook.photo_count() == 1, "une photographie dans l'onglet Photos")
+	InventoryManager.from_save_dict({})
+	_check(not InventoryManager.is_checked(&"hall_mirror"), "état remis à zéro avant rechargement")
+	_check(SaveManager.load_game() == OK, "sauvegarde relue (game_loaded émis)")
+	await _wait(0.3)
+	_check(notebook.is_line_checked(&"hall_mirror"), "le carnet retrouve ses coches après game_loaded")
+	_check(notebook.line_count() == 66, "la liste est reconstruite sans doublon (%d lignes)" % notebook.line_count())
+	_check(notebook.photo_count() == 0, "les photos (non persistées) sont vidées")
+	notebook.queue_free()
+	await get_tree().process_frame
 
 
 # --- Priorité des entrées clavier ---

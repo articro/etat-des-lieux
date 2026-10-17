@@ -285,7 +285,48 @@
 - **2026-10-17 — U-6 DONE (mini).** `main_menu.tscn` : noir + brouillard généré (`menu_fog.gd`, dégradés radiaux qui dérivent + 2 halos chauds = phares de la 205), titre manuscrit, 4 boutons émettant `new_game_requested`/`continue_requested`/`options_requested`/`quit_requested` (contrat S-6 respecté, le placeholder de main.gd n'est plus utilisé), Continuer grisé sans sauvegarde. `pause_menu.tscn` (CanvasLayer 90, `process_mode` ALWAYS) : Échap = `get_tree().paused` + `pause_toggled`, mais **jamais** quand une surcouche UI est ouverte (arbitrage `UiState`, testé). `options_panel.gd` partagé menu/pause : sensibilité, FOV, volume, sous-titres, plein écran, lampe forte — persistés dans `user://settings.cfg` par `UiSettings`, `settings_changed` émis à chaque changement et une fois par clé au démarrage (`apply_all()`).
 - **2026-10-17 — U-7 DONE.** `scenes/ui/subtitles.tscn` (Control instancié dans le HUD et l'écran de fin) : fondu 0,16 s, maintien `duration`, fondu 0,5 s ; respecte le réglage `subtitles` en direct ; clé inconnue = warning + rien à l'écran (jamais de clé brute).
 - **2026-10-17 — U-8 DONE.** `scenes/ui/ending_screen.tscn` (Control, `set_ending_id()` appelé par main.gd) : `ENDING_<ID>_TITLE`, puis P1..P5 écrits un par un, puis la dernière ligne composée via `INV_LINE_FORMAT` (index **sérialisé** : `progress().y + 1` = 61 pour `closed`, 1 pour `ashes`), puis `ENDING_GENERIC_EPILOGUE`, puis boutons « Revenir au menu » / « Quitter ». Entrée accélère, Échap révèle tout.
-- **2026-10-17 — Tests.** `game/tests/ui/ui_tests.tscn` = **82 vérifications headless, 0 échec** (`godot --headless --path game res://tests/ui/ui_tests.tscn`, exit 0/1) : chaînes, thème, réglages, carnet (lignes, coche, ligne ajoutée, photos), documents (pagination, mark_read, dégradation), HUD, sous-titres, pause, options, contrat menu, 2 fins, **priorité des entrées** (Tab/Échap). Banc d'essai manuel : `scenes/ui/test_ui.tscn` (touches 1-7 → signaux factices). Les 9 scènes du module se lancent seules (F6) sans erreur ni warning.
+- **2026-10-17 — Tests.** `game/tests/ui/ui_tests.tscn` = **92 vérifications headless, 0 échec** (`godot --headless --path game res://tests/ui/ui_tests.tscn`, exit 0/1) : chaînes, thème, réglages, carnet (lignes, coche, ligne ajoutée, photos), documents (pagination, mark_read, dégradation), HUD, sous-titres, pause, options, contrat menu, 2 fins, **priorité des entrées** (Tab/Échap), **rattrapage `game_loaded`** (coches retrouvées, photos vidées). Banc d'essai manuel : `scenes/ui/test_ui.tscn` (touches 1-7 → signaux factices). Les 9 scènes du module se lancent seules (F6) sans erreur ni warning.
+
+### HANDOFF — UI (17 oct. 2026, fin de session 1)
+
+**Ce qui marche (branche `agent/ui`, 2 pushes)**
+- **U-9** Polices OFL dans `assets/fonts/` : Courier Prime (R/B/I) = machine à écrire, Caveat = manuscrite, Lato (R/B) = sans-serif. Textes de licence joints, `assets/CREDITS.md` rempli, couverture française vérifiée sur la table `cmap` (`œ Œ`, accents majuscules, `« » — – … ’ €`).
+- **U-1/U-2** `notebook.tscn` (CanvasLayer 20, touche Tab) : 2 onglets. Liste = 60 lignes + 6 en-têtes de pièce dans l'ordre de `list_index`, libellés `tr(label_key)`, format `INV_LINE_FORMAT` ; coche tracée en 0,34 s sur `item_checked` (jouée à l'ouverture si l'objet a été coché carnet fermé) ; `inventory_line_added` écrit une ligne manuscrite caractère par caractère (« 61. Camille ») ; `item_revealed` fait clignoter la ligne à l'encre fraîche ; fin `ashes` = les lignes ajoutées disparaissent.
+- **U-3** Onglet Photos : vignette par `photo_developed` + légende de pièce, sélection ↑↓, Entrée = zoom plein écran ; texture absente → vignette grise et libellé, jamais de crash.
+- **U-4** `hud.tscn` (CanvasLayer **2**) : compteur de films en bas à droite (rougi à 0, à jour sur `photo_taken`), réticule discret qui pulse sur `player_interacted` et se masque carnet ouvert. Rien de doublé avec le HUD du joueur (viseur, voile blanc, jauge longue = `player.tscn`).
+- **U-5** `document_viewer.tscn` (CanvasLayer 30) : `document_found` → `DocumentLibrary.get_document()` → RichTextLabel BBCode, typo machine à écrire ou manuscrite selon `kind`, pagination, `mark_read()` à l'ouverture (donc `document_read` → révélations).
+- **U-6** `main_menu.tscn` (noir + brouillard généré + 2 halos = phares de la 205, les 4 signaux du contrat S-6), `pause_menu.tscn` (Échap = `get_tree().paused` + `pause_toggled`, jamais par-dessus une surcouche), `options_panel.gd` partagé menu/pause (sensibilité, FOV, volume, sous-titres, plein écran, lampe forte) persisté dans `user://settings.cfg` par `UiSettings` + `settings_changed` (une fois par clé au démarrage).
+- **U-7** `subtitles.tscn` : fondu 0,16 s / maintien `duration` / fondu 0,5 s, respecte le réglage en direct, clé inconnue ignorée.
+- **U-8** `ending_screen.tscn` : `set_ending_id()` → titre, P1..P5 écrits un par un, dernière ligne composée (`INV_LINE_FORMAT`, index sérialisé : 61 pour `closed`, 1 pour `ashes`), épilogue, boutons « Revenir au menu » / « Quitter ». Entrée accélère, Échap révèle tout.
+- **Tests** : `res://tests/ui/ui_tests.tscn` = **92 vérifications headless, 0 échec** (exit 0/1). Les 9 scènes du module se lancent seules (F6) sans erreur ni warning. `check.sh` vert à chaque push — `main.tscn` charge désormais mon menu (le warning « main_menu.tscn absente » a disparu).
+
+**Ce qui reste**
+1. **Validation visuelle impossible ici** (rendu dummy en headless) : à regarder en F5/F6 — rendu des polices, pagination réelle des documents, brouillard du menu, position du compteur de films, lisibilité des sous-titres, aspect du papier. La mise en page est vérifiée par les tests (liste de 1926 px dans une fenêtre de 800), pas les pixels.
+2. **Réticule non contextuel** : il faut `interact_target_changed(target_id, kind)` (demande déposée). `Reticle.set_context()` est déjà câblé.
+3. **Aucun son UI** : ids déposés côté Audio (`notebook_open/close/page`, `pencil_check`, `photo_thumb`, `menu_move/select`, `typewriter_line`). À brancher sur `AudioManager.play_ui()` après D-1.
+4. **Carnet 3D en main** (GDD §4.2) : V2, demande un `Marker3D` dans `player.tscn`.
+5. **Options V2** : remapping et daltonisme non faits (coupure PLAN §5 assumée).
+6. **Fusion `scenes/ui/ui_strings.csv` → `data/strings/fr.csv`** (demande déposée, non bloquante).
+
+**Pièges**
+1. `UiText.ensure()` doit précéder tout `tr()` de l'UI — il est en tête de chaque `_ready` du module ; toute nouvelle scène UI doit le faire aussi.
+2. Un `CanvasLayer` n'est **pas** un `CanvasItem` : pas de `modulate` ni de `theme` sur la racine. Les fondus passent par les enfants (`notebook._set_fade`), les thèmes sont posés sur les `Panel`.
+3. Le HUD est en CanvasLayer **2** : ne pas le passer au-dessus de 3 (post-process) ni de 5 (voile de flash du joueur), sinon le compteur de films n'est plus grainé ni aveuglé.
+4. **Ordre des nœuds dans `hud.tscn`** : `PauseMenu` est le dernier fils, donc il reçoit `_unhandled_input` en premier ; il laisse passer Échap si `UiState.any_overlay_open()`. Ne pas réordonner sans rejouer le test « Entrées clavier ».
+5. `document_viewer.open_document()` pose `_current_id`/`_open` **avant** `DocumentLibrary.mark_read()` : `mark_read` réémet `document_found`, c'est cette garde qui empêche la réentrée. Ne pas déplacer l'appel.
+6. Le carnet énumère `data/items/` (pas d'API globale) : une pièce sans clé `ROOM_*` tombe sur « Pièce non classée » + warning.
+7. `game/data/strings/fr.fr.translation` est régénéré par `--import` : le restaurer (`git checkout --`) s'il apparaît modifié (hors périmètre UI). `scenes/ui/ui_strings.fr.translation` est à moi : à commiter avec le CSV.
+8. `AudioManager` est un stub : ne pas brancher les sons UI avant D-1 (chaque appel = warning).
+9. Godot 4.7 traite l'inférence depuis un `Variant` comme une **erreur** (déjà signalé par Gameplay) : typer explicitement.
+
+**Décisions prises seul (à valider)**
+- Chaînes UI dans `scenes/ui/ui_strings.csv` + `TranslationServer` (aucune chaîne en dur, aucun fichier hors périmètre touché).
+- Carnet = surcouche 2D, pas d'objet 3D dans la main (V1).
+- La visionneuse appelle `DocumentLibrary.mark_read()` à l'ouverture (sinon `document_read` ne part que si l'interaction vient du joueur).
+- La pause pose `get_tree().paused` **en plus** de `pause_toggled` (le joueur n'écoute que le signal).
+- « Revenir au menu » = `get_tree().reload_current_scene()` (aucun signal de retour au menu dans le contrat).
+- Fin `closed` : index de la dernière ligne = `progress().y + 1` (61) ; fin `ashes` : 1.
+- `UiSettings.apply_all()` est appelé par le menu puis le HUD (idempotent) faute d'appel dans `main.tscn`.
 
 ## Module Audio `[Audio]` — `autoloads/audio_manager.gd`, `assets/audio`
 
