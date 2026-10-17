@@ -1,0 +1,182 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="920" viewBox="0 0 1400 920" role="img" aria-labelledby="title desc">
+  <title id="title">Plan V1 de la maison Varenne — État des lieux</title>
+  <desc id="desc">Schéma du rez-de-chaussée : extérieur, entrée, cuisine, salon, bureau et cave. Le hall distribue les trois pièces et la cave est accessible depuis la cuisine par une trappe.</desc>
+  <defs>
+    <pattern id="paper-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <path d="M24 0H0V24" fill="none" stroke="#d8d2c5" stroke-width="0.7" opacity="0.45" />
+    </pattern>
+    <pattern id="boards" width="12" height="12" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+      <rect width="12" height="12" fill="#e7ddd0" />
+      <path d="M0 0V12" stroke="#9b7861" stroke-width="3" opacity="0.75" fill="none" />
+    </pattern>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10Z" fill="#8c6550" />
+    </marker>
+    <style>
+      .ink { fill: #272b2a; }
+      .muted { fill: #656b67; }
+      .smallcaps { font: 700 12px Arial, sans-serif; letter-spacing: 1.8px; }
+      .title { font: 700 34px Georgia, serif; fill: #252927; }
+      .subtitle { font: 15px Arial, sans-serif; fill: #5a625e; }
+      .room-title { font: 700 18px Arial, sans-serif; letter-spacing: 1px; fill: #292d2b; }
+      .room-meta { font: 13px Arial, sans-serif; fill: #58605b; }
+      .fixture { font: 11px Arial, sans-serif; fill: #555a56; }
+      .card-title { font: 700 16px Arial, sans-serif; letter-spacing: .7px; fill: #292d2b; }
+      .card-copy { font: 14px Arial, sans-serif; fill: #525a55; }
+      .tiny { font: 11px Arial, sans-serif; fill: #626964; }
+      .wall { fill: none; stroke: #343936; stroke-width: 9; stroke-linecap: square; stroke-linejoin: miter; }
+      .partition { fill: none; stroke: #454b47; stroke-width: 7; stroke-linecap: square; }
+      .door { fill: none; stroke: #8c6550; stroke-width: 2.5; }
+      .fine { fill: none; stroke: #68716b; stroke-width: 1.5; }
+    </style>
+  </defs>
+
+  <rect width="1400" height="920" fill="#f3f0e8" />
+  <rect width="1400" height="920" fill="url(#paper-grid)" />
+  <rect x="32" y="30" width="1336" height="860" rx="14" fill="#f8f6ef" stroke="#d7d0c3" stroke-width="1.5" />
+
+  <text x="64" y="65" class="smallcaps" fill="#7d624e" font-family="DejaVu Sans" font-size="12" font-weight="700" letter-spacing="1.8">ÉTAT DES LIEUX · NIVEAU</text>
+  <text x="64" y="105" class="title" font-family="DejaVu Serif" font-size="34" font-weight="700" fill="#252927">Maison Varenne — plan V1</text>
+  <text x="64" y="134" class="subtitle" font-family="DejaVu Sans" font-size="15" font-weight="400" fill="#5a625e">Rez-de-chaussée jouable · six zones · schéma de circulation pour validation N-1</text>
+  <rect x="1120" y="50" width="215" height="34" rx="17" fill="#ebe3d6" stroke="#cbbba6" />
+  <text x="1227" y="72" text-anchor="middle" class="smallcaps" fill="#785c48" font-family="DejaVu Sans" font-size="12" font-weight="700" letter-spacing="1.8">VERSION DE TRAVAIL</text>
+
+  
+  <text x="235" y="166" class="smallcaps" fill="#6d746e" font-family="DejaVu Sans" font-size="12" font-weight="700" letter-spacing="1.8">MAISON · REZ-DE-CHAUSSÉE</text>
+  <rect x="235" y="180" width="730" height="395" fill="#fffdf8" />
+  <rect x="239" y="184" width="232" height="237" fill="#eee7d8" />
+  <rect x="478" y="184" width="239" height="237" fill="#e8ece3" />
+  <rect x="724" y="184" width="237" height="237" fill="#e6e8e9" />
+  <rect x="239" y="424" width="722" height="147" fill="#eceeeb" />
+
+  
+  <path class="wall" d="M235 180H965V575H655M585 575H235V180" fill="none" stroke="#343936" stroke-width="9" stroke-linecap="square" stroke-linejoin="miter" />
+  <path class="partition" d="M475 180V420M720 180V420" fill="none" stroke="#454b47" stroke-width="7" stroke-linecap="square" />
+  <path class="partition" d="M235 420H315M385 420H560M630 420H805M875 420H965" fill="none" stroke="#454b47" stroke-width="7" stroke-linecap="square" />
+
+  
+  <path class="door" d="M315 420V350A70 70 0 0 1 385 420" fill="none" stroke="#8c6550" stroke-width="2.5" />
+  <path class="door" d="M560 420V350A70 70 0 0 1 630 420" fill="none" stroke="#8c6550" stroke-width="2.5" />
+  <path class="door" d="M805 420V350A70 70 0 0 1 875 420" fill="none" stroke="#8c6550" stroke-width="2.5" />
+  
+  <path class="door" d="M585 575V525A70 70 0 0 1 655 575" fill="none" stroke="#8c6550" stroke-width="2.5" />
+
+  
+  <text x="258" y="218" class="room-title" font-family="DejaVu Sans" font-size="18" font-weight="700" fill="#292d2b" letter-spacing="1">CUISINE</text>
+  <text x="258" y="241" class="room-meta" font-family="DejaVu Sans" font-size="13" font-weight="400" fill="#58605b">room_id: kitchen · 16 objets</text>
+  <rect x="270" y="280" width="100" height="52" rx="4" fill="#d5c8ae" stroke="#807764" stroke-width="2" />
+  <path d="M320 280V332M270 306H370" stroke="#9a8d73" stroke-width="1.4" fill="none" />
+  <circle cx="280" cy="270" r="7" fill="#c6b99f" stroke="#807764" />
+  <circle cx="360" cy="270" r="7" fill="#c6b99f" stroke="#807764" />
+  <circle cx="280" cy="342" r="7" fill="#c6b99f" stroke="#807764" />
+  <circle cx="360" cy="342" r="7" fill="#c6b99f" stroke="#807764" />
+  <text x="320" y="352" text-anchor="middle" class="fixture" font-family="DejaVu Sans" font-size="11" font-weight="400" fill="#555a56">table en formica</text>
+  <rect x="397" y="301" width="52" height="52" rx="3" fill="#f6f0e3" stroke="#8c6550" stroke-width="3" stroke-dasharray="7 4" />
+  <path d="M423 311V339" stroke="#8c6550" stroke-width="2.2" marker-end="url(#arrow)" fill="none" />
+  <text x="423" y="372" text-anchor="middle" class="fixture" fill="#795b47" font-family="DejaVu Sans" font-size="11" font-weight="400">TRAPPE ↓ CAVE</text>
+
+  
+  <text x="501" y="218" class="room-title" font-family="DejaVu Sans" font-size="18" font-weight="700" fill="#292d2b" letter-spacing="1">SALON</text>
+  <text x="501" y="241" class="room-meta" font-family="DejaVu Sans" font-size="13" font-weight="400" fill="#58605b">room_id: living · 14 objets</text>
+  <rect x="520" y="264" width="112" height="22" rx="2" fill="#b9a990" stroke="#6f665a" stroke-width="2" />
+  <path d="M526 270H626M526 279H626" stroke="#827766" stroke-width="1.2" fill="none" />
+  <text x="576" y="301" text-anchor="middle" class="fixture" font-family="DejaVu Sans" font-size="11" font-weight="400" fill="#555a56">cheminée</text>
+  <rect x="536" y="321" width="145" height="48" rx="10" fill="#d1c6bb" stroke="#786f67" stroke-width="2" />
+  <path d="M548 321V369M669 321V369" stroke="#9b8d80" stroke-width="1.5" fill="none" />
+  <text x="608" y="390" text-anchor="middle" class="fixture" font-family="DejaVu Sans" font-size="11" font-weight="400" fill="#555a56">canapé · fauteuils · piano</text>
+
+  
+  <text x="747" y="218" class="room-title" font-family="DejaVu Sans" font-size="18" font-weight="700" fill="#292d2b" letter-spacing="1">BUREAU</text>
+  <text x="747" y="241" class="room-meta" font-family="DejaVu Sans" font-size="13" font-weight="400" fill="#58605b">room_id: study · 12 objets</text>
+  <rect x="774" y="300" width="112" height="50" rx="3" fill="#c2b49f" stroke="#786d5e" stroke-width="2" />
+  <path d="M786 350V362M874 350V362" stroke="#786d5e" stroke-width="3" fill="none" />
+  <text x="830" y="376" text-anchor="middle" class="fixture" font-family="DejaVu Sans" font-size="11" font-weight="400" fill="#555a56">bureau · tiroir</text>
+  <rect x="908" y="268" width="32" height="104" rx="2" fill="#c8c5bb" stroke="#77776f" stroke-width="2" />
+  <path d="M908 294H940M908 320H940M908 346H940" stroke="#8b8980" stroke-width="1.5" fill="none" />
+  <text x="924" y="389" text-anchor="middle" class="fixture" font-family="DejaVu Sans" font-size="11" font-weight="400" fill="#555a56">rayonnage</text>
+
+  
+  <text x="258" y="462" class="room-title" font-family="DejaVu Sans" font-size="18" font-weight="700" fill="#292d2b" letter-spacing="1">ENTRÉE &amp; COULOIR</text>
+  <text x="258" y="484" class="room-meta" font-family="DejaVu Sans" font-size="13" font-weight="400" fill="#58605b">room_id: hall · 10 objets · hub de circulation</text>
+  <rect x="416" y="493" width="90" height="28" rx="3" fill="#c9c4b8" stroke="#736e64" stroke-width="2" />
+  <path d="M426 500H496M426 507H496" stroke="#8e887b" stroke-width="1.3" fill="none" />
+  <text x="461" y="540" text-anchor="middle" class="fixture" font-family="DejaVu Sans" font-size="11" font-weight="400" fill="#555a56">console</text>
+  <rect x="808" y="462" width="126" height="66" rx="3" fill="url(#boards)" stroke="#94745d" stroke-width="2" />
+  <text x="871" y="488" text-anchor="middle" class="smallcaps" fill="#594d43" font-family="DejaVu Sans" font-size="12" font-weight="700" letter-spacing="1.8">ÉTAGE</text>
+  <text x="871" y="510" text-anchor="middle" class="tiny" fill="#594d43" font-family="DejaVu Sans" font-size="11" font-weight="400">accès barré · hors V1</text>
+
+  
+  <rect x="235" y="620" width="730" height="214" rx="5" fill="#e8eddf" stroke="#81917c" stroke-width="2.5" stroke-dasharray="10 7" />
+  <text x="258" y="653" class="room-title" font-family="DejaVu Sans" font-size="18" font-weight="700" fill="#292d2b" letter-spacing="1">EXTÉRIEUR · COUR</text>
+  <text x="258" y="676" class="room-meta" font-family="DejaVu Sans" font-size="13" font-weight="400" fill="#58605b">room_id: exterior · 4 objets listés · 205 en décor</text>
+  <path d="M620 580V616C620 664 620 720 620 812" fill="none" stroke="#8c6550" stroke-width="3" stroke-dasharray="8 7" marker-end="url(#arrow)" />
+
+  
+  <circle cx="315" cy="750" r="24" fill="#d5d7cc" stroke="#677166" stroke-width="2.5" />
+  <circle cx="315" cy="750" r="7" fill="none" stroke="#677166" stroke-width="2" />
+  <text x="315" y="790" text-anchor="middle" class="fixture" font-family="DejaVu Sans" font-size="11" font-weight="400" fill="#555a56">puits</text>
+  <path d="M390 754H460M397 754V768M453 754V768" fill="none" stroke="#736e63" stroke-width="4" stroke-linecap="round" />
+  <text x="425" y="790" text-anchor="middle" class="fixture" font-family="DejaVu Sans" font-size="11" font-weight="400" fill="#555a56">banc</text>
+  <circle cx="510" cy="755" r="7" fill="#b99a78" stroke="#716150" stroke-width="2" />
+  <path d="M510 748L540 733L553 755H517M537 734L544 724" fill="none" stroke="#716150" stroke-width="2.5" stroke-linejoin="round" />
+  <text x="531" y="790" text-anchor="middle" class="fixture" font-family="DejaVu Sans" font-size="11" font-weight="400" fill="#555a56">brouette</text>
+
+  
+  <g transform="translate(730 703)">
+    <path d="M12 34L28 12Q34 5 49 5H113Q128 5 136 18L150 34V57H8V43Z" fill="#aeb5b2" stroke="#515a56" stroke-width="3" />
+    <path d="M42 12H76V32H25ZM82 12H112Q122 12 130 32H82Z" fill="#dce0dc" stroke="#69716d" stroke-width="2" />
+    <circle cx="38" cy="57" r="12" fill="#343a38" /><circle cx="119" cy="57" r="12" fill="#343a38" />
+    <circle cx="38" cy="57" r="5" fill="#c6c5bb" /><circle cx="119" cy="57" r="5" fill="#c6c5bb" />
+    <path d="M10 43H1M151 42H159" stroke="#515a56" stroke-width="3" fill="none" />
+  </g>
+  <text x="810" y="785" text-anchor="middle" class="fixture" font-family="DejaVu Sans" font-size="11" font-weight="400" fill="#555a56">205 PEUGEOT · DÉCOR</text>
+
+  
+  <path d="M575 834V817M665 834V817M575 820L620 834L665 820" fill="none" stroke="#515a56" stroke-width="3" />
+  <text x="620" y="817" text-anchor="middle" class="tiny" fill="#48514b" font-family="DejaVu Sans" font-size="11" font-weight="400">PORTAIL</text>
+
+  
+  <rect x="1010" y="180" width="330" height="265" rx="9" fill="#e9e7e0" stroke="#aaa69a" stroke-width="1.8" />
+  <text x="1032" y="216" class="smallcaps" fill="#7d624e" font-family="DejaVu Sans" font-size="12" font-weight="700" letter-spacing="1.8">ZONE 6 · SOUS LA MAISON</text>
+  <text x="1032" y="247" class="card-title" font-family="DejaVu Sans" font-size="16" font-weight="700" fill="#292d2b" letter-spacing=".7">CAVE</text>
+  <text x="1032" y="271" class="card-copy" font-family="DejaVu Sans" font-size="14" font-weight="400" fill="#525a55">room_id: cellar · 4 objets listés</text>
+  <text x="1032" y="295" class="card-copy" font-family="DejaVu Sans" font-size="14" font-weight="400" fill="#525a55">Accès par la trappe de la cuisine.</text>
+  <rect x="1034" y="322" width="170" height="88" rx="3" fill="#dedbd2" stroke="#77766f" stroke-width="2" />
+  <path d="M1047 344H1190M1047 363H1190M1047 382H1190" stroke="#89877d" stroke-width="5" fill="none" />
+  <path d="M1053 338V390M1088 338V390M1124 338V390M1160 338V390M1185 338V390" stroke="#a09d92" stroke-width="2" fill="none" />
+  <text x="1119" y="430" text-anchor="middle" class="fixture" font-family="DejaVu Sans" font-size="11" font-weight="400" fill="#555a56">étagères · 7</text>
+  <rect x="1220" y="345" width="72" height="65" rx="4" fill="#b8b6af" stroke="#565b57" stroke-width="2.5" />
+  <path d="M1232 362H1280M1232 373H1280M1232 384H1280" stroke="#777a74" stroke-width="2" fill="none" />
+  <text x="1256" y="430" text-anchor="middle" class="fixture" font-family="DejaVu Sans" font-size="11" font-weight="400" fill="#555a56">poêle</text>
+
+  
+  <rect x="1010" y="465" width="330" height="145" rx="9" fill="#f0eee7" stroke="#c5c0b4" stroke-width="1.5" />
+  <text x="1032" y="497" class="card-title" font-family="DejaVu Sans" font-size="16" font-weight="700" fill="#292d2b" letter-spacing=".7">CIRCULATION</text>
+  <circle cx="1038" cy="526" r="4" fill="#8c6550" /><text x="1052" y="531" class="card-copy" font-family="DejaVu Sans" font-size="14" font-weight="400" fill="#525a55">Cour → hall (entrée)</text>
+  <circle cx="1038" cy="553" r="4" fill="#8c6550" /><text x="1052" y="558" class="card-copy" font-family="DejaVu Sans" font-size="14" font-weight="400" fill="#525a55">Hall → cuisine, salon, bureau</text>
+  <circle cx="1038" cy="580" r="4" fill="#8c6550" /><text x="1052" y="585" class="card-copy" font-family="DejaVu Sans" font-size="14" font-weight="400" fill="#525a55">Cuisine → cave par trappe</text>
+
+  
+  <rect x="1010" y="630" width="330" height="204" rx="9" fill="#f0eee7" stroke="#c5c0b4" stroke-width="1.5" />
+  <text x="1032" y="662" class="card-title" font-family="DejaVu Sans" font-size="16" font-weight="700" fill="#292d2b" letter-spacing=".7">LÉGENDE &amp; PÉRIMÈTRE</text>
+  <path d="M1034 691H1086" class="wall" fill="none" stroke="#343936" stroke-width="9" stroke-linecap="square" stroke-linejoin="miter" />
+  <text x="1100" y="696" class="card-copy" font-family="DejaVu Sans" font-size="14" font-weight="400" fill="#525a55">mur / cloison</text>
+  <path d="M1035 724V704A20 20 0 0 1 1055 724" class="door" fill="none" stroke="#8c6550" stroke-width="2.5" />
+  <text x="1100" y="721" class="card-copy" font-family="DejaVu Sans" font-size="14" font-weight="400" fill="#525a55">porte et débattement</text>
+  <rect x="1035" y="741" width="39" height="28" rx="2" fill="#f6f0e3" stroke="#8c6550" stroke-width="2.5" stroke-dasharray="5 3" />
+  <path d="M1054 746V762" stroke="#8c6550" stroke-width="2" marker-end="url(#arrow)" fill="none" />
+  <text x="1100" y="760" class="card-copy" font-family="DejaVu Sans" font-size="14" font-weight="400" fill="#525a55">trappe vers la cave</text>
+  <text x="1032" y="802" class="tiny" font-family="DejaVu Sans" font-size="11" font-weight="400" fill="#626964">Étage condamné · aucune zone jouable à l'étage.</text>
+
+  
+  <g transform="translate(1285 112)">
+    <text x="0" y="0" text-anchor="middle" class="smallcaps" fill="#46504a" font-family="DejaVu Sans" font-size="12" font-weight="700" letter-spacing="1.8">N</text>
+    <path d="M0 12V55" stroke="#46504a" stroke-width="2.5" marker-end="url(#arrow)" fill="none" />
+  </g>
+
+  
+  <path d="M64 860H1336" stroke="#d6d0c4" stroke-width="1.5" fill="none" />
+  <text x="64" y="883" class="subtitle" font-family="DejaVu Sans" font-size="15" font-weight="400" fill="#5a625e">Répartition V1 : extérieur 4 · entrée 10 · cuisine 16 · salon 14 · bureau 12 · cave 4 = 60 objets.</text>
+  <text x="1335" y="883" text-anchor="end" class="tiny" font-family="DejaVu Sans" font-size="11" font-weight="400" fill="#626964">Schéma de circulation — dimensions non contractuelles</text>
+</svg>

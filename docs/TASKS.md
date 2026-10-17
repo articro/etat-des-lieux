@@ -153,7 +153,7 @@
 
 | ID | Tâche | Jalon | Statut |
 |---|---|---|---|
-| N-1 | Plan 2D de la maison (image dans docs/) validé par Architecte : 13 zones, cohérent avec GDD §5 | M1 | TODO |
+| N-1 | Plan 2D de la maison (image dans docs/) validé par Architecte : 13 zones, cohérent avec GDD §5 | M1 | REVIEW |
 | N-2 | Blockout entrée + bureau (CSG ou meshes gris), ancres Marker3D nommées, zones Area3D | M1 | TODO |
 | N-3 | `house.tscn` + `house.gd` : instanciation des Items depuis InventoryManager, écoute `item_moved`, `item_revealed` | M1 | TODO |
 | N-4 | `item.tscn` générique + `item.gd` (`is_in_frustum`, surbrillance, inspection) | M1 | TODO |
@@ -163,6 +163,11 @@
 | N-8 | Set-dressing final des 13 zones (1998 rural, voir GDD §8) | M4 | TODO |
 | N-9 | Modèles des ~212 objets (assets libres, variantes par matériau, placeholders acceptés jusqu'à M4) | M3→M4 | TODO |
 | N-10 | Extérieur : cour, 205, brouillard, appentis | M2 | TODO |
+
+### Notes Niveau (V1 Halloween)
+
+- **2026-10-17 — N-1 REVIEW.** Plan schématique des 6 zones livré dans `game/scenes/house/plan_maison.png` (source `plan_maison.svg`) : cour → hall → cuisine/salon/bureau, trappe cuisine → cave; répartition des 60 objets alignée avec `docs/items_master.csv`.
+- **Périmètre à confirmer avant N-2.** N-1 demande un fichier dans `docs/`, mais le brief interdit les modifications de docs hors `TASKS.md` (seul `docs/anchors.md` est listé au périmètre) : le plan reste dans `game/scenes/house/` en attendant l'accord de l'Architecte; validation du schéma également requise.
 
 ## Module Narration `[Narration]` — `data/`
 
@@ -329,6 +334,8 @@
 - `[Architecte → Gameplay]` (17/10, playtest utilisateur) **Bug Échap** : la touche Échap n'affiche pas la souris. Attendu : Échap bascule `Input.mouse_mode` CAPTURED ↔ VISIBLE **et** émet `pause_toggled`. Le reste du feeling (flash, développement, déplacements, grain) validé par l'utilisateur en F6 sur `test_room.tscn` : « tout marche ». — TODO
 - `[Architecte → Niveau]` (17/10) **Noms d'ancres déjà référencés par les règles de Narration** (doivent exister dans les rooms, sinon `item_moved` est ignoré) : `hall_anchor_console`, `kitchen_anchor_preserves`, `kitchen_anchor_sink`, `living_anchor_fireplace`, `study_anchor_shelves`. Convention : `<room>_anchor_<nom>`. Les autres ancres (position initiale des 60 objets) sont à ton choix, à documenter dans `docs/anchors.md` et à écrire dans `ItemData.anchors[0]`. — TODO
 - `[Architecte → UI]` (17/10) Systèmes a documenté le protocole menu ↔ main dans `docs/TASKS.md` (section Systèmes) : signaux `new_game_requested`, `continue_requested`, `options_requested`, `quit_requested` sur `scenes/ui/main_menu.tscn`, `scenes/ui/hud.tscn`, `scenes/ui/ending_screen.tscn` avec `set_ending_id(id)`. Respecter ces noms. — TODO
+
+- `[Niveau → Architecte]` (2026-10-17) **Validation N-1 / emplacement du plan.** Le plan V1 (6 zones) est livré en `game/scenes/house/plan_maison.png` + source SVG. La tâche N-1 demande une image dans `docs/`, alors que le périmètre Niveau n'autorise que `docs/anchors.md` et la règle générale interdit les autres modifications de docs. Merci de valider le schéma et de confirmer si l'Architecte peut le recopier dans `docs/plan_maison.png` avant le blockout N-2. — EN ATTENTE
 
 ## Journal des décisions
 
