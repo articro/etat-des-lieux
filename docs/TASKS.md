@@ -103,6 +103,10 @@
 - **2026-10-17 — R-8 DONE.** Textes des 2 fins : `ENDING_CLOSED_*` (Inventaire clos, « 61. Camille » sérialisé via `ENDING_CLOSED_LINE_NAME` + `INV_LINE_FORMAT`) et `ENDING_ASHES_*` (Cendres, poêle de la cave conformément au PLAN §2 — le STORY_BIBLE parle de la cheminée du salon, le PLAN prime). Phrase finale de Cendres : « 1. Volant, cuir, usé ».
 - **2026-10-17 — R-6 DONE.** 30 sous-titres ≤ 12 mots dans `fr.csv` (`SUB_*`) + `game/data/strings/subtitles.md` (clé, durée calculée à 14 car./s, contexte d'émission) pour l'UI et l'Audio.
 
+- **2026-10-17 — Relecture des 10 documents (session 2).** Relus à voix haute et corrigés dans `fr.csv` (4 lignes touchées, aucun libellé d'inventaire modifié) : transcription de 1973 « reconstituée après la destruction de la minute », cycle de Lucienne « à chaque génération » (1912/1951/1973/1998 n'est pas trentenaire), Louis « treize ans » sur la photo de 1951 (né en 1938, STORY_BIBLE §2), lettre de Besnard « plus loin que la liste ». `docs/itch_textes.md` : les 5 captures de texte pour itch.io, mot pour mot, avec accroche, ordre et légendes.
+  Point de canon signalé (non bloquant V1) : la photo datée « été 1951 » nomme Madeleine à la maison alors que STORY_BIBLE §2 la dit internée depuis 1946. Laissé tel quel — l'annotation peut être un mensonge de Lucienne, et le jeu ne donne pas la date d'internement. À trancher par l'Architecte avant la V2.
+- **2026-10-17 — Narration en mode disponible.** Priorité V1 terminée et intégrée (branche réalignée sur `22037e8`). En attente : retours de playtest J5 sur les textes, demandes ponctuelles des autres modules (libellés, sous-titres, légendes). Aucune tâche R bloquante en cours.
+
 **Sources R-9 (consultées le 17 oct. 2026, usage : vocabulaire et ordre des opérations uniquement, aucun formulaire reproduit)**
 - Notaires de Paris — « Succession : en pratique, comment se déroule un inventaire ? » (description pièce par pièce, « prisée ») : https://paris.notaires.fr/fr/actualites/succession-en-pratique-comment-se-deroule-un-inventaire
 - Légifrance — Code civil, art. 809 et suivants (succession vacante, curatelle, inventaire estimatif article par article) : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006070721/LEGISCTA000006136274/
@@ -139,6 +143,13 @@
 - La fin *Cendres* se joue au **poêle de la cave** (PLAN §2), pas à la cheminée du salon (STORY_BIBLE §5).
 - Les 8 fantômes = 3 personnes comptées + 3 objets-messages + 2 photo_only. Aucun `phantom_kind = "moved"` en V1 (les déplacements sont déjà couverts par les règles).
 - Le fantôme `hall_ring_1951` est une alliance gravée « M. V. » : c'est un objet-message de Lucienne, pas une personne comptée.
+
+### HANDOFF — Narration & Contenu (17 oct. 2026, session 2, mode disponible)
+
+- **Fait** : branche réalignée sur `origin/agent/narration` (`22037e8`, intégration Architecte). Relecture complète des 10 documents, 5 micro-corrections de cohérence dans `fr.csv` (voir note ci-dessus), `check.sh` vert, `fr.fr.translation` régénérée. `docs/itch_textes.md` livré : 5 captures de texte mot pour mot (post-it, registre 1847, photo annotée, cassette 1973, inventaire 1912) + accroche Lucienne, prêtes pour la page itch.io (J13).
+- **Reste** : rien de bloquant. Narration **disponible** pour les retours de playtest et les demandes ponctuelles (textes d'interface, légendes, sous-titres additionnels).
+- **À trancher (Architecte, non bloquant)** : photo « été 1951 » nommant Madeleine à la maison contre STORY_BIBLE §2 (internée depuis 1946). Laissé comme possible mensonge d'annotation ; décision requise seulement pour la V2.
+- **Piège inchangé** : toute modification d'un libellé de `docs/items_master.csv` impose de régénérer le corps de l'inventaire 1973, et toute capture itch.io faite avant le 17/10 au soir est périmée pour la photo.
 
 ## Module UI `[UI]` — `scenes/ui/`, `assets/fonts`
 
