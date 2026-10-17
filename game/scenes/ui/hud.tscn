@@ -1,0 +1,42 @@
+[gd_scene load_steps=7 format=3 uid="uid://buihud0000001"]
+
+[ext_resource type="Script" path="res://scenes/ui/hud.gd" id="1_hud"]
+[ext_resource type="Script" path="res://scenes/ui/reticle.gd" id="2_reticle"]
+[ext_resource type="PackedScene" path="res://scenes/ui/subtitles.tscn" id="3_subtitles"]
+[ext_resource type="PackedScene" path="res://scenes/ui/notebook.tscn" id="4_notebook"]
+[ext_resource type="PackedScene" path="res://scenes/ui/document_viewer.tscn" id="5_docviewer"]
+[ext_resource type="PackedScene" path="res://scenes/ui/pause_menu.tscn" id="6_pause"]
+
+[node name="HUD" type="CanvasLayer"]
+layer = 2
+script = ExtResource("1_hud")
+
+[node name="Reticle" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("2_reticle")
+
+[node name="FilmCounter" type="Label" parent="."]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -320.0
+offset_top = -76.0
+offset_right = -44.0
+offset_bottom = -40.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+horizontal_alignment = 2
+
+[node name="Subtitles" parent="." instance=ExtResource("3_subtitles")]
+
+[node name="Notebook" parent="." instance=ExtResource("4_notebook")]
+
+[node name="DocumentViewer" parent="." instance=ExtResource("5_docviewer")]
+
+[node name="PauseMenu" parent="." instance=ExtResource("6_pause")]

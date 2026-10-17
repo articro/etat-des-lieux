@@ -264,15 +264,28 @@
 
 | ID | Tâche | Jalon | Statut |
 |---|---|---|---|
-| U-1 | Carnet 3D en main : ouverture/fermeture, pages, onglets (liste / photos / documents / plan) | M1 | TODO |
-| U-2 | Liste d'inventaire : 212 lignes par pièce, coche animée, lignes « ajoutées » (écriture qui apparaît) | M1 | TODO |
-| U-3 | Visionneuse de photo (en main + dans le carnet) | M1 | TODO |
-| U-4 | HUD minimal : compteur de films sur l'appareil, réticule contextuel discret | M1 | TODO |
-| U-5 | Lecture de document (papier en main, pages, BBCode, typo machine/manuscrite) | M1 | TODO |
-| U-6 | Menu principal (205 dans le brouillard), pause, options (sensibilité, FOV, sous-titres, accessibilité, remapping) | M2 | TODO |
-| U-7 | Sous-titres (`subtitle_requested`) | M2 | TODO |
-| U-8 | Écrans de fin, générique | M3 | TODO |
-| U-9 | Polices libres (machine à écrire, manuscrite, UI) + CREDITS | M1 | TODO |
+| U-1 | Carnet 3D en main : ouverture/fermeture, pages, onglets (liste / photos / documents / plan) | M1 | DONE (V1 : 2 onglets, surcouche 2D) |
+| U-2 | Liste d'inventaire : 212 lignes par pièce, coche animée, lignes « ajoutées » (écriture qui apparaît) | M1 | DONE (60 lignes V1) |
+| U-3 | Visionneuse de photo (en main + dans le carnet) | M1 | DONE (carnet + zoom ; « en main » = Gameplay G-5) |
+| U-4 | HUD minimal : compteur de films sur l'appareil, réticule contextuel discret | M1 | DONE (réticule non contextuel : signal manquant, voir demandes) |
+| U-5 | Lecture de document (papier en main, pages, BBCode, typo machine/manuscrite) | M1 | DONE |
+| U-6 | Menu principal (205 dans le brouillard), pause, options (sensibilité, FOV, sous-titres, accessibilité, remapping) | M2 | DONE (mini V1 : remapping/daltonisme = V2) |
+| U-7 | Sous-titres (`subtitle_requested`) | M2 | DONE |
+| U-8 | Écrans de fin, générique | M3 | DONE (2 fins ; générique = V2) |
+| U-9 | Polices libres (machine à écrire, manuscrite, UI) + CREDITS | M1 | DONE |
+
+### Notes UI (V1 Halloween)
+
+- **2026-10-17 — U-9 DONE.** `assets/fonts/` : Courier Prime (R/B/I, machine à écrire), Caveat (manuscrite, variable), Lato (R/B, sans-serif) — SIL OFL 1.1, textes de licence joints, `assets/CREDITS.md` rempli. Couverture française vérifiée sur la table `cmap` des 3 familles (`œ Œ`, majuscules accentuées, `« » — – … ’ €`) : aucun glyphe manquant.
+- **2026-10-17 — Chaînes UI.** `data/strings/fr.csv` est le périmètre Narration : mes clés vivent dans `scenes/ui/ui_strings.csv`, enregistré dans le `TranslationServer` par `UiText.ensure()` (appelé en tête de chaque `_ready` UI), avec repli sur une lecture directe du CSV. `tr()` fonctionne ensuite normalement. Demande de fusion déposée.
+- **2026-10-17 — U-1/U-2 DONE.** `scenes/ui/notebook.tscn` (CanvasLayer 20, Tab) : 2 onglets. Liste = 60 lignes + 6 en-têtes de pièce, groupées dans l'ordre de `list_index`, libellés `tr(label_key)`, format `INV_LINE_FORMAT` ; coche tracée en 0,34 s (`check_mark.gd`, stylo-bille) sur `item_checked` — animée à l'ouverture si l'objet a été coché carnet fermé. `inventory_line_added` ajoute une ligne manuscrite révélée caractère par caractère (« 61. Camille ») ; `item_revealed` fait clignoter la ligne à l'encre fraîche ; fin `ashes` = les lignes ajoutées disparaissent.
+- **2026-10-17 — U-3 DONE.** Onglet Photos : une vignette par `photo_developed` (bordure + légende pièce), sélection ↑↓, Entrée = zoom plein écran. Texture absente (headless, capture SubViewport indisponible) → vignette grise + `UI_NOTEBOOK_PHOTO_UNDEVELOPED`, jamais de crash.
+- **2026-10-17 — U-4 DONE.** `scenes/ui/hud.tscn` (CanvasLayer **2**, sous le post-process 3 et le voile de flash 5 du joueur : le grain et l'aveuglement s'appliquent au HUD). Compteur de films en bas à droite (`UI_FILM_COUNT`, rougi à 0), mis à jour sur `photo_taken` (le film est consommé avant l'émission). Réticule : point discret qui pulse sur `player_interacted` et se masque carnet ouvert ; `set_context(kind)` est prêt mais aucun signal de cible survolée n'existe (demande déposée). Viseur photo, voile blanc et jauge d'interaction longue appartiennent à `player.tscn` : rien n'est doublé.
+- **2026-10-17 — U-5 DONE.** `scenes/ui/document_viewer.tscn` (CanvasLayer 30) : `document_found` → `DocumentLibrary.get_document()` → `RichTextLabel` BBCode, typo machine à écrire (`inventory/form/note/tape`) ou manuscrite (`letter/journal/postit`) selon `kind`, pagination par budget de caractères (pas de mesure de texte : déterministe et testable), navigation ↑↓←→, `mark_read()` appelé à l'ouverture (déclenche `document_read` → révélations).
+- **2026-10-17 — U-6 DONE (mini).** `main_menu.tscn` : noir + brouillard généré (`menu_fog.gd`, dégradés radiaux qui dérivent + 2 halos chauds = phares de la 205), titre manuscrit, 4 boutons émettant `new_game_requested`/`continue_requested`/`options_requested`/`quit_requested` (contrat S-6 respecté, le placeholder de main.gd n'est plus utilisé), Continuer grisé sans sauvegarde. `pause_menu.tscn` (CanvasLayer 90, `process_mode` ALWAYS) : Échap = `get_tree().paused` + `pause_toggled`, mais **jamais** quand une surcouche UI est ouverte (arbitrage `UiState`, testé). `options_panel.gd` partagé menu/pause : sensibilité, FOV, volume, sous-titres, plein écran, lampe forte — persistés dans `user://settings.cfg` par `UiSettings`, `settings_changed` émis à chaque changement et une fois par clé au démarrage (`apply_all()`).
+- **2026-10-17 — U-7 DONE.** `scenes/ui/subtitles.tscn` (Control instancié dans le HUD et l'écran de fin) : fondu 0,16 s, maintien `duration`, fondu 0,5 s ; respecte le réglage `subtitles` en direct ; clé inconnue = warning + rien à l'écran (jamais de clé brute).
+- **2026-10-17 — U-8 DONE.** `scenes/ui/ending_screen.tscn` (Control, `set_ending_id()` appelé par main.gd) : `ENDING_<ID>_TITLE`, puis P1..P5 écrits un par un, puis la dernière ligne composée via `INV_LINE_FORMAT` (index **sérialisé** : `progress().y + 1` = 61 pour `closed`, 1 pour `ashes`), puis `ENDING_GENERIC_EPILOGUE`, puis boutons « Revenir au menu » / « Quitter ». Entrée accélère, Échap révèle tout.
+- **2026-10-17 — Tests.** `game/tests/ui/ui_tests.tscn` = **82 vérifications headless, 0 échec** (`godot --headless --path game res://tests/ui/ui_tests.tscn`, exit 0/1) : chaînes, thème, réglages, carnet (lignes, coche, ligne ajoutée, photos), documents (pagination, mark_read, dégradation), HUD, sous-titres, pause, options, contrat menu, 2 fins, **priorité des entrées** (Tab/Échap). Banc d'essai manuel : `scenes/ui/test_ui.tscn` (touches 1-7 → signaux factices). Les 9 scènes du module se lancent seules (F6) sans erreur ni warning.
 
 ## Module Audio `[Audio]` — `autoloads/audio_manager.gd`, `assets/audio`
 
@@ -361,6 +374,14 @@
   - Les 5 ancres exigées par les règles (`hall_anchor_console`, `kitchen_anchor_sink`, `kitchen_anchor_preserves`, `living_anchor_fireplace`, `study_anchor_shelves`) + une ancre par objet (60) nommées `<room>_anchor_<objet>`. Documente tout dans `docs/anchors.md` (autorisé, c'est ton fichier) et remplis `ItemData.anchors[0]` + `scene` dans `data/items/*.tres` (seuls champs autorisés).
   - Ordre : N-2 (hall + bureau) → N-3 → N-4 → **push dès que house.tscn se lance seul**, même moche. Le reste des pièces ensuite.
   — DONE (validation)
+- `[UI → Architecte/Narration]` (2026-10-17) **Fusion des chaînes UI.** `data/strings/fr.csv` est le périmètre Narration, donc mes 53 clés (`UI_*`, `ROOM_*`) vivent dans `scenes/ui/ui_strings.csv`, chargé dans le `TranslationServer` par `UiText.ensure()` (repli : lecture directe du CSV si le `.translation` manque). À terme, fusionner ce CSV dans `fr.csv` (mêmes clés, aucun conflit : préfixes `UI_`/`ROOM_` réservés à l'UI) puis supprimer `ui_strings.csv`. Non bloquant. — POUR INFO
+- `[UI → Systèmes]` (2026-10-17) **API manquante : liste globale des objets.** `InventoryManager` expose `get_item()` et `get_items_in_room()` mais aucune énumération complète : le carnet relit `data/items/*.tres` (lecture seule, instances mises en cache = les mêmes que les vôtres) puis filtre sur `get_item(id) != null`. Proposition : `func all_items() -> Array[ItemData]` triée par `list_index`. En attendant le carnet fonctionne, mais il dépend du dossier de données. — TODO
+- `[UI → Gameplay/Architecte]` (2026-10-17) **Signal de cible survolée.** Le réticule ne peut pas être contextuel : `player_interacted` n'arrive qu'**après** l'interaction. Proposition : `EventBus.interact_target_changed(target_id: StringName, kind: StringName)` émis par `interactor.gd` à chaque changement de cible (chaîne vide = rien). Mon `Reticle.set_context(kind)` est déjà prêt (4 équerres pour une cible, point seul sinon). Bonus utile : `camera_raised_changed(bool)` pour masquer le réticule appareil levé. — TODO
+- `[UI → Architecte]` (2026-10-17) **`main.gd::_on_options()`.** Le menu ouvre lui-même le panneau Options (même scène dans le menu et la pause) tout en émettant `options_requested` comme demandé ; `_on_options()` journalise donc « options à venir (UI, U-6) » à chaque clic. Merci de vider ce handler (ou de ne plus connecter le signal). Cosmétique. — TODO
+- `[UI → Architecte]` (2026-10-17) **`Settings.apply_all()` (ARCHITECTURE §7).** Faute d'appel dans `main.tscn`, c'est `main_menu._ready()` puis `hud._ready()` qui appellent `UiSettings.apply_all()` : les 8 clés du contrat sont émises au démarrage du menu, donc avant l'instanciation du joueur. Si `main.gd` préfère appeler `UiSettings.apply_all()` lui-même, c'est idempotent. — POUR INFO
+- `[UI → Audio]` (2026-10-17) **Ids SFX de l'UI** (à faire exister ; je ne joue aucun son tant qu'`AudioManager` est un stub, pour ne pas polluer la console) : `notebook_open`, `notebook_close`, `notebook_page`, `pencil_check` (la coche), `photo_thumb`, `menu_move`, `menu_select`, `typewriter_line` (écrans de fin). Le son de page d'un document est déjà porté par la règle `paper_turn`. — TODO
+- `[UI → Gameplay]` (2026-10-17) **Carnet 3D en main (GDD §4.2) = V2.** Le carnet V1 est une surcouche 2D : l'accrocher à la main gauche demanderait un `Marker3D` dans `player.tscn` + un `SubViewport`, hors périmètre UI. Rien à faire maintenant, noté pour ne pas le perdre. — POUR INFO
+- `[UI → Niveau]` (2026-10-17) **Ids de pièce affichés.** Les en-têtes du carnet utilisent `ROOM_<ID EN MAJUSCULES>` : `exterior, hall, kitchen, living, study, cellar` sont couverts ; tout autre `room_id` tombe sur `ROOM_UNKNOWN` (warning, pas de crash). Si la V2 ajoute des pièces, demander les clés à l'UI. — POUR INFO
 
 ## Journal des décisions
 

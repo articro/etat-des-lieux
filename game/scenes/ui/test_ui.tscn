@@ -1,0 +1,16 @@
+[gd_scene load_steps=4 format=3 uid="uid://buitestui000001"]
+
+[ext_resource type="Script" path="res://scenes/ui/test_ui.gd" id="1_testui"]
+[ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="2_hud"]
+[ext_resource type="PackedScene" path="res://scenes/ui/ending_screen.tscn" id="3_ending"]
+
+[node name="TestUi" type="Node"]
+script = ExtResource("1_testui")
+
+[node name="HUD" parent="." instance=ExtResource("2_hud")]
+
+[node name="EndingLayer" type="CanvasLayer" parent="."]
+layer = 100
+
+[node name="Ending" parent="EndingLayer" instance=ExtResource("3_ending")]
+visible = false

@@ -1,0 +1,54 @@
+keys,fr
+UI_TITLE,État des lieux
+UI_SUBTITLE,Rez-de-chaussée
+UI_TAGLINE,"Chaque objet coché te rapproche de la fin. De la liste, et de la tienne."
+UI_VERSION,Version {version}
+UI_MENU_FOG,Le brouillard ne se lève pas.
+UI_BACK,Retour
+UI_RESUME,Reprendre
+UI_BACK_TO_MENU,Revenir au menu
+UI_QUIT_TO_DESKTOP,Quitter le jeu
+UI_PAUSE_TITLE,Pause
+UI_PAUSE_HINT,Échap : reprendre
+UI_OPTIONS_TITLE,Options
+UI_OPTION_SENSITIVITY,Sensibilité de la souris
+UI_OPTION_FOV,Champ de vision
+UI_OPTION_VOLUME,Volume
+UI_OPTION_SUBTITLES,Sous-titres
+UI_OPTION_FULLSCREEN,Plein écran
+UI_OPTION_FLASHLIGHT,Lampe plus forte
+UI_OPTION_YES,Oui
+UI_OPTION_NO,Non
+UI_OPTION_SENSITIVITY_VALUE,{value} ×
+UI_OPTION_FOV_VALUE,{value}°
+UI_OPTION_VOLUME_VALUE,{value} %
+UI_OPTIONS_HINT,Les réglages sont enregistrés sur ce poste.
+UI_NOTEBOOK_TITLE,État des lieux — Rez-de-chaussée
+UI_NOTEBOOK_TAB_LIST,Liste
+UI_NOTEBOOK_TAB_PHOTOS,Photos
+UI_NOTEBOOK_HINT,Tab : fermer · ← → : onglet · ↑ ↓ : défiler
+UI_NOTEBOOK_PHOTOS_HINT,↑ ↓ : parcourir · Entrée : agrandir · Échap : fermer
+UI_NOTEBOOK_PHOTOS_EMPTY,Aucune photographie développée.
+UI_NOTEBOOK_PHOTO_UNDEVELOPED,Pellicule non développée
+UI_NOTEBOOK_PROGRESS,{checked} sur {total}
+UI_NOTEBOOK_PHOTO_ZOOM_HINT,Échap ou Entrée : revenir au carnet
+UI_ROOM_PROGRESS,{checked} / {count}
+ROOM_EXTERIOR,Cour et dépendances
+ROOM_HALL,Entrée
+ROOM_KITCHEN,Cuisine
+ROOM_LIVING,Salon
+ROOM_STUDY,Bureau
+ROOM_CELLAR,Cave
+ROOM_UNKNOWN,Pièce non classée
+UI_PHOTOS_COUNT,Photographies : {count}
+UI_PHOTO_INDEX,Photo {index}
+UI_PHOTO_ROOM,Pièce : {room}
+UI_DOC_PAGE,Page {page} sur {pages}
+UI_DOC_CLOSE_HINT,Échap : fermer · ↑ ↓ : défiler
+UI_DOC_MISSING,Document introuvable.
+UI_DOC_AUTHOR,{author} — {year}
+UI_ENDING_HINT,Entrée : continuer
+UI_ENDING_BACK,Revenir au menu
+UI_ENDING_QUIT,Quitter
+UI_TEST_TITLE,Banc d'essai UI
+UI_TEST_HELP,"1 objet coché · 2 ligne ajoutée · 3 photographie · 4 document · 5 sous-titre · 6 fin Inventaire clos · 7 fin Cendres · Tab carnet · Échap pause"

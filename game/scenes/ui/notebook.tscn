@@ -1,0 +1,187 @@
+[gd_scene load_steps=2 format=3 uid="uid://buinotebook0001"]
+
+[ext_resource type="Script" path="res://scenes/ui/notebook.gd" id="1_notebook"]
+
+[node name="Notebook" type="CanvasLayer"]
+layer = 20
+script = ExtResource("1_notebook")
+
+[node name="Dim" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.62)
+
+[node name="Sheet" type="Panel" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -620.0
+offset_top = -400.0
+offset_right = 620.0
+offset_bottom = 400.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Margin" type="MarginContainer" parent="Sheet"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 34
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 34
+theme_override_constants/margin_bottom = 20
+
+[node name="Column" type="VBoxContainer" parent="Sheet/Margin"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 10
+
+[node name="Head" type="HBoxContainer" parent="Sheet/Margin/Column"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Title" type="Label" parent="Sheet/Margin/Column/Head"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="Progress" type="Label" parent="Sheet/Margin/Column/Head"]
+layout_mode = 2
+mouse_filter = 2
+horizontal_alignment = 2
+
+[node name="Tabs" type="HBoxContainer" parent="Sheet/Margin/Column"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 28
+
+[node name="TabList" type="Button" parent="Sheet/Margin/Column/Tabs"]
+layout_mode = 2
+focus_mode = 0
+mouse_filter = 2
+flat = true
+
+[node name="TabPhotos" type="Button" parent="Sheet/Margin/Column/Tabs"]
+layout_mode = 2
+focus_mode = 0
+mouse_filter = 2
+flat = true
+
+[node name="Pages" type="Control" parent="Sheet/Margin/Column"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+clip_contents = true
+
+[node name="ListScroll" type="ScrollContainer" parent="Sheet/Margin/Column/Pages"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+horizontal_scroll_mode = 0
+
+[node name="ListColumn" type="VBoxContainer" parent="Sheet/Margin/Column/Pages/ListScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_constants/separation = 3
+
+[node name="PhotosScroll" type="ScrollContainer" parent="Sheet/Margin/Column/Pages"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+horizontal_scroll_mode = 0
+
+[node name="PhotoColumn" type="VBoxContainer" parent="Sheet/Margin/Column/Pages/PhotosScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_constants/separation = 12
+
+[node name="Hint" type="Label" parent="Sheet/Margin/Column"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Zoom" type="Control" parent="."]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="ZoomDim" type="ColorRect" parent="Zoom"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.88)
+
+[node name="ZoomTexture" type="TextureRect" parent="Zoom"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -560.0
+offset_top = -360.0
+offset_right = 560.0
+offset_bottom = 360.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ZoomPlaceholder" type="Label" parent="Zoom"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -20.0
+offset_right = 300.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+horizontal_alignment = 1
+
+[node name="ZoomCaption" type="Label" parent="Zoom"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -400.0
+offset_top = -96.0
+offset_right = 400.0
+offset_bottom = -64.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+horizontal_alignment = 1
+
+[node name="ZoomHint" type="Label" parent="Zoom"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -400.0
+offset_top = -52.0
+offset_right = 400.0
+offset_bottom = -28.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+horizontal_alignment = 1
