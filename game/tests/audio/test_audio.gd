@@ -310,5 +310,5 @@ func _smoke_test() -> void:
 		AudioManager.set_layer(layer_id, 0.0, 0.05)
 	# Il faut quelques frames pour que l'AudioServer libère les playbacks :
 	# sinon Godot signalera « resources still in use at exit ».
-	await get_tree().create_timer(0.5).timeout
+	await get_tree().create_timer(0.6).timeout
 	print("=== TEST AUDIO — terminé ===")

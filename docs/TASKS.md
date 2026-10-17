@@ -398,6 +398,13 @@
   5. `sf.write()` de soundfile **plante** (segfault libsndfile) au-delà de ~2²¹ échantillons :
      écrire par blocs de 10 s (déjà fait dans `_src/common.py`).
   6. `DisplayServer.get_name()` vaut **`"headless"`** en 4.7 headless (pas `"dummy"`).
+  7. À la fermeture, l'AudioServer libère ses playbacks **de façon asynchrone** : même après
+     `stop()` + 0,6 s d'attente, Godot annonce parfois « resources still in use at exit »
+     (1 run sur 3). Ce n'est pas une erreur de l'AudioManager et le joueur ne le voit jamais :
+     `tests/audio/run_headless.sh` exclut ces deux lignes du verdict (commentaire dans le script).
+     **Conséquence pour tout le monde** : `tools/check.sh` reste vert parce que rien ne joue
+     pendant le menu. Si un jour un son se déclenche dans les premières frames de `main.tscn`,
+     le check passera rouge — la parade est dans `_exit_tree()` de l'AudioManager.
 
 ## Module QA / Intégration `[QA]` — `tests/`, `tools/`, branche `main`
 
