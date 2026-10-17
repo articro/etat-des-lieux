@@ -13,4 +13,4 @@ is_phantom = true
 phantom_kind = "photo_only"
 reveal_condition = "checked>=35"
 movable = true
-min_photo_coverage = 0.15
+min_photo_coverage = 0.04

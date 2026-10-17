@@ -13,4 +13,4 @@ is_phantom = true
 phantom_kind = "person"
 reveal_condition = "doc_read:living_photo_family"
 movable = true
-min_photo_coverage = 0.15
+min_photo_coverage = 0.04

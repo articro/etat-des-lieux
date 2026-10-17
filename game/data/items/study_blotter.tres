@@ -13,4 +13,4 @@ is_phantom = true
 phantom_kind = "message"
 reveal_condition = "doc_read:study_letter_besnard"
 movable = true
-min_photo_coverage = 0.15
+min_photo_coverage = 0.04
