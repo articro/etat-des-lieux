@@ -78,15 +78,30 @@
 
 | ID | Tâche | Jalon | Statut |
 |---|---|---|---|
-| R-1 | Liste maîtresse des 212 objets (tableur `docs/items_master.csv` : id, index, pièce, libellé 1973, fantôme ?, type, condition, lore) | M1 | TODO |
-| R-2 | 20 ItemData de la vertical slice (entrée + bureau) en `.tres` + strings | M1 | TODO |
-| R-3 | Documents de la vertical slice : post-it Besnard, inventaire 1973 (extrait), 2 lettres | M1 | TODO |
-| R-4 | Tous les ItemData (212) | M3 | TODO |
+| R-1 | Liste maîtresse des 212 objets (tableur `docs/items_master.csv` : id, index, pièce, libellé 1973, fantôme ?, type, condition, lore) | M1 | DONE |
+| R-2 | 20 ItemData de la vertical slice (entrée + bureau) en `.tres` + strings | M1 | DONE |
+| R-3 | Documents de la vertical slice : post-it Besnard, inventaire 1973 (extrait), 2 lettres | M1 | EN COURS (narration) |
+| R-4 | Tous les ItemData (212) | M3 | DONE |
 | R-5 | Tous les documents (~45 : inventaires 1912/1951/1973, carnets de Lucienne ×8, dessins de Louis, lettres, formulaires, répondeur) | M3 | TODO |
 | R-6 | Monologues de Camille (≤ 80 lignes, ≤ 12 mots chacune) + sous-titres | M3 | TODO |
 | R-7 | Règles de maison (`data/rules/*.tres`) en coordination avec Systèmes : ~40 règles | M2→M3 | TODO |
 | R-8 | Textes des 4 fins + génériques | M3 | TODO |
-| R-9 | Recherche documentaire : formulaires notariaux 1912 / 1951 / 1973, vocabulaire, Morvan | M1 | TODO |
+| R-9 | Recherche documentaire : formulaires notariaux 1912 / 1951 / 1973, vocabulaire, Morvan | M1 | DONE |
+
+
+### Notes Narration (V1 Halloween)
+
+- **2026-10-17 — R-1 DONE.** `docs/items_master.csv` : 60 lignes, 8 colonnes exactes (id, list_index, room_id, label_1973, is_phantom, phantom_kind, reveal_condition, lore). Répartition : extérieur 4 / entrée 10 / cuisine 16 / salon 14 / bureau 12 / cave 4.
+  8 fantômes : 3 « personnes comptées » (`living_portrait_louis` Louis, `study_briefcase_jpd` Jean-Paul, `cellar_coat_emile` Émile) + 3 objets-messages (`kitchen_key_l` clé de la chambre de Louis, `hall_ring_1951` alliance gravée M. V., `study_blotter` buvard) + 2 photo_only (`hall_hand_railing`, `living_curtain_part`). Indices 1-60 ordonnés par pièce pour que le carnet se remplisse de haut en bas.
+- **2026-10-17 — R-2 + R-4 DONE (livrés d'un bloc ; R-4 porte sur les 60 objets V1, pas les 212 de la V2).** Les 60 `ItemData` `.tres` sont dans `game/data/items/`, `scene` vide (Niveau), `anchors` vide (Niveau définit les noms). 125 clés `ITEM_<ID>_LABEL` / `ITEM_<ID>_LORE` dans `fr.csv`. Validation : ids/indices uniques, id = nom de fichier, clés présentes, fantômes tous conditionnés.
+- **2026-10-17 — R-9 DONE (recherche minimale).** Vocabulaire notarial vérifié : procès-verbal de description, prisée, succession vacante, actif/charges, sceau, liasse, minute, expédition, clerc de notaire, étude. Sources citées dans ce fichier (voir bloc Sources en fin de module). Pas de copie de formulaire réel : formulaires reconstitués, mentions plausibles 1912/1951/1973 (dactylographie, cachet sec, en-tête « Étude de Maître … », article de loi non cité nommément — décision : rester allusif pour éviter tout faux).
+
+**Sources R-9 (consultées le 17 oct. 2026, usage : vocabulaire et ordre des opérations uniquement, aucun formulaire reproduit)**
+- Notaires de Paris — « Succession : en pratique, comment se déroule un inventaire ? » (description pièce par pièce, « prisée ») : https://paris.notaires.fr/fr/actualites/succession-en-pratique-comment-se-deroule-un-inventaire
+- Légifrance — Code civil, art. 809 et suivants (succession vacante, curatelle, inventaire estimatif article par article) : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006070721/LEGISCTA000006136274/
+- Légifrance — Code civil, art. 730 et suivants (acte de notoriété) : https://www.legifrance.gouv.fr/codes/id/LEGISCTA000006165514
+- LexisNexis — « Inventaire : mesures conservatoires après décès » (procès-verbal, minute, expédition, apposition des scellés) : https://www.lexisnexis.com/blogs/fr-juridique/b/droit-notarial/posts/synthese-inventaire-mesures-conservatoires-apres-deces
+- DGFiP — « Successions vacantes : le notaire, partenaire du Domaine » (délai de six mois, constat de vacance) : https://www.impots.gouv.fr/sites/default/files/media/3_Documentation/depliants/parte_successions_vacantes_notaire_partenaire_domaine.pdf
 
 ## Module UI `[UI]` — `scenes/ui/`, `assets/fonts`
 
@@ -134,7 +149,12 @@
 
 > Format : `[De → Vers] (date) Description. — Statut`
 
-_(vide)_
+- `[Narration → Architecte]` (2026-10-17) `game/data/strings/fr.csv` **n'est pas enregistré** dans `project.godot` (`locale/translations=PackedStringArray()` vide) : `tr()` renverra les clés brutes. Le `.import` du CSV génère bien `fr.fr.translation`. Il faut ajouter `res://data/strings/fr.fr.translation` dans `internationalization/locale/translations`. Hors périmètre Narration. — À FAIRE (Architecte)
+- `[Narration → Systèmes]` (2026-10-17) **Qui évalue `ItemData.reveal_condition` ?** ARCHITECTURE §6 la définit mais aucune API ne la traite : `InventoryManager.reveal_item()` est appelé sans condition. Proposition : HouseDirector évalue toutes les `reveal_condition` des fantômes non révélés sur les triggers `doc_read`, `progress`, `item_checked` et `act_changed`, et appelle `InventoryManager.reveal_item()`. En attendant, aucun fantôme n'apparaît : le jeu reste finissable sur 52 objets réels. — À TRANCHER
+- `[Narration → Systèmes]` (2026-10-17) **Seuil de la cave.** PLAN_HALLOWEEN §2 dit « à 45 objets : le téléphone sonne, la trappe s'ouvre » et « les 8 derniers objets » se trouvent dans la cave. Avec la répartition validée (cave = 4 objets réels), il reste 8 objets au moment où il en manque 8 **si** 52 sont cochés (56 réels + 8 fantômes = 60, donc 52 cochés = 4 réels + 4 fantômes restants). Je livre les règles à `progress 45` (téléphone/répondeur, trappe) conformément au PLAN, et je **ne change pas** la répartition. La règle `cellar_door` reste à 45. — POUR INFO
+- `[Narration → Niveau]` (2026-10-17) **Ancres.** Les 60 `ItemData.anchors` sont vides et `scene` est vide : c'est Niveau qui fournit les `Marker3D`. Proposition de convention (à documenter dans `docs/anchors.md`) : `a_<item_id sans préfixe de pièce>` (ex. `a_clock_stopped` pour `kitchen_clock_stopped`), et pour les objets déplacés par les règles, les ancres citées dans `data/rules/*.tres` sont : `living_anchor_fireplace`, `study_anchor_desk`, `hall_anchor_console`, `kitchen_anchor_table`, `cellar_anchor_shelves`. Liste exacte dans les `.tres` de règles. — À FAIRE (Niveau)
+- `[Narration → UI]` (2026-10-17) **Ligne « 61. Camille ».** Le numéro est **sérialisé** (`InventoryManager.progress().x`) et non figé : je livre `INV_LINE_ADDED_CAMILLE` = `Camille` (sans numéro) et `INV_LINE_FORMAT` = `{index}. {name}`. Le carnet affiche via `inventory_line_added(line_index, text_key)`. — POUR INFO
+- `[Narration → Systèmes]` (2026-10-17) **Ids de documents** référencés par les `reveal_condition` et les règles (à créer par R-3/R-5, contrats à respecter) : `hall_postit_besnard`, `study_inventory_1973`, `study_letter_besnard`, `kitchen_letter_lucienne_1`, `kitchen_letter_lucienne_2`, `living_letter_lucienne_3`, `living_photo_family`, `hall_tape_1973`, `cellar_register_1847`, `study_deed_1912`. — POUR INFO
 
 ## Journal des décisions
 

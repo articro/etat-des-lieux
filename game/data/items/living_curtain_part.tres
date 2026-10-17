@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/item_data.gd" id="1_itemdata"]
+
+[resource]
+script = ExtResource("1_itemdata")
+id = &"living_curtain_part"
+list_index = 43
+room_id = &"living"
+label_key = &"ITEM_LIVING_CURTAIN_PART_LABEL"
+lore_key = &"ITEM_LIVING_CURTAIN_PART_LORE"
+is_phantom = true
+phantom_kind = "photo_only"
+reveal_condition = "checked>=35"
+movable = true
+min_photo_coverage = 0.15

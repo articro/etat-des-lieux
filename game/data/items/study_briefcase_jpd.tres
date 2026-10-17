@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/item_data.gd" id="1_itemdata"]
+
+[resource]
+script = ExtResource("1_itemdata")
+id = &"study_briefcase_jpd"
+list_index = 56
+room_id = &"study"
+label_key = &"ITEM_STUDY_BRIEFCASE_JPD_LABEL"
+lore_key = &"ITEM_STUDY_BRIEFCASE_JPD_LORE"
+is_phantom = true
+phantom_kind = "person"
+reveal_condition = "doc_read:study_inventory_1973"
+movable = true
+min_photo_coverage = 0.15
