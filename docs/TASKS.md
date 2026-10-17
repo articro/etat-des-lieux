@@ -37,16 +37,69 @@
 
 | ID | Tâche | Jalon | Statut |
 |---|---|---|---|
-| G-1 | Contrôleur FPS (marche/course/accroupi, essoufflement, head-bob subtil, ZQSD + QWERTY via physical keys) | M1 | TODO |
-| G-2 | Système d'interaction (raycast, surbrillance discrète, prendre/inspecter/reposer un objet, portes & tiroirs physiques à la souris) | M1 | TODO |
-| G-3 | Appareil photo : visée (lever l'appareil, viseur), déclenchement, consommation film, SubViewport capture, flash lumière + aveuglement, son via AudioManager | M1 | TODO |
-| G-4 | Détection des objets cadrés (frustum + occlusion raycast + couverture écran ≥ `min_photo_coverage`), construction PhotoData | M1 | TODO |
-| G-5 | Photo en main : sortie de l'appareil, développement 10 s (shader), consultation | M1 | TODO |
-| G-6 | Lampe de poche faible, batterie infinie, option « plus forte » | M1 | TODO |
-| G-7 | Post-process : grain, vignette, aberration légère, aveuglement flash (scenes/fx) | M2 | TODO |
-| G-8 | Présence : nœud `Presence` (déplacement lent par NavigationAgent3D, états via `presence_state_changed`, figée 4 s si photographiée, contact → `player_caught`) | M3 | TODO |
-| G-9 | Interactions longues (brûler carnet 8 s, signer registre) avec annulation | M3 | TODO |
-| G-10 | Zones de pièce (Area3D → `player_entered_room/left_room`) — en coordination avec Niveau | M1 | TODO |
+| G-1 | Contrôleur FPS (marche/course/accroupi, essoufflement, head-bob subtil, ZQSD + QWERTY via physical keys) | M1 | DONE |
+| G-2 | Système d'interaction (raycast, surbrillance discrète, prendre/inspecter/reposer un objet, portes & tiroirs physiques à la souris) | M1 | DONE (V1 simplifiée) |
+| G-3 | Appareil photo : visée (lever l'appareil, viseur), déclenchement, consommation film, SubViewport capture, flash lumière + aveuglement, son via AudioManager | M1 | DONE |
+| G-4 | Détection des objets cadrés (frustum + occlusion raycast + couverture écran ≥ `min_photo_coverage`), construction PhotoData | M1 | DONE |
+| G-5 | Photo en main : sortie de l'appareil, développement 10 s (shader), consultation | M1 | DONE |
+| G-6 | Lampe de poche faible, batterie infinie, option « plus forte » | M1 | DONE |
+| G-7 | Post-process : grain, vignette, aberration légère, aveuglement flash (scenes/fx) | M2 | DONE |
+| G-8 | Présence : nœud `Presence` (déplacement lent par NavigationAgent3D, états via `presence_state_changed`, figée 4 s si photographiée, contact → `player_caught`) | M3 | DONE (simplifiée) |
+| G-9 | Interactions longues (brûler carnet 8 s, signer registre) avec annulation | M3 | DONE (brûler) |
+| G-10 | Zones de pièce (Area3D → `player_entered_room/left_room`) — en coordination avec Niveau | M1 | DONE (côté Gameplay) |
+
+### Notes Gameplay (V1 Halloween)
+
+- **2026-10-17 — Socle.** `[input]` ajouté à `project.godot` (13 actions, physical_keycode : ZQSD+WASD, Maj, Ctrl/C, E, F, clic droit/gauche, P, Tab, Échap). Filet de sécurité `scenes/player/input_actions.gd` : recrée les actions manquantes à l'exécution (si fusion/porte). `player.tscn` (CharacterBody3D + caméra) et `scenes/player/test_room.tscn` (sol, 3 Item placeholders, zone de pièce, occluder) se lancent seuls. Test item : `tests/player/test_item.gd` (contrat `Item` respecté).
+- **2026-10-17 — G-1 DONE.** `player.gd` : marche 2,5 / course 4,0 m/s (accél. 14), accroupi maintenu (capsule 1,75 → 1,10 m), essoufflement (18/s, récup. 30), head-bob + pas → `player_noise` (0,25 marche / 0,85 course), pas de saut, souris capturée, `pause_toggled` respecté, retour auto si chute. Vérifié : 38 assertions headless (`tests/player/player_tests.tscn`, 0 échec).
+- **2026-10-17 — G-2 DONE (V1 simplifiée).** `scenes/player/interactor.gd` : `RayCast3D` 2,5 m depuis la caméra, touche E, résolution par méthode `get_interact_id()` → metadata `interact_id` → `document_id` (kind "read") → groupe `items` (kind "pickup") ; `set_highlight(bool)` appelée si présente. Émet `player_interacted(target_id, kind)` et, pour une lecture, `DocumentLibrary.mark_read(id)` (sinon aucun signal `document_read` n'existe pour l'UI). Portes/tiroirs physiques = V2, non faits.
+- **2026-10-17 — G-6 DONE.** `scenes/player/flashlight.gd` (`SpotLight3D` enfant de la caméra) : F, faisceau 24°, portée 9 m, énergie 2,4, ombres, piles infinies ; éteinte au départ ; son `flashlight_click` (id déposé côté Audio).
+- **2026-10-17 — G-7 DONE.** `scenes/fx/post_process.tscn` + shader : grain animé, vignette, aberration chromatique radiale, `darkness` ; paramètres exportés sur `PostProcess` (`apply_settings()` pour les options). **Instancié une seule fois, dans `player.tscn`** — ne pas en ajouter ailleurs. Sans rendu (headless) aucune erreur.
+- **2026-10-17 — G-8 DONE (simplifiée).** `scenes/player/presence.tscn` : `CharacterBody3D` place-holder sombre, écoute `presence_state_changed` ; en `physical`, avance en ligne droite à 0,45 m/s vers le joueur (groupe `player`, pas de NavMesh conformément au PLAN), figée 4 s si `photo_taken` la contient (cône 32°, 25 m), contact ≤ 1,1 m → `player_caught` (une seule fois). Scène autonome (F6) avec caméra/sol/lampe de test. **À placer par le Niveau dans la cave.**
+- **2026-10-17 — G-9 DONE (brûler).** Dans `interactor.gd` : si la cible porte `interact_duration` > 0, maintenir E remplit la jauge `HUD/LongAction` (sans texte) ; relâchement ou changement de cible = annulation ; au bout → `player_interacted(id, kind)`. Conçu pour `cellar_stove` / `"burn"` / 8 s (metadata côté Niveau). La signature du registre (autre interaction longue) n'est pas faite : V2.
+- **2026-10-17 — G-3 DONE.** `scenes/player/photo_device.gd` : lever maintenu (clic droit, FOV 75→55), viseur dessiné (`viewfinder.gd`, zéro texte), déclencheur (clic gauche) → `InventoryManager.consume_film()`, flash `OmniLight3D` 0,3 s (ombre), aveuglement blanc 1,5 s (0,06 s de montée + 1,44 s de descente), capture `SubViewport` 1280×720 en `UPDATE_ONCE` au déclenchement seulement, sons `camera_raise/shutter/flash/photo_slide/dry` via `AudioManager`. En headless la capture est désactivée (`texture = null`) : le reste du flux est testé.
+- **2026-10-17 — G-4 DONE.** `photo_detector.gd` : groupe `items`, `data: ItemData`, `is_in_frustum()` (repli `ScreenMath` si absent), couverture ≥ `data.min_photo_coverage`, occlusion par raycast caméra→centre de l'AABB sur les `CollisionObject3D` enfants de l'Item (exclusion des RID du joueur). `screen_math.gd` calcule la couverture en espace caméra (fov + aspect) — **piège** : `unproject_position` et `get_visible_rect()` ne sont pas homogènes sous headless (écart ×2,8 constaté) ; ne pas revenir à cette méthode.
+- **2026-10-17 — G-5 DONE.** `photo_in_hand.gd` + `scenes/fx/photo_develop.gdshader` : la photo sort de l'appareil (tween 0,25 s), se développe en 10 s (`@export develop_time`), bordure instantané + grain + latence laiteuse ; `photo_developed` émis par l'appareil à 10 s ; touche P pour ramener la photo au centre (`PhotoHold`). Texture absente en headless → shader en gris neutre (dégradation).
+- **2026-10-17 — G-10 DONE (côté Gameplay).** `RoomSensor` (Area3D enfant du joueur) détecte les zones `Area3D` monitorables portant `metadata/room_id` et émet `player_entered_room/left_room` (bascule entre zones chevauchées gérée). Convention déposée en Demandes inter-modules ; en attendant les zones du Niveau, `test_room` en fournit une.
+
+
+### HANDOFF — Gameplay (17 oct. 2026, fin de session 1)
+
+**Ce qui marche (branche `agent/gameplay`, 3 commits poussés : `5c98125`, `99fd46d`, `f0a4098`)**
+- **G-1** Contrôleur FPS : marche 2,5 / course 4,0 m/s, accélération 14, accroupi maintenu (capsule 1,75→1,10 m), essoufflement (18/s, récupération à 30), head-bob et bruit de pas (`player_noise` 0,25 / 0,85), pas de saut, souris capturée, pause via `pause_toggled`, téléréapparition si chute. ZQSD/QWERTY par `physical_keycode` (13 actions dans `project.godot`, filet de sécurité `input_actions.gd`).
+- **G-3 / G-4 / G-5** Appareil photo complet : clic droit maintenu (FOV 75→55), viseur dessiné sans texte, clic gauche → `consume_film()`, flash Omni 0,3 s + aveuglement blanc 1,5 s, capture `SubViewport` 1280×720 en `UPDATE_ONCE`, `PhotoData` (ids cadrés, room, transform, texture), `flash_fired` puis `photo_taken`, `photo_developed` après 10 s (`@export develop_time`), photo en main avec shader de développement et bordure instantané, touche P pour la ramener au centre.
+- **Détection** : groupe `items`, `data: ItemData`, `is_in_frustum()`, couverture écran ≥ `min_photo_coverage`, occlusion par raycast sur les colliders enfants de l'Item, exclusion des RID du joueur. Math de couverture en espace caméra (`screen_math.gd`), indépendante de la résolution et du headless.
+- **G-2** Interaction V1 : raycast 2,5 m + E → `player_interacted(id, kind)` ; résolution méthode → metadata → `document_id` (« read ») → groupe `items` (« pickup ») ; `DocumentLibrary.mark_read()` sur une lecture ; `set_highlight()` si l'objet l'implémente.
+- **G-6** Lampe : F, SpotLight 24°, 9 m, piles infinies, ombres.
+- **G-7** Post-process : grain animé, vignette, aberration légère — instancié **une seule fois dans `player.tscn`**.
+- **G-8** Présence simplifiée : scène autonome, apparaît sur `presence_state_changed(&"physical")`, avance à 0,45 m/s en ligne droite (groupe `player`), figée 4 s si photographiée (cône 32°, 25 m), contact ≤ 1,1 m → `player_caught` (une fois).
+- **G-9** Interaction longue : `interact_duration` sur la cible → maintenir E, jauge `HUD/LongAction`, annulation au relâchement, `player_interacted(&"cellar_stove", &"burn")`.
+- **G-10** `RoomSensor` : zones `Area3D` monitorables + `metadata/room_id` → `player_entered_room/left_room`, bascule entre zones chevauchées.
+- **Tests** : `game/tests/player/player_tests.tscn` = **73 assertions headless, 0 échec** (lancement : `godot --headless --path game res://tests/player/player_tests.tscn`). Scènes validées seules : `player.tscn`, `test_room.tscn`, `presence.tscn`, `post_process.tscn`. `check.sh` vert avant chaque push.
+
+**Ce qui reste**
+1. **Validation visuelle** de la capture `SubViewport`, du shader de développement, du flash et du post-process : impossible sans rendu dans le sandbox. À vérifier en F5/F6 par l'Architecte (headless : capture désactivée, `texture = null`).
+2. **Intégration Niveau** : `item.gd` réel (contrat + collider enfant obligatoire pour l'occlusion), zones de pièce avec `metadata/room_id`, poêle avec `interact_duration = 8.0`, instance de `presence.tscn` dans la cave.
+3. **Options UI** : sensibilité souris et FOV sont des `@export` du joueur ; l'UI devra les piloter (via une demande à l'Architecte, pas d'API dédiée pour l'instant).
+4. **V2 uniquement** : portes/tiroirs physiques à la souris, signature du registre, Présence à NavMesh, objets « photo_only ».
+5. `min_photo_coverage = 0.15` (Narration) reste très exigeant pour les petits objets — demande déposée, non bloquante.
+
+**Pièges connus**
+1. Après ajout d'un `class_name`, lancer `godot --headless --path game --import` sinon `Could not find type "X"` (cache des classes globales).
+2. Godot 4.7 du projet traite en **erreur** l'inférence depuis un `Variant` (`var x := f()` où `f() -> Variant`) : typer explicitement.
+3. Ne pas revenir à `unproject_position` + `get_visible_rect()` pour la couverture : tailles incohérentes en headless (écart ×2,8 constaté) → `screen_math.gd` (espace caméra, fov + aspect).
+4. `player.tscn` contient un sol de secours (`StandaloneFloor`) activé **seulement** si la scène est lancée seule ; le désactiver ne casse rien.
+5. `Player`, `RoomSensor`, `PhotoDevice`, `PhotoInHand`, `Viewfinder`, `Interactor`, `Flashlight`, `Presence`, `PostProcess`, `ScreenMath`, `PhotoDetector`, `TestItem`, `InputActions` sont des noms de classes globaux : ne pas les redéfinir ailleurs.
+6. La salle de test a un objet en (0, 0.45, 3.8) : toute Présence de test doit éviter l'axe x=0 (elle se bloque contre l'objet).
+7. `game/data/strings/fr.fr.translation` est régénéré par `--import` : le restaurer (`git checkout --`), il n'est pas dans le périmètre Gameplay.
+8. `AudioManager` est un stub : chaque son produit un `push_warning`, sans impact sur `check.sh`.
+9. Ne pas doubler le post-process (un seul, dans `player.tscn`).
+
+**Décisions prises seul (à valider)**
+- La Présence vit dans `scenes/player/` (seul emplacement de mon périmètre) et lit le joueur via le groupe `player`.
+- Le figeage 4 s est géré localement ; `presence_state_changed` reste la propriété de HouseDirector.
+- Les conventions d'interaction passent par des **metadata** (`interact_id`, `interact_kind`, `interact_duration`, `document_id`) : zéro dépendance de script entre modules.
+- Le son de la lampe utilise un id nouveau `flashlight_click` (demande Audio).
 
 ## Module Systèmes `[Systèmes]` — `autoloads/`, `scenes/main/`
 
@@ -217,6 +270,18 @@
 - `[Architecte → Gameplay]` (17/10) L'interaction longue « brûler » cible `cellar_stove` et émet `player_interacted(&"cellar_stove", &"burn")`. — TODO
 
 - `[Narration → Architecte]` (17/10) Photo « été 1951 » nomme Madeleine à la maison alors qu'elle est internée depuis 1946. — **TRANCHÉ** : on garde. C'est Lucienne qui a annoté la photo après avoir pris l'identité : l'annotation est le premier mensonge. Cohérent et plus fort. À exploiter en V2.
+- `[Gameplay → Niveau]` (2026-10-17) **Zones de pièce.** Chaque pièce doit contenir une `Area3D` **monitorable** avec `metadata/room_id` (StringName, ex. `&"kitchen"`) couvrant la pièce — `collision_layer` 4 de préférence (le capteur du joueur teste les layers 1 et 3/bits 1 et 4). C'est le Gameplay qui émet `player_entered_room/left_room` ; le Niveau n'émet rien. Zone sans `room_id` = ignorée en silence.
+- `[Gameplay → Niveau]` (2026-10-17) **Contrat Item / occlusion.** La détection photo s'appuie uniquement sur : groupe `items`, `data: ItemData`, `is_in_frustum(cam) -> float` (0..1). Pour l'occlusion, le Gameplay cherche les `CollisionObject3D` **enfants de l'Item** : sans collider, pas de test d'occlusion (l'objet reste photographiable à travers un mur). Merci de donner à chaque Item un collider enfant. `ItemData.scene` étant vide, mes scènes de test utilisent des boîtes grises.
+- `[Gameplay → Narration]` (2026-10-17) **`min_photo_coverage = 0.15` est très exigeant** : en 1080p / FOV 75, un objet de 1 m de côté doit être cadré à ≈ 1,3 m pour occuper 15 % de l'écran (un objet de 0,5 m à 3 m ≈ 0,7 %). Sauf si le Niveau fournit des boîtes de cadrage généreuses, je recommande 0,03–0,06 pour les petits objets (horloge, alliance, cachet). Je respecte la donnée en attendant.
+- `[Gameplay → Audio]` (2026-10-17) **Ids SFX utilisés par l'appareil photo** (à faire exister, sinon AudioManager dégrade) : `camera_raise`, `camera_shutter`, `camera_flash`, `photo_slide`, `camera_dry`. Les pas sont signalés par `EventBus.player_noise(level, pos)` (0,25 marche / 0,85 course) toutes les 0,72 m (marche) / 1,05 m (course) — utilisable pour D-3.
+- `[Gameplay → UI]` (2026-10-17) **Actions InputMap réservées** (définies dans `project.godot`) : `move_*`, `sprint`, `crouch`, `interact`, `flashlight`, `camera_raise`, `camera_shoot`, `photo_review`, `notebook` (Tab), `pause` (Échap). L'UI doit écouter ces **actions**, jamais les touches brutes. Le joueur capture la souris ; sur pause, émettre `pause_toggled(true)` pour qu'il la relâche.
+
+- `[Gameplay → Niveau]` (2026-10-17) **Poêle de la cave (fin Cendres).** Poser sur le nœud du poêle : `metadata/interact_id = &"cellar_stove"`, `metadata/interact_kind = &"burn"`, `metadata/interact_duration = 8.0`. C'est la convention lue par `interactor.gd` ; sans elle, l'interaction longue n'existe pas (aucun crash).
+- `[Gameplay → Niveau]` (2026-10-17) **Présence.** Instancier `res://scenes/player/presence.tscn` dans la cave (à un `Marker3D` de votre choix). Elle reste invisible tant que `HouseDirector` n'émet pas `presence_state_changed(&"physical")`. Ne pas déplacer le nœud pendant la partie : il avance seul vers le joueur.
+- `[Gameplay → UI]` (2026-10-17) **Jauge d'interaction longue.** `player.tscn` contient `HUD/LongAction` (`ProgressBar` sans texte, masquée) : c'est le retour visuel des 8 s de « brûler ». L'UI n'a rien à faire, mais ne pas créer d'autre barre pour ce flux.
+- `[Gameplay → Audio]` (2026-10-17) **Id SFX supplémentaire** : `flashlight_click` (bascule F). Rappel des ids appareil : `camera_raise`, `camera_shutter`, `camera_flash`, `photo_slide`, `camera_dry`.
+- `[Gameplay → Systèmes]` (2026-10-17) **Flux Présence.** `player_caught` est émis une seule fois au contact (≤ 1,1 m). Le figeage 4 s est géré localement par la Présence ; `presence_state_changed` reste émis uniquement par `HouseDirector`. La Présence lit la position du joueur via le groupe `player` (convention), pas via un chemin de nœud.
+- `[Gameplay → Architecte]` (2026-10-17) **Post-process unique.** `player.tscn` instancie `scenes/fx/post_process.tscn` (CanvasLayer 3). Si `main.tscn` en ajoute un second, le grain et la vignette seront doublés. Les réglages (grain, vignette, aberration, assombrissement) sont des `@export` sur le nœud `PostProcess`.
 
 ## Journal des décisions
 
