@@ -1,0 +1,61 @@
+id,list_index,room_id,label_1973,is_phantom,phantom_kind,reveal_condition,lore
+exterior_gate,1,exterior,"Portail, deux vantaux, fer forgé",false,none,,Le vantail de droite ne ferme plus. Il a été redressé plusieurs fois ; la peinture marque chaque réparation.
+exterior_well,2,exterior,"Puits, margelle, pierre",false,none,,"Asséché en 1976. Le seau est remonté et pend au-dessus du vide, propre."
+exterior_wheelbarrow,3,exterior,"Brouette, une roue",false,none,,"La roue est voilée. Le fond porte une rayure nette, longue d'un mètre. On a transporté là autre chose que des bûches."
+exterior_bench,4,exterior,"Banc, pierre, sous le tilleul",false,none,,"La pierre est polie à une seule place, à hauteur d'assise. Quelqu'un s'est assis là, toujours au même endroit, pendant des années."
+hall_console_table,5,hall,"Table, console, marbre",false,none,,"Le marbre est piqué en son centre, à l'endroit où l'on pose les clés. Le mot du patron y est collé. L'encre est fraîche."
+hall_barometer,6,hall,"Baromètre, cadre noyer",false,none,,L'aiguille est bloquée sur « variable ». Le verre est fêlé en étoile autour d'elle.
+hall_coat_rack,7,hall,"Porte-manteau, trois patères",false,none,,Trois patères. Un fil de laine vert est noué à celle du milieu ; les deux autres sont vides et propres.
+hall_key_board,8,hall,"Tableau des clés, dix crochets",false,none,,"Neuf clés, dix étiquettes. La dixième est vide : le papier a été gratté au couteau."
+hall_mirror,9,hall,"Miroir, cadre bois, glace",false,none,,"La glace est bonne. Je m'y vois telle que je suis, avec le sac, la lampe, le carnet. Rien de plus."
+hall_umbrella_stand,10,hall,"Râtelier à parapluies, zinc",false,none,,"Deux parapluies, un homme et une femme. Les plis gardent encore la forme du dernier jour de pluie."
+hall_doorbell,11,hall,"Cloche de porte, laiton",false,none,,"Le battant porte une trace de pouce, brillante, à l'intérieur. Comme si on avait sonné depuis la maison."
+hall_answering_machine,12,hall,"Répondeur, à cassette, deux boutons",false,none,,La cassette est engagée. Le compteur indique 1. Personne n'a effacé.
+hall_hand_railing,13,hall,"Main, sur la rampe",true,photo_only,checked>=25,"Une main d'adulte, posée à plat sur la rampe, doigts écartés. Elle n'appartient à personne dans la pièce."
+hall_ring_1951,14,hall,"Alliance, gravée M. V.",true,message,doc_read:living_photo_family,"Un anneau d'or, gravé à l'intérieur : M. V. - 1951. Le doigt qui la portait était plus fin que le mien."
+kitchen_table,15,kitchen,"Table de cuisine, formica, quatre pieds",false,none,,"Le formica est brûlé à une place, toujours la même. On a posé là un fer, ou une casserole, pendant vingt ans."
+kitchen_chairs,16,kitchen,"Chaises, quatre, paillées",false,none,,"Quatre chaises, quatre places. Une seule est tirée ; les trois autres sont poussées sous la table, à la même distance du bord."
+kitchen_sink,17,kitchen,"Évier, pierre, deux bassins",false,none,,Le robinet d'eau chaude goutte. L'eau qui tombe est froide : le ballon doit être vide depuis longtemps.
+kitchen_stove,18,kitchen,"Cuisinière, fonte émaillée, deux feux",false,none,,"L'intérieur du four est propre. Le cendrier est vide. La cendre est dans le seau, dehors, sous la pluie."
+kitchen_coffee_mill,19,kitchen,"Moulin à café, bois et laiton",false,none,,Le tiroir est plein de café moulu. Il sent encore.
+kitchen_scales,20,kitchen,"Balance de ménage, plateau",false,none,,Le plateau porte des graduations à la craie. Le dernier trait est plus appuyé que les autres.
+kitchen_jars,21,kitchen,"Bocaux, six, verre",false,none,,"Six bocaux vides, alignés du plus grand au plus petit. Les couvercles sont rangés à part, dans le même ordre."
+kitchen_preserves,22,kitchen,"Confitures, douze pots, étiquetés",false,none,,"Douze pots. Onze portent une date. Le douzième porte un prénom, sans date : Louis."
+kitchen_clock_stopped,23,kitchen,"Pendule arrêtée, 3 h 10",false,none,,Arrêtée à 3 h 10. Le ressort est remonté. On dirait qu'elle s'est arrêtée en marche.
+kitchen_calendar,24,kitchen,"Calendrier des postes, 1973",false,none,,Le calendrier est de 1973. La page est restée à octobre. Le 30 est entouré au crayon.
+kitchen_cookware,25,kitchen,"Batterie de cuisine, sept pièces",false,none,,"Sept pièces, sept tailles. La plus petite n'a jamais servi : le culot est encore noir de fabrique."
+kitchen_tureen,26,kitchen,"Soupière, faïence, couvercle",false,none,,"Le couvercle est collé au plat. Trois miettes à l'intérieur, très vieilles."
+kitchen_tin_box,27,kitchen,"Boîte en fer, biscuits",false,none,,La boîte est vide. Le papier du fond garde l'empreinte ronde d'un biscuit.
+kitchen_stool,28,kitchen,"Tabouret, trois pieds",false,none,,Le tabouret est usé sur un seul coin. Il manque dix centimètres pour atteindre les étagères hautes.
+kitchen_lamp,29,kitchen,"Suspension, abat-jour tôle",false,none,,"L'abat-jour est propre en dessous, sale au-dessus. La poussière commence exactement au niveau des yeux."
+kitchen_key_l,30,kitchen,"Clé, étiquette ""L.""",true,message,doc_read:kitchen_letter_lucienne_1,"Une clé de chambre, petite, à étiquette de carton. Les dents sont usées jusqu'au plat."
+living_piano,31,living,"Piano droit, bois noirci",false,none,,Le couvercle est ouvert. Les touches du milieu sont creusées ; les aigus sont comme neufs.
+living_fireplace,32,living,"Cheminée, manteau de pierre",false,none,,"La pierre est noire de suie jusqu'à hauteur de main. Plus haut, elle est claire. Le feu n'a pas été allumé depuis longtemps."
+living_armchairs,33,living,"Fauteuils, deux, velours",false,none,,"Les deux fauteuils se font face, à un mètre. Personne ne s'est assis dans celui de gauche : le velours y est intact."
+living_sofa,34,living,"Canapé, trois places",false,none,,Un journal de 1976 est glissé sous le coussin. Il n'a pas été lu : les pages sont encore collées au tranchant.
+living_sideboard,35,living,"Buffet, deux corps, noyer",false,none,,"Le buffet est vide, sauf un tiroir. Le tiroir contient six ronds de serviette gravés à six initiales."
+living_rug,36,living,"Tapis, laine, salon",false,none,,Le tapis est plus clair à l'endroit où un meuble a été posé. Ce meuble n'est plus là.
+living_frames,37,living,"Cadres, quatre, portraits",false,none,,"Quatre portraits. Trois hommes d'âge mûr, trois visages différents, la même expression. Le quatrième cadre est vide, avec son clou."
+living_sheet_music,38,living,"Partitions, trente-deux, en cahier",false,none,,"Trente-deux partitions, toutes de la même main. La dernière porte une date, 1976, et deux mesures inachevées."
+living_radio,39,living,"Poste de radio, bakélite",false,none,,Le poste est réglé sur une fréquence vide. Le bouton de volume est cassé en position haute.
+living_bookcase,40,living,"Bibliothèque, trois rayons",false,none,,"Trois rayons. Les livres sont classés par taille du haut vers le bas, et par couleur de dos de gauche à droite. Quelqu'un a eu le temps."
+living_curtains,41,living,"Rideaux, deux paires, velours",false,none,,"Les rideaux sont tirés. Le velours garde la marque d'un écartement, à hauteur d'homme, côté cour."
+living_workbasket,42,living,"Panière à ouvrage, osier",false,none,,"Un gilet d'enfant, taille quatre ans, commencé. Les aiguilles sont plantées dans la laine, en attente."
+living_curtain_part,43,living,"Rideau, écarté, côté cour",true,photo_only,checked>=35,"Le rideau n'est écarté que sur la photographie. Dans la pièce, il est tiré."
+living_portrait_louis,44,living,"Portrait d'homme, cadre cassé",true,person,doc_read:living_photo_family,"Un homme assis, la main posée sur un genou. Le cadre est cassé en bas à droite. Au dos, au crayon : Louis, 38 ans."
+study_desk,45,study,"Bureau, acajou, trois tiroirs",false,none,,"Trois tiroirs. Celui du milieu est fermé à clé. La clé est dans la serrure, côté intérieur."
+study_chair,46,study,"Fauteuil de bureau, cuir",false,none,,Le cuir est craquelé aux accoudoirs. Le siège garde la forme de quelqu'un qui s'asseyait sur le bord.
+study_shelves,47,study,"Rayonnage, dossiers, quarante",false,none,,"Quarante dossiers, quarante noms. Le trente-neuvième est vide et porte une étiquette neuve."
+study_typewriter,48,study,"Machine à écrire, Underwood",false,none,,"La machine est chargée. Le ruban est neuf. Le chariot est à mi-course, au milieu d'un mot."
+study_lamp,49,study,"Lampe de bureau, abat-jour vert",false,none,,"Ampoule à filament, quarante watts. Le verre est noirci par le haut : elle brûle depuis longtemps."
+study_inkwell,50,study,"Écritoire, encrier de verre",false,none,,"L'encrier est plein. Le bouchon est posé à côté, du bon côté de la main droite."
+study_stamp,51,study,"Cachet, laiton, armoiries",false,none,,"Le cachet est encré. L'empreinte porte les armes de la maison Varenne et, dessous, un nom gratté au couteau."
+study_registers,52,study,"Registres, douze, reliés",false,none,,Douze registres. Onze sont rangés par année. Le douzième n'a pas d'année sur le dos.
+study_cadastre,53,study,"Plan cadastral, encadré",false,none,,Le plan est celui du cadastre de 1845. La maison est dessinée en entier ; l'aile qui n'existe plus n'a pas été effacée.
+study_safe,54,study,"Coffre-fort, deux serrures",false,none,,"Les deux serrures sont ouvertes. À l'intérieur, une liasse de lettres et une place vide de la taille d'une serviette."
+study_blotter,55,study,"Buvard, écriture fraîche",true,message,doc_read:study_letter_besnard,"Le buvard garde l'empreinte d'une dernière ligne, à l'encre encore fraîche : Il ne manque plus que moi."
+study_briefcase_jpd,56,study,"Serviette en cuir, initiales J.-P. D.",true,person,doc_read:study_inventory_1973,"Une serviette plate, vide. Les initiales sont gravées à chaud. À l'intérieur, la marque d'un stylo-bille et un numéro à six chiffres."
+cellar_shelves,57,cellar,"Étagères, sept, bois blanc",false,none,,"Sept étagères. Les conserves sont rangées par année, de droite à gauche. Les plus vieilles sont devant."
+cellar_bottles,58,cellar,"Bouteilles, cent quatorze",false,none,,"Cent quatorze bouteilles. Douze sont pleines, alignées à part, étiquetées 1973. Aucune n'a été ouverte."
+cellar_stove,59,cellar,"Poêle, fonte, un seul feu",false,none,,"Le poêle est froid. Le cendrier est plein, tassé : on a brûlé du papier, puis on a refermé la porte."
+cellar_coat_emile,60,cellar,"Manteau d'homme, taille 48",true,person,doc_read:cellar_register_1847,"Un manteau pend à un clou derrière la porte. Le tissu est propre. Dans la poche intérieure, une carte de visite : Émile Ferrand, clerc de notaire, Dijon."

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/item_data.gd" id="1_itemdata"]
+
+[resource]
+script = ExtResource("1_itemdata")
+id = &"hall_coat_rack"
+list_index = 7
+room_id = &"hall"
+label_key = &"ITEM_HALL_COAT_RACK_LABEL"
+lore_key = &"ITEM_HALL_COAT_RACK_LORE"
+is_phantom = false
+phantom_kind = "none"
+reveal_condition = ""
+movable = true
+min_photo_coverage = 0.15

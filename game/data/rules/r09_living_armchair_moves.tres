@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="HouseRule" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/house_rule.gd" id="1_houserule"]
+
+[resource]
+script = ExtResource("1_houserule")
+id = &"r09_living_armchair_moves"
+trigger = "room_left"
+trigger_param = "living"
+condition = "!item_checked:living_armchairs && checked>=25"
+actions = Array[String](["move_item:living_armchairs:living:living_anchor_fireplace", "attention:+5"])
+once = true
+cooldown = 0.0

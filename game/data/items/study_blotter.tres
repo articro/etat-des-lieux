@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/item_data.gd" id="1_itemdata"]
+
+[resource]
+script = ExtResource("1_itemdata")
+id = &"study_blotter"
+list_index = 55
+room_id = &"study"
+label_key = &"ITEM_STUDY_BLOTTER_LABEL"
+lore_key = &"ITEM_STUDY_BLOTTER_LORE"
+is_phantom = true
+phantom_kind = "message"
+reveal_condition = "doc_read:study_letter_besnard"
+movable = true
+min_photo_coverage = 0.15

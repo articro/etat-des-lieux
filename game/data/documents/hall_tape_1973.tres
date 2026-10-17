@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="DocumentData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/document_data.gd" id="1_docdata"]
+
+[resource]
+script = ExtResource("1_docdata")
+id = &"hall_tape_1973"
+kind = "tape"
+year = 1973
+author = "Répondeur — cassette n° 1"
+title_key = &"DOC_HALL_TAPE_1973_TITLE"
+body_key = &"DOC_HALL_TAPE_1973_BODY"
+pages = 1
+reveals_items = Array[StringName]([])
+sets_flags = Array[StringName]([&"tape_1973_heard"])

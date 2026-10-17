@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="HouseRule" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/house_rule.gd" id="1_houserule"]
+
+[resource]
+script = ExtResource("1_houserule")
+id = &"r18_attention_65"
+trigger = "attention_above"
+trigger_param = "65"
+condition = ""
+actions = Array[String](["sfx:footsteps_above", "presence:offscreen", "attention:-4"])
+once = false
+cooldown = 45.0

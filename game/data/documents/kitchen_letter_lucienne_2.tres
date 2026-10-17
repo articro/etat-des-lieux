@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="DocumentData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/document_data.gd" id="1_docdata"]
+
+[resource]
+script = ExtResource("1_docdata")
+id = &"kitchen_letter_lucienne_2"
+kind = "letter"
+year = 1998
+author = "Lucienne Marchal"
+title_key = &"DOC_KITCHEN_LETTER_LUCIENNE_2_TITLE"
+body_key = &"DOC_KITCHEN_LETTER_LUCIENNE_2_BODY"
+pages = 1
+reveals_items = Array[StringName]([])
+sets_flags = Array[StringName]([&"lucienne_letter_2_read"])

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/item_data.gd" id="1_itemdata"]
+
+[resource]
+script = ExtResource("1_itemdata")
+id = &"living_workbasket"
+list_index = 42
+room_id = &"living"
+label_key = &"ITEM_LIVING_WORKBASKET_LABEL"
+lore_key = &"ITEM_LIVING_WORKBASKET_LORE"
+is_phantom = false
+phantom_kind = "none"
+reveal_condition = ""
+movable = true
+min_photo_coverage = 0.15

@@ -4,3 +4,190 @@ UI_CONTINUE,Continuer
 UI_OPTIONS,Options
 UI_QUIT,Quitter
 UI_FILM_COUNT,Films : {count}
+ITEM_EXTERIOR_GATE_LABEL,"Portail, deux vantaux, fer forgé"
+ITEM_EXTERIOR_GATE_LORE,Le vantail de droite ne ferme plus. Il a été redressé plusieurs fois ; la peinture marque chaque réparation.
+ITEM_EXTERIOR_WELL_LABEL,"Puits, margelle, pierre"
+ITEM_EXTERIOR_WELL_LORE,"Asséché en 1976. Le seau est remonté et pend au-dessus du vide, propre."
+ITEM_EXTERIOR_WHEELBARROW_LABEL,"Brouette, une roue"
+ITEM_EXTERIOR_WHEELBARROW_LORE,"La roue est voilée. Le fond porte une rayure nette, longue d'un mètre. On a transporté là autre chose que des bûches."
+ITEM_EXTERIOR_BENCH_LABEL,"Banc, pierre, sous le tilleul"
+ITEM_EXTERIOR_BENCH_LORE,"La pierre est polie à une seule place, à hauteur d'assise. Quelqu'un s'est assis là, toujours au même endroit, pendant des années."
+ITEM_HALL_CONSOLE_TABLE_LABEL,"Table, console, marbre"
+ITEM_HALL_CONSOLE_TABLE_LORE,"Le marbre est piqué en son centre, à l'endroit où l'on pose les clés. Le mot du patron y est collé. L'encre est fraîche."
+ITEM_HALL_BAROMETER_LABEL,"Baromètre, cadre noyer"
+ITEM_HALL_BAROMETER_LORE,L'aiguille est bloquée sur « variable ». Le verre est fêlé en étoile autour d'elle.
+ITEM_HALL_COAT_RACK_LABEL,"Porte-manteau, trois patères"
+ITEM_HALL_COAT_RACK_LORE,Trois patères. Un fil de laine vert est noué à celle du milieu ; les deux autres sont vides et propres.
+ITEM_HALL_KEY_BOARD_LABEL,"Tableau des clés, dix crochets"
+ITEM_HALL_KEY_BOARD_LORE,"Neuf clés, dix étiquettes. La dixième est vide : le papier a été gratté au couteau."
+ITEM_HALL_MIRROR_LABEL,"Miroir, cadre bois, glace"
+ITEM_HALL_MIRROR_LORE,"La glace est bonne. Je m'y vois telle que je suis, avec le sac, la lampe, le carnet. Rien de plus."
+ITEM_HALL_UMBRELLA_STAND_LABEL,"Râtelier à parapluies, zinc"
+ITEM_HALL_UMBRELLA_STAND_LORE,"Deux parapluies, un homme et une femme. Les plis gardent encore la forme du dernier jour de pluie."
+ITEM_HALL_DOORBELL_LABEL,"Cloche de porte, laiton"
+ITEM_HALL_DOORBELL_LORE,"Le battant porte une trace de pouce, brillante, à l'intérieur. Comme si on avait sonné depuis la maison."
+ITEM_HALL_ANSWERING_MACHINE_LABEL,"Répondeur, à cassette, deux boutons"
+ITEM_HALL_ANSWERING_MACHINE_LORE,La cassette est engagée. Le compteur indique 1. Personne n'a effacé.
+ITEM_HALL_HAND_RAILING_LABEL,"Main, sur la rampe"
+ITEM_HALL_HAND_RAILING_LORE,"Une main d'adulte, posée à plat sur la rampe, doigts écartés. Elle n'appartient à personne dans la pièce."
+ITEM_HALL_RING_1951_LABEL,"Alliance, gravée M. V."
+ITEM_HALL_RING_1951_LORE,"Un anneau d'or, gravé à l'intérieur : M. V. - 1951. Le doigt qui la portait était plus fin que le mien."
+ITEM_KITCHEN_TABLE_LABEL,"Table de cuisine, formica, quatre pieds"
+ITEM_KITCHEN_TABLE_LORE,"Le formica est brûlé à une place, toujours la même. On a posé là un fer, ou une casserole, pendant vingt ans."
+ITEM_KITCHEN_CHAIRS_LABEL,"Chaises, quatre, paillées"
+ITEM_KITCHEN_CHAIRS_LORE,"Quatre chaises, quatre places. Une seule est tirée ; les trois autres sont poussées sous la table, à la même distance du bord."
+ITEM_KITCHEN_SINK_LABEL,"Évier, pierre, deux bassins"
+ITEM_KITCHEN_SINK_LORE,Le robinet d'eau chaude goutte. L'eau qui tombe est froide : le ballon doit être vide depuis longtemps.
+ITEM_KITCHEN_STOVE_LABEL,"Cuisinière, fonte émaillée, deux feux"
+ITEM_KITCHEN_STOVE_LORE,"L'intérieur du four est propre. Le cendrier est vide. La cendre est dans le seau, dehors, sous la pluie."
+ITEM_KITCHEN_COFFEE_MILL_LABEL,"Moulin à café, bois et laiton"
+ITEM_KITCHEN_COFFEE_MILL_LORE,Le tiroir est plein de café moulu. Il sent encore.
+ITEM_KITCHEN_SCALES_LABEL,"Balance de ménage, plateau"
+ITEM_KITCHEN_SCALES_LORE,Le plateau porte des graduations à la craie. Le dernier trait est plus appuyé que les autres.
+ITEM_KITCHEN_JARS_LABEL,"Bocaux, six, verre"
+ITEM_KITCHEN_JARS_LORE,"Six bocaux vides, alignés du plus grand au plus petit. Les couvercles sont rangés à part, dans le même ordre."
+ITEM_KITCHEN_PRESERVES_LABEL,"Confitures, douze pots, étiquetés"
+ITEM_KITCHEN_PRESERVES_LORE,"Douze pots. Onze portent une date. Le douzième porte un prénom, sans date : Louis."
+ITEM_KITCHEN_CLOCK_STOPPED_LABEL,"Pendule arrêtée, 3 h 10"
+ITEM_KITCHEN_CLOCK_STOPPED_LORE,Arrêtée à 3 h 10. Le ressort est remonté. On dirait qu'elle s'est arrêtée en marche.
+ITEM_KITCHEN_CALENDAR_LABEL,"Calendrier des postes, 1973"
+ITEM_KITCHEN_CALENDAR_LORE,Le calendrier est de 1973. La page est restée à octobre. Le 30 est entouré au crayon.
+ITEM_KITCHEN_COOKWARE_LABEL,"Batterie de cuisine, sept pièces"
+ITEM_KITCHEN_COOKWARE_LORE,"Sept pièces, sept tailles. La plus petite n'a jamais servi : le culot est encore noir de fabrique."
+ITEM_KITCHEN_TUREEN_LABEL,"Soupière, faïence, couvercle"
+ITEM_KITCHEN_TUREEN_LORE,"Le couvercle est collé au plat. Trois miettes à l'intérieur, très vieilles."
+ITEM_KITCHEN_TIN_BOX_LABEL,"Boîte en fer, biscuits"
+ITEM_KITCHEN_TIN_BOX_LORE,La boîte est vide. Le papier du fond garde l'empreinte ronde d'un biscuit.
+ITEM_KITCHEN_STOOL_LABEL,"Tabouret, trois pieds"
+ITEM_KITCHEN_STOOL_LORE,Le tabouret est usé sur un seul coin. Il manque dix centimètres pour atteindre les étagères hautes.
+ITEM_KITCHEN_LAMP_LABEL,"Suspension, abat-jour tôle"
+ITEM_KITCHEN_LAMP_LORE,"L'abat-jour est propre en dessous, sale au-dessus. La poussière commence exactement au niveau des yeux."
+ITEM_KITCHEN_KEY_L_LABEL,"Clé, étiquette ""L."""
+ITEM_KITCHEN_KEY_L_LORE,"Une clé de chambre, petite, à étiquette de carton. Les dents sont usées jusqu'au plat."
+ITEM_LIVING_PIANO_LABEL,"Piano droit, bois noirci"
+ITEM_LIVING_PIANO_LORE,Le couvercle est ouvert. Les touches du milieu sont creusées ; les aigus sont comme neufs.
+ITEM_LIVING_FIREPLACE_LABEL,"Cheminée, manteau de pierre"
+ITEM_LIVING_FIREPLACE_LORE,"La pierre est noire de suie jusqu'à hauteur de main. Plus haut, elle est claire. Le feu n'a pas été allumé depuis longtemps."
+ITEM_LIVING_ARMCHAIRS_LABEL,"Fauteuils, deux, velours"
+ITEM_LIVING_ARMCHAIRS_LORE,"Les deux fauteuils se font face, à un mètre. Personne ne s'est assis dans celui de gauche : le velours y est intact."
+ITEM_LIVING_SOFA_LABEL,"Canapé, trois places"
+ITEM_LIVING_SOFA_LORE,Un journal de 1976 est glissé sous le coussin. Il n'a pas été lu : les pages sont encore collées au tranchant.
+ITEM_LIVING_SIDEBOARD_LABEL,"Buffet, deux corps, noyer"
+ITEM_LIVING_SIDEBOARD_LORE,"Le buffet est vide, sauf un tiroir. Le tiroir contient six ronds de serviette gravés à six initiales."
+ITEM_LIVING_RUG_LABEL,"Tapis, laine, salon"
+ITEM_LIVING_RUG_LORE,Le tapis est plus clair à l'endroit où un meuble a été posé. Ce meuble n'est plus là.
+ITEM_LIVING_FRAMES_LABEL,"Cadres, quatre, portraits"
+ITEM_LIVING_FRAMES_LORE,"Quatre portraits. Trois hommes d'âge mûr, trois visages différents, la même expression. Le quatrième cadre est vide, avec son clou."
+ITEM_LIVING_SHEET_MUSIC_LABEL,"Partitions, trente-deux, en cahier"
+ITEM_LIVING_SHEET_MUSIC_LORE,"Trente-deux partitions, toutes de la même main. La dernière porte une date, 1976, et deux mesures inachevées."
+ITEM_LIVING_RADIO_LABEL,"Poste de radio, bakélite"
+ITEM_LIVING_RADIO_LORE,Le poste est réglé sur une fréquence vide. Le bouton de volume est cassé en position haute.
+ITEM_LIVING_BOOKCASE_LABEL,"Bibliothèque, trois rayons"
+ITEM_LIVING_BOOKCASE_LORE,"Trois rayons. Les livres sont classés par taille du haut vers le bas, et par couleur de dos de gauche à droite. Quelqu'un a eu le temps."
+ITEM_LIVING_CURTAINS_LABEL,"Rideaux, deux paires, velours"
+ITEM_LIVING_CURTAINS_LORE,"Les rideaux sont tirés. Le velours garde la marque d'un écartement, à hauteur d'homme, côté cour."
+ITEM_LIVING_WORKBASKET_LABEL,"Panière à ouvrage, osier"
+ITEM_LIVING_WORKBASKET_LORE,"Un gilet d'enfant, taille quatre ans, commencé. Les aiguilles sont plantées dans la laine, en attente."
+ITEM_LIVING_CURTAIN_PART_LABEL,"Rideau, écarté, côté cour"
+ITEM_LIVING_CURTAIN_PART_LORE,"Le rideau n'est écarté que sur la photographie. Dans la pièce, il est tiré."
+ITEM_LIVING_PORTRAIT_LOUIS_LABEL,"Portrait d'homme, cadre cassé"
+ITEM_LIVING_PORTRAIT_LOUIS_LORE,"Un homme assis, la main posée sur un genou. Le cadre est cassé en bas à droite. Au dos, au crayon : Louis, 38 ans."
+ITEM_STUDY_DESK_LABEL,"Bureau, acajou, trois tiroirs"
+ITEM_STUDY_DESK_LORE,"Trois tiroirs. Celui du milieu est fermé à clé. La clé est dans la serrure, côté intérieur."
+ITEM_STUDY_CHAIR_LABEL,"Fauteuil de bureau, cuir"
+ITEM_STUDY_CHAIR_LORE,Le cuir est craquelé aux accoudoirs. Le siège garde la forme de quelqu'un qui s'asseyait sur le bord.
+ITEM_STUDY_SHELVES_LABEL,"Rayonnage, dossiers, quarante"
+ITEM_STUDY_SHELVES_LORE,"Quarante dossiers, quarante noms. Le trente-neuvième est vide et porte une étiquette neuve."
+ITEM_STUDY_TYPEWRITER_LABEL,"Machine à écrire, Underwood"
+ITEM_STUDY_TYPEWRITER_LORE,"La machine est chargée. Le ruban est neuf. Le chariot est à mi-course, au milieu d'un mot."
+ITEM_STUDY_LAMP_LABEL,"Lampe de bureau, abat-jour vert"
+ITEM_STUDY_LAMP_LORE,"Ampoule à filament, quarante watts. Le verre est noirci par le haut : elle brûle depuis longtemps."
+ITEM_STUDY_INKWELL_LABEL,"Écritoire, encrier de verre"
+ITEM_STUDY_INKWELL_LORE,"L'encrier est plein. Le bouchon est posé à côté, du bon côté de la main droite."
+ITEM_STUDY_STAMP_LABEL,"Cachet, laiton, armoiries"
+ITEM_STUDY_STAMP_LORE,"Le cachet est encré. L'empreinte porte les armes de la maison Varenne et, dessous, un nom gratté au couteau."
+ITEM_STUDY_REGISTERS_LABEL,"Registres, douze, reliés"
+ITEM_STUDY_REGISTERS_LORE,Douze registres. Onze sont rangés par année. Le douzième n'a pas d'année sur le dos.
+ITEM_STUDY_CADASTRE_LABEL,"Plan cadastral, encadré"
+ITEM_STUDY_CADASTRE_LORE,Le plan est celui du cadastre de 1845. La maison est dessinée en entier ; l'aile qui n'existe plus n'a pas été effacée.
+ITEM_STUDY_SAFE_LABEL,"Coffre-fort, deux serrures"
+ITEM_STUDY_SAFE_LORE,"Les deux serrures sont ouvertes. À l'intérieur, une liasse de lettres et une place vide de la taille d'une serviette."
+ITEM_STUDY_BLOTTER_LABEL,"Buvard, écriture fraîche"
+ITEM_STUDY_BLOTTER_LORE,"Le buvard garde l'empreinte d'une dernière ligne, à l'encre encore fraîche : Il ne manque plus que moi."
+ITEM_STUDY_BRIEFCASE_JPD_LABEL,"Serviette en cuir, initiales J.-P. D."
+ITEM_STUDY_BRIEFCASE_JPD_LORE,"Une serviette plate, vide. Les initiales sont gravées à chaud. À l'intérieur, la marque d'un stylo-bille et un numéro à six chiffres."
+ITEM_CELLAR_SHELVES_LABEL,"Étagères, sept, bois blanc"
+ITEM_CELLAR_SHELVES_LORE,"Sept étagères. Les conserves sont rangées par année, de droite à gauche. Les plus vieilles sont devant."
+ITEM_CELLAR_BOTTLES_LABEL,"Bouteilles, cent quatorze"
+ITEM_CELLAR_BOTTLES_LORE,"Cent quatorze bouteilles. Douze sont pleines, alignées à part, étiquetées 1973. Aucune n'a été ouverte."
+ITEM_CELLAR_STOVE_LABEL,"Poêle, fonte, un seul feu"
+ITEM_CELLAR_STOVE_LORE,"Le poêle est froid. Le cendrier est plein, tassé : on a brûlé du papier, puis on a refermé la porte."
+ITEM_CELLAR_COAT_EMILE_LABEL,"Manteau d'homme, taille 48"
+ITEM_CELLAR_COAT_EMILE_LORE,"Un manteau pend à un clou derrière la porte. Le tissu est propre. Dans la poche intérieure, une carte de visite : Émile Ferrand, clerc de notaire, Dijon."
+DOC_HALL_POSTIT_BESNARD_TITLE,Mot de Maître Besnard
+DOC_HALL_POSTIT_BESNARD_BODY,"Camille,\n\nRez-de-chaussée ce soir. L'étage est condamné : ne l'ouvrez pas. Nous y monterons demain, ensemble.\n\nL'état des lieux porte sur les soixante lignes de la liste. Rien de plus.\n\nLes clés sont au tableau de l'entrée. La cave vient après le reste.\n\nM. Besnard\n\nP.-S. — Les films sont dans le tiroir du bureau. Il y en a moins que d'objets. Servez-vous dans la maison. Ne photographiez pas n'importe quoi."
+DOC_STUDY_INVENTORY_1973_TITLE,"Inventaire de 1973, rez-de-chaussée"
+DOC_STUDY_INVENTORY_1973_BODY,"ÉTUDE DE MAÎTRE A. BESNARD, NOTAIRE À DIJON\nSUCCESSION DE M. ROBERT VASSEUR, DÉCÉDÉ LE 12 OCTOBRE 1973\nPROCÈS-VERBAL DE DESCRIPTION ET PRISÉE — REZ-DE-CHAUSSÉE\n\nTranscription établie sur la minute détruite, à la demande de Mme M. Varenne.\nLes prix portés sont ceux de 1973. Les lignes non prisées le sont faute d'usage.\n\n\nCOUR ET DÉPENDANCES\n1. Portail, deux vantaux, fer forgé — 150 F\n2. Puits, margelle, pierre — sans valeur\n3. Brouette, une roue — 15 F\n4. Banc, pierre, sous le tilleul — sans valeur\n\nENTRÉE\n5. Table, console, marbre — 40 F\n6. Baromètre, cadre noyer — 25 F\n7. Porte-manteau, trois patères — 5 F\n8. Tableau des clés, dix crochets — 3 F\n9. Miroir, cadre bois, glace — 80 F\n10. Râtelier à parapluies, zinc — 8 F\n11. Cloche de porte, laiton — 2 F\n12. Répondeur, à cassette, deux boutons — 250 F\n13. Main, sur la rampe — sans valeur\n14. Alliance, gravée M. V. — 60 F\n[i]Gravée à l'intérieur. Je n'ai pas voulu l'enlever.[/i]\n\nCUISINE\n15. Table de cuisine, formica, quatre pieds — 30 F\n16. Chaises, quatre, paillées — 40 F\n17. Évier, pierre, deux bassins — sans valeur\n18. Cuisinière, fonte émaillée, deux feux — 120 F\n19. Moulin à café, bois et laiton — 6 F\n20. Balance de ménage, plateau — 12 F\n21. Bocaux, six, verre — 4 F\n22. Confitures, douze pots, étiquetés — 18 F\n23. Pendule arrêtée, 3 h 10 — 35 F\n[i]Arrêtée le 16 octobre, à 3 h 10. Je ne l'ai pas remontée.[/i]\n24. Calendrier des postes, 1973 — sans valeur\n25. Batterie de cuisine, sept pièces — 45 F\n26. Soupière, faïence, couvercle — 20 F\n27. Boîte en fer, biscuits — 3 F\n28. Tabouret, trois pieds — 7 F\n29. Suspension, abat-jour tôle — 9 F\n30. Clé, étiquette ""L."" — sans valeur\n[i]Celle-ci, je l'ai mise moi-même. Elle n'était pas dans la maison.[/i]\n\nSALON\n31. Piano droit, bois noirci — 400 F\n32. Cheminée, manteau de pierre — sans valeur\n33. Fauteuils, deux, velours — 180 F\n34. Canapé, trois places — 150 F\n35. Buffet, deux corps, noyer — 220 F\n36. Tapis, laine, salon — 60 F\n37. Cadres, quatre, portraits — 70 F\n38. Partitions, trente-deux, en cahier — 15 F\n39. Poste de radio, bakélite — 90 F\n40. Bibliothèque, trois rayons — 130 F\n41. Rideaux, deux paires, velours — 55 F\n42. Panière à ouvrage, osier — 8 F\n43. Rideau, écarté, côté cour — sans valeur\n44. Portrait d'homme, cadre cassé — 30 F\n[i]C'est lui. Ne l'écrivez pas encore.[/i]\n\nBUREAU\n45. Bureau, acajou, trois tiroirs — 300 F\n46. Fauteuil de bureau, cuir — 140 F\n47. Rayonnage, dossiers, quarante — 160 F\n48. Machine à écrire, Underwood — 110 F\n49. Lampe de bureau, abat-jour vert — 20 F\n50. Écritoire, encrier de verre — 25 F\n51. Cachet, laiton, armoiries — 75 F\n52. Registres, douze, reliés — 40 F\n53. Plan cadastral, encadré — 10 F\n54. Coffre-fort, deux serrures — 200 F\n55. Buvard, écriture fraîche — 2 F\n[i]Le buvard garde tout. Ne vous asseyez pas à cette place.[/i]\n56. Serviette en cuir, initiales J.-P. D. — 35 F\n\nCAVE\n57. Étagères, sept, bois blanc — 20 F\n58. Bouteilles, cent quatorze — 60 F\n59. Poêle, fonte, un seul feu — 45 F\n60. Manteau d'homme, taille 48 — 25 F\n[i]Il pend derrière la porte depuis 1912. Personne ne l'a décroché.[/i]\n\nLa présente description s'arrête à la soixantième ligne, celle du rez-de-chaussée. C'est ce qui est demandé ce soir.\nLes articles 61 à 180 se trouvaient sur la partie détruite. Madame Varenne n'a pas souhaité les rétablir.\n\nPAGE DÉTACHÉE, RETROUVÉE DANS LE POÊLE — À L'ENCRE, RAYÉ :\n181. Jean-Paul\n\n[i]Il manque le prix. J'ai compté trois fois. Je ne compte plus.[/i]\nL. M., le 6 novembre 1973"
+DOC_KITCHEN_LETTER_LUCIENNE_1_TITLE,"Lettre à Louis, non envoyée"
+DOC_KITCHEN_LETTER_LUCIENNE_1_BODY,"Louis,\n\nJe n'ai pas fermé ta chambre. J'ai fermé la serrure, ce n'est pas la même chose : la porte est restée comme tu l'avais laissée, avec le dessin au mur et le lit défait.\n\nLa clé est dans la cuisine, sous l'étiquette L. Si tu rentres, tu sauras quoi en faire. Si c'est quelqu'un d'autre qui la trouve, il saura au moins que quelqu'un t'a attendu ici.\n\nJe ne t'ai jamais appelé mon fils. Je n'en avais pas le droit. Je t'ai élevé, ce n'est pas pareil, et ce n'est pas rien.\n\nTu me manques, et c'est la seule phrase que je sais écrire ce soir.\n\nLucienne"
+DOC_KITCHEN_LETTER_LUCIENNE_2_TITLE,Lettre à celle ou celui qui viendra compter
+DOC_KITCHEN_LETTER_LUCIENNE_2_BODY,"À celle ou celui qui viendra compter,\n\nIls envoient quelqu'un tous les trente ans. J'ai vu faire en 1951 : j'étais de l'autre côté du bureau. Cette fois ce sera une femme, je crois. Elles tiennent mieux les listes. Elles finissent ce qu'elles commencent.\n\nLa maison ne ment pas. Elle ajoute. C'est plus difficile à suivre qu'un mensonge.\n\nCe qui n'a pas de prix, ici, est ce qui compte. Méfiez-vous des objets qu'on vous laisse trouver : ils sont là pour vous mettre en appétit.\n\nSi vous lisez cette lettre, je suis morte, et la maison attend. Prenez votre temps. Elle n'en a pas.\n\nL. M."
+DOC_LIVING_LETTER_LUCIENNE_3_TITLE,"Lettre à personne, mars 1953"
+DOC_LIVING_LETTER_LUCIENNE_3_BODY,"Le 4 mars 1953.\n\nOn a écrit de Dijon. Madeleine Varenne, morte à l'asile le 2, à quarante-six ans. On demande qui doit venir. Personne ne vient.\n\nJ'ai signé un papier en 1951. Le papier a tenu. Depuis, le village m'appelle madame Varenne, et moi je réponds. On m'a donné sa maison, son lit, sa vaisselle. On ne m'a pas donné son fils.\n\nElle est partie avec le nom qu'on m'avait pris, et personne ne l'a réclamée. C'est moi qui porte le deuil, et ce n'est pas de l'hypocrisie : c'est une dette.\n\nJe garde le registre. Je ne le remplis plus. C'est la seule chose que je puisse faire pour elle, et je ne suis même pas sûre qu'elle le sache.\n\nLucienne Marchal, qui porte son nom."
+DOC_LIVING_PHOTO_FAMILY_TITLE,"Photographie de famille, annotée au dos"
+DOC_LIVING_PHOTO_FAMILY_BODY,"Tirage au gélatino-bromure, dix-huit centimètres sur treize. La maison est au fond, la cour est herbeuse.\n\nSur l'image, quatre personnes.\n\nAu dos, à l'encre bleue, à trois colonnes :\n\n« Été 1951.\nHortense Varenne, assise.\nMadeleine Varenne, debout, à gauche.\nLouis, sept ans, devant.\nLucienne, debout, à droite. »\n\nCelle de gauche tient l'enfant par l'épaule. Celle de droite a les mains derrière le dos.\n\nPlus bas, au crayon, d'une autre main, en petits caractères : « et lui ».\n\nIl n'y a personne d'autre sur la photographie."
+DOC_STUDY_LETTER_BESNARD_TITLE,"Lettre de Maître Besnard, sous pli"
+DOC_STUDY_LETTER_BESNARD_BODY,"Camille,\n\nSi vous lisez cette lettre, vous êtes allée plus loin que le rez-de-chaussée, et j'en suis désolé. Je vous devais la vérité avant que vous ne la trouviez seule.\n\nEn 1973 j'étais clerc chez mon père. Jean-Paul Doucet occupait le bureau devant le mien. On l'a envoyé à Varenne le 14 octobre. Il est revenu le 16 au matin sans sa sacoche, sans sa montre, et il ne savait plus dire où il avait dormi. Il a brûlé sa liste dans le poêle de la cave.\n\nJe n'y suis jamais retourné. Je vous ai envoyée parce que l'étude doit envoyer quelqu'un, et que cette année c'était à moi de choisir.\n\nLes scellés de la cave sont dans le coffre. Ne les levez pas sans être assise.\n\nA. Besnard\n\nP.-S. — La maison compte les gens. Faites en sorte que quelqu'un vous compte, ou ne vous laissez pas compter seule."
+DOC_HALL_TAPE_1973_TITLE,"Répondeur, cassette n° 1"
+DOC_HALL_TAPE_1973_BODY,"[b]Lecture de la cassette. Compteur : 1.[/b]\n\n[00:00] Silence. Souffle. Un meuble qu'on tire sur un parquet, deux fois.\n[00:12] BESNARD : Jean-Paul. Décroche.\n[00:20] BESNARD : Jean-Paul, sors de là.\n[00:31] Trois coups, lents, frappés sur du bois.\n[00:38] JEAN-PAUL : Qui est à l'appareil.\n[00:41] BESNARD : Tu sais qui. Sors.\n[00:47] Le combiné se pose. La bande continue.\n[01:05] Une chaise se déplace. Puis encore. Puis plus rien.\n[01:38] Fin de l'enregistrement.\n\nAu dos de la cassette, à l'encre : « 16 octobre 1973. Ne pas effacer. »"
+DOC_CELLAR_REGISTER_1847_TITLE,"Registre des biens, depuis 1847"
+DOC_CELLAR_REGISTER_1847_BODY,"[b]Registre des biens de la maison Varenne, tenu par moi, Anselme Varenne, à compter du 3 mai 1847.[/b]\n\n1. Table de chêne, six pieds. C'est la table où l'on mange.\n2. Horloge de parquet. Elle avance de quatre minutes.\n3. Lit à colonnes, noyer. Celui de la chambre haute.\n4. Coffre, ferrures. Vide.\n\nJe compte chaque soir, à la même heure. Ce qui est compté demeure. Ce qui demeure est à moi. Ce qui n'est pas compté s'en va, et je ne le revois pas.\n\n[Autre main, 1889, écriture plus petite.]\nMon père est mort le 2 février. Il manquait une ligne au registre.\nJe l'ai comptée le soir même.\n\n[Autre main, 1912, écriture de clerc.]\nArticle 212. Aucune prisée.\n\n[Encre différente, sans date.]\nLe registre ne s'arrête pas. Il change de main. C'est ainsi qu'il tient."
+DOC_STUDY_DEED_1912_TITLE,"Inventaire de 1912, dernière page"
+DOC_STUDY_DEED_1912_BODY,"ÉTUDE DE MAÎTRE L. FERRAND, NOTAIRE À SAULIEU\nSUCCESSION DE M. THÉODORE VARENNE, DÉCÉDÉ LE 9 JANVIER 1912\nINVENTAIRE — DERNIÈRE PAGE\n\n209. Plat à barbe, faïence ébréchée — 0,50 F\n210. Paire de draps, toile — 2 F\n211. Registre, reliure parchemin — sans valeur\n212. Émile Ferrand, clerc de notaire, trente et un ans — néant\n\nLa présente description est close à la deux cent douzième ligne.\n\n[En marge, à l'encre, même main :]\nIl ne manque plus que moi.\n\n[Au verso, tampon sec de l'étude :]\nDéposé au rang des minutes. Non retiré."
+SUB_EXTERIOR_ARRIVAL,"Il fait noir depuis six heures. C'est normal, en octobre."
+SUB_HALL_LIGHT,L'ampoule du couloir est neuve. Qui l'a vissée.
+SUB_HALL_KEYS,Neuf clés. Dix étiquettes. Il en manque une.
+SUB_HALL_POSTIT,Il savait que je viendrais seule.
+SUB_KITCHEN_CALENDAR,Octobre 1973. Le trentième jour est entouré.
+SUB_KITCHEN_CLOCK,Trois heures dix. Je suis arrivée à vingt-deux heures.
+SUB_KITCHEN_JARS,Douze pots. Un prénom sur le dernier.
+SUB_KITCHEN_LETTER,Elle écrivait comme on tient un livre ouvert.
+SUB_FIRST_PHOTO,La photo se développe. Ça prend dix secondes.
+SUB_FIRST_CHECK,Une ligne de moins. Cinquante-neuf.
+SUB_LIVING_PIANO,Personne n'a joué des aigus depuis longtemps.
+SUB_LIVING_PHOTO,Quatre personnes sur la photo. Cinq sur la liste.
+SUB_LIVING_FIREPLACE,"Le feu n'a pas servi. La suie, si."
+SUB_LIVING_EMPTY_FRAME,"Un cadre vide, et son clou. C'est une place gardée."
+SUB_STUDY_DESK,Trois tiroirs. Celui du milieu ne s'ouvre pas.
+SUB_DRAWER_OPENS,Le tiroir s'est ouvert. Je n'ai rien touché.
+SUB_INVENTORY_1973,Il a écrit son nom à la fin. Puis il l'a rayé.
+SUB_BESNARD_LETTER,Il le savait. Il m'a envoyée quand même.
+SUB_NOISE_ABOVE,On marche au-dessus. La planche est clouée.
+SUB_PHANTOM_REVEAL,Cet objet n'était pas là. Il est sur la liste.
+SUB_TAPE,C'est la voix du patron. En 1973.
+SUB_CELLAR_DOOR,La trappe est ouverte. Je ne l'ai pas ouverte.
+SUB_CELLAR_STAIRS,"Ça sent le froid. Le froid a une odeur, ici."
+SUB_CELLAR_COAT,Un manteau à ma taille. Taille quarante-huit.
+SUB_REGISTER,Ils comptaient déjà. En 1847.
+SUB_LAST_OBJECT,Un objet. Il reste un objet.
+SUB_PRESENCE_SEEN,Je la vois. Elle ne bouge pas encore.
+SUB_ENDING_CLOSED,La page s'écrit toute seule. C'est mon nom.
+SUB_BURNING,Le carnet brûle mal. Le papier ancien est épais.
+SUB_DAWN,Le jour se lève sur du brouillard. Je repars.
+ENDING_CLOSED_TITLE,Inventaire clos
+ENDING_CLOSED_P1,Le procès-verbal est clos à la soixantième ligne. Il porte la mention : sans témoin.
+ENDING_CLOSED_P2,Le carnet s'ouvre à la page suivante. L'écriture n'est pas la mienne.
+ENDING_CLOSED_LINE_NAME,Camille
+ENDING_CLOSED_P3,La photographie se développe dans ma main. Le temps de compter jusqu'à dix.
+ENDING_CLOSED_P4,"Objet 61 : jeune femme, assise, bureau. Ne répond pas."
+ENDING_CLOSED_P5,État des lieux conforme. Le dossier est classé.
+ENDING_ASHES_TITLE,Cendres
+ENDING_ASHES_P1,Le poêle tire mal. Le carnet met longtemps à prendre.
+ENDING_ASHES_P2,"À l'aube, le brouillard tient encore la cour. La 205 démarre au deuxième tour."
+ENDING_ASHES_P3,"Maître Besnard, au téléphone : « Camille qui ? »"
+ENDING_ASHES_P4,"Sur le siège passager, un carnet neuf. Première page, mon écriture."
+ENDING_ASHES_LINE_NAME,"Volant, cuir, usé"
+ENDING_ASHES_P5,Je ne me souviens pas l'avoir écrit.
+ENDING_GENERIC_EPILOGUE,"État des lieux — 1998. Dossier de succession vacante, non clôturé."
+INV_LINE_FORMAT,{index}. {name}
+INV_LINE_ADDED_CAMILLE,Camille
