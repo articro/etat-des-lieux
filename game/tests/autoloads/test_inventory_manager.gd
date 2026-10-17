@@ -104,3 +104,11 @@ func test_check_random_unchecked() -> void:
 	assert_bool(InventoryManager._check_random_unchecked()).is_true()
 	assert_that(InventoryManager.progress()).is_equal(Vector2i(3, 3))
 	assert_bool(InventoryManager._check_random_unchecked()).is_false()
+
+
+func test_all_items_sorted() -> void:
+	var all := InventoryManager.all_items()
+	assert_int(all.size()).is_equal(3)
+	assert_that(all[0].id).is_equal(&"t01")
+	assert_that(all[1].id).is_equal(&"t02")
+	assert_that(all[2].id).is_equal(&"t03")
