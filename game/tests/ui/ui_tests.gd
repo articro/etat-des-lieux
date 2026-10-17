@@ -130,6 +130,11 @@ func _test_notebook() -> void:
 	_check(notebook.current_tab() == NotebookUi.TAB_PHOTOS, "onglet Photos sélectionné")
 	notebook.select_tab(NotebookUi.TAB_LIST)
 	_check(notebook.current_tab() == NotebookUi.TAB_LIST, "retour à l'onglet Liste")
+	print(
+		"  info - source des objets : %s"
+		% ("InventoryManager.all_items()" if InventoryManager.has_method("all_items") else "repli data/items/")
+	)
+	_check(notebook.item_count() == total.y, "le carnet liste exactement les objets d'InventoryManager (%d)" % notebook.item_count())
 	var column := notebook.get_node("Sheet/Margin/Column/Pages/ListScroll/ListColumn") as VBoxContainer
 	await get_tree().process_frame
 	_check(column != null and column.size.y > 200.0, "liste mise en page (%.0f px de haut)" % (column.size.y if column != null else 0.0))
@@ -187,7 +192,17 @@ func _test_hud() -> void:
 		_check(reticle.visible, "réticule rendu carnet fermé")
 		EventBus.player_interacted.emit(&"study_desk", &"read")
 		await get_tree().process_frame
-		_check(true, "player_interacted ne casse pas le réticule")
+		_check(reticle.context() == &"read", "repli : la forme suit player_interacted tant qu'aucun survol n'est émis")
+		EventBus.interact_target_changed.emit(&"study_desk", &"read")
+		await get_tree().process_frame
+		_check(hud.is_hover_driven(), "interact_target_changed reçu (contrat du 17/10)")
+		_check(reticle.context() == &"read", "réticule contextuel : forme « lire »")
+		EventBus.interact_target_changed.emit(&"cellar_stove", &"burn")
+		await get_tree().process_frame
+		_check(reticle.context() == &"burn", "la forme suit la cible survolée (brûler)")
+		EventBus.interact_target_changed.emit(StringName(), StringName())
+		await get_tree().process_frame
+		_check(reticle.context() == StringName(), "plus de cible → réticule nu")
 	hud.queue_free()
 	await get_tree().process_frame
 

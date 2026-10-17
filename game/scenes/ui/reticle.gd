@@ -32,6 +32,11 @@ func set_context(kind: StringName) -> void:
 	queue_redraw()
 
 
+## Forme courante ("" = aucune cible) — utilisée par les tests.
+func context() -> StringName:
+	return _kind
+
+
 ## Retour visuel d'une interaction (`EventBus.player_interacted`).
 func pulse() -> void:
 	if _tween != null and _tween.is_valid():

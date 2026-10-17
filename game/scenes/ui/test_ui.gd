@@ -119,21 +119,28 @@ func _fake_photo(room_id: StringName) -> PhotoData:
 	return photo
 
 
-## Même énumération que le carnet (InventoryManager n'expose pas de liste globale).
+## Même énumération que le carnet : `all_items()` si elle existe, sinon le dossier.
 func _collect_items() -> Array[ItemData]:
-	var dir := DirAccess.open(ITEMS_DIR)
-	if dir == null:
-		push_warning("Banc d'essai : %s inaccessible." % ITEMS_DIR)
-		return []
-	var files := dir.get_files()
-	files.sort()
 	var found: Array[ItemData] = []
-	for file: String in files:
-		if not file.ends_with(".tres"):
-			continue
-		var resource := ResourceLoader.load(ITEMS_DIR + file)
-		if resource is ItemData and InventoryManager.get_item((resource as ItemData).id) != null:
-			found.append(resource as ItemData)
+	if InventoryManager.has_method("all_items"):
+		var from_api: Variant = InventoryManager.call("all_items")
+		if from_api is Array:
+			for element: Variant in from_api:
+				if element is ItemData:
+					found.append(element as ItemData)
+	if found.is_empty():
+		var dir := DirAccess.open(ITEMS_DIR)
+		if dir == null:
+			push_warning("Banc d'essai : %s inaccessible." % ITEMS_DIR)
+			return found
+		var files := dir.get_files()
+		files.sort()
+		for file: String in files:
+			if not file.ends_with(".tres"):
+				continue
+			var resource := ResourceLoader.load(ITEMS_DIR + file)
+			if resource is ItemData and InventoryManager.get_item((resource as ItemData).id) != null:
+				found.append(resource as ItemData)
 	found.sort_custom(func(a: ItemData, b: ItemData) -> bool: return a.list_index < b.list_index)
 	return found
 
