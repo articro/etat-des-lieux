@@ -33,6 +33,14 @@ func get_items_in_room(room_id: StringName) -> Array[ItemData]:
 	return out
 
 
+## Tous les objets de la liste, triés par list_index (ARCHITECTURE §5).
+func all_items() -> Array[ItemData]:
+	var out: Array[ItemData] = []
+	out.assign(_items.values())
+	out.sort_custom(func(a: ItemData, b: ItemData) -> bool: return a.list_index < b.list_index)
+	return out
+
+
 func is_checked(item_id: StringName) -> bool:
 	return _checked.has(item_id)
 

@@ -183,6 +183,12 @@ func _test_rules_and_reveals() -> void:
 	phantom2.reveal_condition = "doc_read:test_doc"
 	InventoryManager._register_item(phantom2)
 
+	# all_items() : contrat §5, trié par list_index.
+	var all := InventoryManager.all_items()
+	_expect(all.size() == 62, "all_items : tous les objets")
+	if all.size() == 62:
+		_expect(all[0].list_index == 1 and all[61].list_index == 62, "all_items : trié par list_index")
+
 	# Déclenchement progressif.
 	InventoryManager.check_item(&"t01", PhotoData.new())
 	InventoryManager.check_item(&"t02", PhotoData.new())
