@@ -10,12 +10,17 @@ extends CanvasLayer
 
 const FILM_SIZE := 21
 const FILM_EMPTY := Color(0.74, 0.31, 0.25)
-## Le réticule garde la forme de la dernière action un court instant.
+## Repli uniquement : tant que Gameplay n'émet pas `interact_target_changed`, le
+## réticule garde la forme de la dernière action un court instant.
 const CONTEXT_TIME := 1.4
+const HOVER_SIGNAL := &"interact_target_changed"
 
 var _film: Label
 var _reticle: Reticle
 var _context_tween: Tween
+## Vrai dès qu'un `interact_target_changed` a été reçu : la cible survolée devient
+## alors la seule source de la forme du réticule (décision Architecte, 17/10).
+var _hover_driven := false
 
 
 func _ready() -> void:
@@ -37,6 +42,10 @@ func _ready() -> void:
 	EventBus.player_interacted.connect(_on_player_interacted)
 	EventBus.notebook_opened.connect(_on_notebook_opened)
 	EventBus.notebook_closed.connect(_on_notebook_closed)
+	if EventBus.has_signal(HOVER_SIGNAL):
+		EventBus.connect(HOVER_SIGNAL, _on_interact_target_changed)
+	else:
+		push_warning("HUD : EventBus.interact_target_changed absent — réticule non contextuel.")
 
 
 func film_text() -> String:
@@ -63,16 +72,33 @@ func _on_game_loaded() -> void:
 	_refresh_film()
 
 
+## Cible sous le réticule (émis par l'Interactor) : `(&"", &"")` quand plus rien.
+func _on_interact_target_changed(_target_id: StringName, kind: StringName) -> void:
+	_hover_driven = true
+	if _context_tween != null and _context_tween.is_valid():
+		_context_tween.kill()
+	if _reticle != null:
+		_reticle.set_context(kind)
+
+
 func _on_player_interacted(_target_id: StringName, kind: StringName) -> void:
 	if _reticle == null:
 		return
 	_reticle.pulse()
+	if _hover_driven:
+		return
+	# Repli : pas encore de signal de survol, on affiche l'action qui vient d'avoir lieu.
 	_reticle.set_context(kind)
 	if _context_tween != null and _context_tween.is_valid():
 		_context_tween.kill()
 	_context_tween = create_tween()
 	_context_tween.tween_interval(CONTEXT_TIME)
 	_context_tween.tween_callback(func() -> void: _reticle.set_context(StringName()))
+
+
+## Vrai si la forme du réticule vient du signal de survol (tests).
+func is_hover_driven() -> bool:
+	return _hover_driven
 
 
 func _on_notebook_opened() -> void:

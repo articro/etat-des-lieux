@@ -11,8 +11,8 @@
 class_name NotebookUi
 extends CanvasLayer
 
-## Les lignes sont énumérées depuis les ressources d'objets (lecture seule) car
-## InventoryManager n'expose pas de liste globale — demande d'API dans TASKS.md.
+## Repli seulement : dossier des objets, utilisé tant que `InventoryManager.all_items()`
+## (contrat ARCHITECTURE §5, décision Architecte du 17/10) n'est pas implémentée.
 const ITEMS_DIR := "res://data/items/"
 const TAB_LIST := 0
 const TAB_PHOTOS := 1
@@ -37,6 +37,10 @@ var _photos: Array[PhotoData] = []
 var _thumbs: Array[Control] = []
 var _selected := -1
 var _fade_tween: Tween
+
+## L'API `all_items()` est au contrat mais pas encore implémentée : on le dit une
+## fois (print, pas warning — la console doit rester propre), puis on se tait.
+static var _source_notice_shown := false
 
 var _dim: ColorRect
 var _sheet: Panel
@@ -204,16 +208,37 @@ func _build_list() -> void:
 		push_warning("Carnet : aucune ligne d'inventaire (data/items/ vide ?).")
 
 
-## Énumère les objets dans l'ordre de la liste 1973, en ne gardant que ceux
-## qu'InventoryManager connaît (c'est lui la source de vérité du cochage).
+## Énumère les objets dans l'ordre de la liste 1973. Passe par
+## `InventoryManager.all_items()` dès qu'elle existe ; sinon lit `data/items/`.
+## Dans les deux cas, seul ce qu'InventoryManager connaît est affiché (source de
+## vérité du cochage) — une ressource orpheline est ignorée avec un warning.
 func _collect_items() -> Array[ItemData]:
+	var found: Array[ItemData] = []
+	if InventoryManager.has_method("all_items"):
+		var from_api: Variant = InventoryManager.call("all_items")
+		if from_api is Array:
+			_append_known(found, from_api)
+		else:
+			push_warning("Carnet : all_items() n'a pas renvoyé d'Array — repli sur %s." % ITEMS_DIR)
+	elif not _source_notice_shown:
+		_source_notice_shown = true
+		print("Carnet : InventoryManager.all_items() absente — repli sur %s (API au contrat §5, en attente de Systèmes)." % ITEMS_DIR)
+	if found.is_empty():
+		_append_known(found, _load_item_resources())
+	found.sort_custom(func(a: ItemData, b: ItemData) -> bool: return a.list_index < b.list_index)
+	return found
+
+
+## Les ItemData du dossier de données (repli). `ResourceLoader` rend les instances
+## déjà en cache : ce sont exactement celles d'InventoryManager, pas des copies.
+func _load_item_resources() -> Array:
+	var out: Array = []
 	var dir := DirAccess.open(ITEMS_DIR)
 	if dir == null:
 		push_warning("Carnet : dossier %s inaccessible — liste vide." % ITEMS_DIR)
-		return []
+		return out
 	var files := dir.get_files()
 	files.sort()
-	var found: Array[ItemData] = []
 	for file: String in files:
 		if not (file.ends_with(".tres") or file.ends_with(".res")):
 			continue
@@ -222,15 +247,20 @@ func _collect_items() -> Array[ItemData]:
 			push_warning("Carnet : ressource invalide %s." % path)
 			continue
 		var resource := ResourceLoader.load(path)
-		if not (resource is ItemData):
+		if resource is ItemData:
+			out.append(resource)
+	return out
+
+
+func _append_known(target: Array[ItemData], source: Array) -> void:
+	for element: Variant in source:
+		if not (element is ItemData):
 			continue
-		var item := resource as ItemData
+		var item := element as ItemData
 		if InventoryManager.get_item(item.id) == null:
 			push_warning("Carnet : %s inconnu d'InventoryManager — ligne ignorée." % item.id)
 			continue
-		found.append(item)
-	found.sort_custom(func(a: ItemData, b: ItemData) -> bool: return a.list_index < b.list_index)
-	return found
+		target.append(item)
 
 
 func _make_room_header(room_id: StringName) -> Control:
@@ -534,6 +564,11 @@ func current_tab() -> int:
 ## Changement d'onglet depuis le code (tests, futur pad).
 func select_tab(tab: int) -> void:
 	_set_tab(tab)
+
+
+## Nombre d'objets listés (doit valoir `InventoryManager.progress().y`).
+func item_count() -> int:
+	return _items.size()
 
 
 ## Nombre de lignes affichées (objets + en-têtes de pièce + lignes ajoutées).
