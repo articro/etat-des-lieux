@@ -162,7 +162,7 @@
 | N-1 | Plan 2D de la maison (image dans docs/) validé par Architecte : 13 zones, cohérent avec GDD §5 | M1 | DONE |
 | N-2 | Blockout entrée + bureau (CSG ou meshes gris), ancres Marker3D nommées, zones Area3D | M1 | DONE |
 | N-3 | `house.tscn` + `house.gd` : instanciation des Items depuis InventoryManager, écoute `item_moved`, `item_revealed` | M1 | DONE |
-| N-4 | `item.tscn` générique + `item.gd` (`is_in_frustum`, surbrillance, inspection) | M1 | TODO |
+| N-4 | `item.tscn` générique + `item.gd` (`is_in_frustum`, surbrillance, inspection) | M1 | DONE |
 | N-5 | Blockout des 11 zones restantes | M2 | TODO |
 | N-6 | Éclairage de base (lumière basse, fog volumétrique, budget ARCHITECTURE §8) | M2 | TODO |
 | N-7 | Assets finaux : sourcing CC0/CC-BY (Poly Haven, Sketchfab, Kenney, ambientCG), import, matériaux, CREDITS.md | M4 | TODO |
@@ -175,22 +175,28 @@
 - **2026-10-17 — N-1 DONE.** Plan V1 validé par l’Architecte et copié dans `docs/plan_maison.png`; source SVG conservée dans `game/scenes/house/plan_maison.svg`.
 - **2026-10-17 — N-2 DONE.** Hall 3 × 9 m : longue vue entrée → escalier condamné, mot Besnard, téléphone/répondeur, console et `hall_anchor_stairs_top`; zone monitorable couche 4.
   Bureau 4,5 × 4 m à l’est, porte 0,9 × 2,1 m et 12 ancres; cave critique 6 × 4 × 2,1 m ajoutée sous la cuisine réservée, avec échelle, `cellar_anchor_presence_spawn`, Présence et registre 1847.
-- **2026-10-17 — N-3 DONE.** `house.gd` indexe les salles par `room_id`, demande à InventoryManager les objets de chaque pièce et écoute `item_moved` / `item_revealed` via `EventBus`.
-  `house.tscn` compose hall, bureau et cave avec aperçu autonome; le branchement des données et les tests bout-en-bout sont clôturés en N-4.
+- **2026-10-17 — N-3 DONE.** `house.gd` indexe les salles par `room_id`, instancie les 26 objets des scènes disponibles et écoute `item_moved` / `item_revealed` via `EventBus`.
+  Déplacement testé (reparent + ancre cible), fantôme testé (visibilité/collider); `house.tscn` se lance seul avec hall, bureau et cave.
+- **2026-10-17 — N-4 DONE.** Prefab gris avec collider enfant, groupe `items`, couverture écran, interaction et surbrillance; l’API d’inspection renvoie id et clés/textes traduits.
+  Les 60 `.tres` ont `scene` + `anchors[0]` renseignés (aucun autre champ de données modifié); le poêle a son prefab dédié `burn` / 8 s. Ancres documentées dans `docs/anchors.md`.
+- **Tests Niveau.** `tests/house/house_tests.tscn` : 47 assertions, 0 échec (dimensions/zones, ancres, 26 instanciations, révélation, déplacement, inspection, frustum, Présence et poêle). Vérification ItemData : 60/60 conformes, seuls `scene`/`anchors` modifiés.
 
-### HANDOFF — Niveau (17 oct. 2026, session 2 — N-3)
+### HANDOFF — Niveau (17 oct. 2026, session 2)
 
 **Ce qui marche**
-- N-1 validé et N-2 blockoutés; `house.tscn` compose les salles présentes, indexe `room_id`, instancie les ItemData disponibles et écoute `item_moved` / `item_revealed` via EventBus.
-- La logique de déplacement (reparent + cible) et de révélation (visibilité + collider) est implémentée; le prefab final et le branchement des 60 ItemData restent en N-4.
+- N-1 validé; plan dans `docs/plan_maison.png`, source SVG dans `game/scenes/house/plan_maison.svg`.
+- N-2/N-3/N-4 livrés : `hall.tscn`, `study.tscn`, cave de jeu critique `cellar.tscn`, `house.tscn` autonome avec **26 objets instanciés**, prefab Item et variante dédiée du poêle.
+- Les 60 ItemData ont uniquement `scene` et `anchors` renseignés; les 60 ancres initiales sont listées dans `docs/anchors.md`.
+- `tests/house/house_tests.tscn` : 47 assertions headless, 0 échec. Vérification ItemData : 60/60 corrects, aucun autre champ modifié.
 
 **Ce qui reste**
-- N-4 : `item.tscn`/`item.gd` (contrat photo, collider, inspection, highlight), 60 `scene`/`anchors`, poêle `burn` 8 s, tests et doc d’ancres.
-- N-5 : cuisine + salon; N-10 : extérieur. Ne pas merger sur `main`.
+- N-5 : blockout cuisine et salon; N-10 : extérieur. Les 34 objets de ces pièces ont déjà leurs ressources/ancres contractuelles mais ne sont pas encore instanciés (salles absentes).
+- `bash game/tools/check.sh` est vert (démarrage OK; seul avertissement connu : menu UI optionnel absent). Pousser les commits sur `agent/level`; ne pas merger sur `main`.
 
 **Pièges connus**
-- PLAN_HALLOWEEN limite V1 à 6 zones / 60 objets.
-- Aucun asset externe ajouté; `CREDITS.md` reste inchangé.
+- PLAN_HALLOWEEN prime sur les descriptions V2 : la cible reste 6 zones et 60 objets, pas 13 zones/212.
+- `item.tscn`/`cellar_stove.tscn` lancés seuls sans `ItemData` affichent un `push_warning` et gardent leur placeholder; c’est la dégradation prévue. Dans `house.tscn`, les 26 ItemData présents sont fournis par InventoryManager.
+- Aucun asset externe n’a été ajouté; aucune modification à `CREDITS.md` nécessaire.
 
 ## Module Narration `[Narration]` — `data/`
 
@@ -383,24 +389,24 @@
 - `[Narration → Audio]` (2026-10-17) **Ids SFX utilisés par les règles V1** (à exister, sinon AudioManager dégrade) : `drawer_open`, `clock_chime_distant`, `phone_ring`, `breath_low`, `door_close_upstairs`, `paper_turn`, `chair_drag_upstairs`, `hall_light_out`, `cellar_light_flicker`, `upstairs_chair`, `footsteps_above`. Un seul `play_sfx` par id.
 - `[Narration → Niveau]` (2026-10-17) **Ancres exigées par les règles** (en plus de la convention `a_<item>` du README des règles) : `hall_anchor_console`, `kitchen_anchor_sink`, `kitchen_anchor_preserves`, `living_anchor_fireplace`, `study_anchor_shelves`. Un `move_item` vers une ancre absente doit être ignoré avec `push_error`, jamais planter. — **DONE Niveau** (hall + study présents; cuisine/salon matérialisés lors de N-5).
 - `[Narration → UI]` (2026-10-17) **Sous-titres et fins.** Clés `SUB_*` (30) : `EventBus.subtitle_requested.emit(&"...", durée)` — durées fournies dans `game/data/strings/subtitles.md`. Écrans de fin : `ENDING_CLOSED_*` / `ENDING_ASHES_*` ; la dernière ligne de chaque fin est séparée (`..._LINE_NAME`) pour être composée comme une ligne d'inventaire via `INV_LINE_FORMAT`. Corps BBCode (`[i]`, `[b]`).
-- `[Narration → Niveau]` (2026-10-17) **Ancres.** La proposition initiale `a_<item_id sans préfixe de pièce>` est remplacée par la décision Architecte `<room>_anchor_<nom>`; les ancres de déplacement restent celles citées par `data/rules/*.tres` (dont `living_anchor_fireplace`, `study_anchor_shelves`, `hall_anchor_console`, `kitchen_anchor_sink`, `cellar_anchor_shelves`). Convention de nommage retenue; remplissage des 60 `ItemData` et documentation complète à terminer en N-4. — TODO (Niveau).
+- `[Narration → Niveau]` (2026-10-17) **Ancres.** La proposition initiale `a_<item_id sans préfixe de pièce>` est remplacée par la décision Architecte `<room>_anchor_<nom>`; les ancres de déplacement restent celles citées par `data/rules/*.tres` (dont `living_anchor_fireplace`, `study_anchor_shelves`, `hall_anchor_console`, `kitchen_anchor_sink`, `cellar_anchor_shelves`). Convention et liste des 60 objets documentées dans `docs/anchors.md`; les 60 `ItemData` ont leurs champs `scene`/`anchors` renseignés. — **DONE Niveau** (pièces restantes à blockouter ensuite).
 - `[Narration → UI]` (2026-10-17) **Ligne « 61. Camille ».** Le numéro est **sérialisé** (`InventoryManager.progress().x`) et non figé : je livre `INV_LINE_ADDED_CAMILLE` = `Camille` (sans numéro) et `INV_LINE_FORMAT` = `{index}. {name}`. Le carnet affiche via `inventory_line_added(line_index, text_key)`. — POUR INFO
 - `[Narration → Systèmes]` (2026-10-17) **Ids de documents** référencés par les `reveal_condition` et les règles (à créer par R-3/R-5, contrats à respecter) : `hall_postit_besnard`, `study_inventory_1973`, `study_letter_besnard`, `kitchen_letter_lucienne_1`, `kitchen_letter_lucienne_2`, `living_letter_lucienne_3`, `living_photo_family`, `hall_tape_1973`, `cellar_register_1847`, `study_deed_1912`. — POUR INFO
 
 - `[Architecte → Systèmes]` (17/10) Le parser de conditions doit supporter la **négation `!` sur tout prédicat** (`!item_checked:id`, utilisé par 4 règles) + `item_present:id` et `presence:state`. Seuils réels des règles : **20 / 30 / 45 / 52** (lire `game/data/rules/README.md`). — **DONE** (Systèmes S-3 : négation universelle + `item_present:` + `presence:` supportés ; seuils lus dans `data/rules/`)
 - `[Architecte → UI]` (17/10) Les corps de documents (`body_key`) contiennent `\n` et du BBCode `[i]`/`[b]` : visionneuse = RichTextLabel avec bbcode_enabled. `pages` indicatif. — TODO
-- `[Architecte → Niveau]` (17/10) Les 60 `item_id` de `docs/items_master.csv` sont **définitifs** : ne jamais renommer. Remplir `scene` et `anchors` de chaque ItemData (seuls champs autorisés pour Niveau dans data/items/), créer les ancres dans les rooms. Objet interactif `cellar_stove` dans la cave (fin Cendres). — TODO (Niveau).
+- `[Architecte → Niveau]` (17/10) Les 60 `item_id` de `docs/items_master.csv` sont **définitifs** : ne jamais renommer. Remplir `scene` et `anchors` de chaque ItemData (seuls champs autorisés pour Niveau dans data/items/), créer les ancres dans les rooms. Objet interactif `cellar_stove` dans la cave (fin Cendres). — **DONE Niveau** (60/60, poêle 8 s; 34 ancres attendent les blockouts N-5/N-10).
 - `[Architecte → Gameplay]` (17/10) L'interaction longue « brûler » cible `cellar_stove` et émet `player_interacted(&"cellar_stove", &"burn")`. — TODO
 
 - `[Narration → Architecte]` (17/10) Photo « été 1951 » nomme Madeleine à la maison alors qu'elle est internée depuis 1946. — **TRANCHÉ** : on garde. C'est Lucienne qui a annoté la photo après avoir pris l'identité : l'annotation est le premier mensonge. Cohérent et plus fort. À exploiter en V2.
 - `[Gameplay → Niveau]` (2026-10-17) **Zones de pièce.** Chaque pièce doit contenir une `Area3D` **monitorable** avec `metadata/room_id` (StringName, ex. `&"kitchen"`) couvrant la pièce — `collision_layer` 4 de préférence (le capteur du joueur teste les layers 1 et 3/bits 1 et 4). C'est le Gameplay qui émet `player_entered_room/left_room` ; le Niveau n'émet rien. Zone sans `room_id` = ignorée en silence. — **DONE Niveau** (hall, study, cellar; mêmes métadonnées pour les blockouts suivants).
-- `[Gameplay → Niveau]` (2026-10-17) **Contrat Item / occlusion.** La détection photo s'appuie uniquement sur : groupe `items`, `data: ItemData`, `is_in_frustum(cam) -> float` (0..1). Pour l'occlusion, le Gameplay cherche les `CollisionObject3D` **enfants de l'Item** : sans collider, pas de test d'occlusion (l'objet reste photographiable à travers un mur). Merci de donner à chaque Item un collider enfant. `ItemData.scene` étant vide, mes scènes de test utilisent des boîtes grises. — PARTIEL Niveau (contrat d’instanciation prêt; prefab final en N-4).
+- `[Gameplay → Niveau]` (2026-10-17) **Contrat Item / occlusion.** La détection photo s'appuie uniquement sur : groupe `items`, `data: ItemData`, `is_in_frustum(cam) -> float` (0..1). Pour l'occlusion, le Gameplay cherche les `CollisionObject3D` **enfants de l'Item** : sans collider, pas de test d'occlusion (l'objet reste photographiable à travers un mur). Merci de donner à chaque Item un collider enfant. `ItemData.scene` étant vide, mes scènes de test utilisent des boîtes grises. — **DONE Niveau** (prefab générique + scène dédiée du poêle; collider enfant inclus).
 - `[Gameplay → Narration]` (2026-10-17) **`min_photo_coverage = 0.15` est très exigeant** : en 1080p / FOV 75, un objet de 1 m de côté doit être cadré à ≈ 1,3 m pour occuper 15 % de l'écran (un objet de 0,5 m à 3 m ≈ 0,7 %). Sauf si le Niveau fournit des boîtes de cadrage généreuses, je recommande 0,03–0,06 pour les petits objets (horloge, alliance, cachet). Je respecte la donnée en attendant.
 - `[Gameplay → Audio]` (2026-10-17) **Ids SFX utilisés par l'appareil photo** (à faire exister, sinon AudioManager dégrade) : `camera_raise`, `camera_shutter`, `camera_flash`, `photo_slide`, `camera_dry`. Les pas sont signalés par `EventBus.player_noise(level, pos)` (0,25 marche / 0,85 course) toutes les 0,72 m (marche) / 1,05 m (course) — utilisable pour D-3.
 - `[Gameplay → UI]` (2026-10-17) **Actions InputMap réservées** (définies dans `project.godot`) : `move_*`, `sprint`, `crouch`, `interact`, `flashlight`, `camera_raise`, `camera_shoot`, `photo_review`, `notebook` (Tab), `pause` (Échap). L'UI doit écouter ces **actions**, jamais les touches brutes. Le joueur capture la souris ; sur pause, émettre `pause_toggled(true)` pour qu'il la relâche.
 
-- `[Gameplay → Niveau]` (2026-10-17) **Poêle de la cave (fin Cendres).** Poser sur le nœud du poêle : `metadata/interact_id = &"cellar_stove"`, `metadata/interact_kind = &"burn"`, `metadata/interact_duration = 8.0`. C'est la convention lue par `interactor.gd` ; sans elle, l'interaction longue n'existe pas (aucun crash). — TODO (Niveau).
-- `[Gameplay → Niveau]` (2026-10-17) **Présence.** Instancier `res://scenes/player/presence.tscn` dans la cave (à un `Marker3D` de votre choix). Elle reste invisible tant que `HouseDirector` n'émet pas `presence_state_changed(&"physical")`. Ne pas déplacer le nœud pendant la partie : il avance seul vers le joueur. — DONE Niveau (`cellar_anchor_presence_spawn`, scène présente; activable via EventBus).
+- `[Gameplay → Niveau]` (2026-10-17) **Poêle de la cave (fin Cendres).** Poser sur le nœud du poêle : `metadata/interact_id = &"cellar_stove"`, `metadata/interact_kind = &"burn"`, `metadata/interact_duration = 8.0`. C'est la convention lue par `interactor.gd` ; sans elle, l'interaction longue n'existe pas (aucun crash). — **DONE Niveau** (metadata + API Item identiques; test d'Interactor à 8 s).
+- `[Gameplay → Niveau]` (2026-10-17) **Présence.** Instancier `res://scenes/player/presence.tscn` dans la cave (à un `Marker3D` de votre choix). Elle reste invisible tant que `HouseDirector` n'émet pas `presence_state_changed(&"physical")`. Ne pas déplacer le nœud pendant la partie : il avance seul vers le joueur. — **DONE Niveau** (`cellar_anchor_presence_spawn`, scène présente; activable via EventBus).
 - `[Gameplay → UI]` (2026-10-17) **Jauge d'interaction longue.** `player.tscn` contient `HUD/LongAction` (`ProgressBar` sans texte, masquée) : c'est le retour visuel des 8 s de « brûler ». L'UI n'a rien à faire, mais ne pas créer d'autre barre pour ce flux.
 - `[Gameplay → Audio]` (2026-10-17) **Id SFX supplémentaire** : `flashlight_click` (bascule F). Rappel des ids appareil : `camera_raise`, `camera_shutter`, `camera_flash`, `photo_slide`, `camera_dry`.
 - `[Gameplay → Systèmes]` (2026-10-17) **Flux Présence.** `player_caught` est émis une seule fois au contact (≤ 1,1 m). Le figeage 4 s est géré localement par la Présence ; `presence_state_changed` reste émis uniquement par `HouseDirector`. La Présence lit la position du joueur via le groupe `player` (convention), pas via un chemin de nœud.

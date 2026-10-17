@@ -1,6 +1,8 @@
-[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="ItemData" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/item_data.gd" id="1_itemdata"]
+
+[ext_resource type="PackedScene" path="res://scenes/items/item.tscn" id="2_item_scene"]
 
 [resource]
 script = ExtResource("1_itemdata")
@@ -13,4 +15,6 @@ is_phantom = false
 phantom_kind = "none"
 reveal_condition = ""
 movable = true
+scene = ExtResource("2_item_scene")
+anchors = Array[StringName]([&"hall_anchor_barometer"])
 min_photo_coverage = 0.04

@@ -1,0 +1,45 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scenes/items/cellar_stove.gd" id="1_stove"]
+
+[sub_resource type="BoxMesh" id="StoveMesh"]
+size = Vector3(0.45, 0.45, 0.45)
+
+[sub_resource type="StandardMaterial3D" id="StoveMaterial"]
+albedo_color = Color(0.30, 0.30, 0.29, 1)
+roughness = 0.95
+
+[sub_resource type="BoxShape3D" id="StoveShape"]
+size = Vector3(0.45, 0.45, 0.45)
+
+[sub_resource type="BoxMesh" id="HighlightMesh"]
+size = Vector3(0.50, 0.50, 0.50)
+
+[sub_resource type="StandardMaterial3D" id="HighlightMaterial"]
+albedo_color = Color(0.76, 0.70, 0.53, 0.22)
+roughness = 1.0
+transparency = 1
+shading_mode = 1
+cull_mode = 1
+
+[node name="CellarStove" type="Node3D"]
+script = ExtResource("1_stove")
+metadata/interact_id = &"cellar_stove"
+metadata/interact_kind = &"burn"
+metadata/interact_duration = 8.0
+
+[node name="Visual" type="MeshInstance3D" parent="."]
+mesh = SubResource("StoveMesh")
+surface_material_override/0 = SubResource("StoveMaterial")
+
+[node name="Collision" type="StaticBody3D" parent="."]
+collision_layer = 1
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape3D" parent="Collision"]
+shape = SubResource("StoveShape")
+
+[node name="Highlight" type="MeshInstance3D" parent="."]
+mesh = SubResource("HighlightMesh")
+material_override = SubResource("HighlightMaterial")
+visible = false

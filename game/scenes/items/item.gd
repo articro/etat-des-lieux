@@ -70,6 +70,20 @@ func get_interact_duration() -> float:
 	return 0.0
 
 
+## Contenu d'inspection destiné à l'UI, sans dépendance directe sur son module.
+func get_inspection_data() -> Dictionary:
+	if data == null:
+		return {}
+	return {
+		&"id": data.id,
+		&"label_key": data.label_key,
+		&"lore_key": data.lore_key,
+		&"label": tr(data.label_key),
+		&"lore": tr(data.lore_key),
+		&"movable": data.movable,
+	}
+
+
 ## Surbrillance discrète lors du survol par le rayon d'interaction.
 func set_highlight(enabled: bool) -> void:
 	_highlighted = enabled
