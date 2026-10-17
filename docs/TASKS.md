@@ -29,6 +29,7 @@
 | A0-3 | Dépôt GitHub `articro/etat-des-lieux`, push initial, 6 branches agents | DONE |
 | A0-7 | Intégration Narration session 1 (60 objets, 10 docs, 18 règles) sur main, traduction enregistrée | DONE |
 | A0-8 | Intégration Narration session 2 (relecture, itch_textes.md) | DONE |
+| A0-10 | Intégration Systèmes session 1 (S-2→S-8, 79 assertions) ; playtest utilisateur J1 : feeling validé | DONE |
 | A0-9 | Intégration Gameplay session 1 (G-1→G-10, 73 tests) + décisions (coverage 0.04, settings_changed, post-process unique) | DONE |
 | A0-4 | Version Godot = **4.7.2**, `config/features` ajusté, check headless OK | DONE |
 | A0-5 | Outils : `tools/check.sh`, `tools/install_godot_sandbox.sh`, `tools/run_tests.sh` | DONE |
@@ -108,13 +109,46 @@
 | ID | Tâche | Jalon | Statut |
 |---|---|---|---|
 | S-1 | GameState complet + to/from_save_dict | M1 | TODO |
-| S-2 | InventoryManager : chargement de `data/items/*.tres`, check/reveal/film, progression, signaux | M1 | TODO |
-| S-3 | HouseDirector : moteur de règles (HouseRule), parser du mini-langage de condition, attention (montée/descente), actions (`move_item`, `event`, `attention`, `presence`, `sfx`) | M1 | TODO |
+| S-2 | InventoryManager : chargement de `data/items/*.tres`, check/reveal/film, progression, signaux | M1 | DONE |
+| S-3 | HouseDirector : moteur de règles (HouseRule), parser du mini-langage de condition, attention (montée/descente), actions (`move_item`, `event`, `attention`, `presence`, `sfx`) | M1 | DONE |
 | S-4 | DocumentLibrary | M1 | TODO |
-| S-5 | SaveManager : JSON, auto-save à `player_entered_room`, versionnage | M2 | TODO |
-| S-6 | main.tscn : séquence de démarrage (menu → chargement maison → spawn joueur → UI), gestion des fins (`ending_reached` → scène de fin) | M2 | TODO |
-| S-7 | Séquenceur d'actes : seuils 60/140 → `act_changed`, événements de fin d'acte | M2 | TODO |
-| S-8 | Logique des 4 fins (conditions, déclenchement) | M3 | TODO |
+| S-5 | SaveManager : JSON, auto-save à `player_entered_room`, versionnage | M2 | DONE |
+| S-6 | main.tscn : séquence de démarrage (menu → chargement maison → spawn joueur → UI), gestion des fins (`ending_reached` → scène de fin) | M2 | DONE |
+| S-7 | Séquenceur d'actes : seuils 60/140 → `act_changed`, événements de fin d'acte | M2 | DONE |
+| S-8 | Logique des 4 fins (conditions, déclenchement) | M3 | DONE |
+
+### Notes Systèmes
+
+- **Tests** (2026-10-17) — `game/scenes/main/test_systems.tscn` (scène de test autonome, 89 assertions, exit code CI) + suites gdUnit4 dans `game/tests/autoloads/` (parser, règles, inventaire) prêtes pour Q-1 : elles attendent l'installation de gdUnit4 (`tools/run_tests.sh` les ignorera jusque-là). Les cas de syntaxe invalide (push_error spéculés) sont dans `test_systems.tscn` pour ne pas faire échouer gdUnit4 sur les erreurs volontaires.
+
+- **S-5** (2026-10-17) — SaveManager vérifié : JSON versionné (v1), auto-sauvegarde ajoutée sur `player_entered_room`, `save_requested` OK, chargement en dégradé si version différente. Aller-retour save/load couvert par `test_systems.tscn`. Limite connue : les déplacements d'objets (`item_moved`) déjà consommés par Niveau ne sont pas rejoués au chargement (les règles `room_left` passées ne se refirent pas) — à noter pour la V2 si besoin.
+- **S-6** (2026-10-17) — `main.tscn` : menu (UI `main_menu.tscn` si présent, sinon placeholder `tr()` avec `UI_*`) → jeu (`house.tscn` + `player.tscn` + `hud.tscn`, chargés par chemin avec `push_warning` si absents) → fin (`ending_reached` → `ending_screen.tscn` ou placeholder `ENDING_*_TITLE`). Nouvelle partie réinitialise les autoloads (`from_save_dict({})`) ; Continuer charge la sauvegarde APRÈS instanciation maison/joueur (rattrapage `game_loaded`).
+- **S-7** (2026-10-17) — Séquenceur V1 dans HouseDirector : seuils 20/45/60 → `act_changed` (phases calme/inquiétude/cave = act 1/2/3 sur le signal existant, pas de changement de contrat) + `house_event_triggered` en secours (`act1_drawer_opens`, `phone_rings`, `cellar_door_opens`) **dédoublonné avec les règles** (les règles r01/r03 portent ces événements ; le séquenceur ne les réémet pas s'ils le sont déjà). Rattrapage après `game_loaded`.
+- **S-8** (2026-10-17) — 2 fins V1 : `closed` au 60e objet coché (+ ligne « 61. Camille » via `inventory_line_added(61, &"INV_LINE_ADDED_CAMILLE")`), `ashes` sur `player_interacted(&"cellar_stove", &"burn")`. Première fin gagne ; la ligne finale est supprimée après `ashes` (carnet brûlé).
+- **S-3** (2026-10-17) — HouseDirector : parser complet (tous prédicats §6 + négation `!` universelle, `item_present:`, `presence:`, `&&`/`||`/parenthèses ; invalide = `push_error` + `false`), moteur de règles (9 triggers, 5 actions, `once`/`cooldown`, validation douce au chargement), attention (+3/flash, +6×bruit, −1.5/s après 20 s d'immobilité, valeurs calables), révélation des fantômes sur `document_read`/`item_checked`/`inventory_progress`/`player_entered_room`. Les 18 règles de `data/rules/` se chargent et se déclenchent. DocumentLibrary applique `sets_flags`/`reveals_items` au `mark_found` (demande Narration). Vérifié par `scenes/main/test_systems.tscn` (62 assertions).
+- **S-2** (2026-10-17) — Chargement `data/items/` robuste (ids vides/dupliqués → erreur sans crash, tri par `list_index` dans `get_items_in_room`), garde-fous `check_item`/`reveal_item`/photo nulle. À toute la liste cochée : `inventory_line_added(total+1, &"INV_LINE_ADDED_CAMILLE")` (« 61. Camille », numéro sérialisé via `INV_LINE_FORMAT` côté UI).
+
+### HANDOFF — Systèmes (session 1, 2026-10-17)
+
+**Ce qui marche**
+- S-2 InventoryManager : chargement `data/items/` (60 objets OK), check/reveal/film/progress, ligne finale `inventory_line_added(total+1, &"INV_LINE_ADDED_CAMILLE")` quand toute la liste est cochée (supprimée si une fin est déjà survenue).
+- S-3 HouseDirector : parser mini-langage complet (§6 + négation `!` universelle, `item_present:`, `presence:`) — invalide = `push_error` + `false` ; moteur de règles (les 18 règles de `data/rules/` chargées et déclenchées : 9 triggers, 5 actions, `once`/`cooldown`) ; attention (flash +3, bruit +6×niveau, −1.5/s après 20 s d'immobilité) ; révélation des fantômes sur `document_read`/`item_checked`/`inventory_progress`/`player_entered_room`.
+- S-7 séquenceur : seuils 20/45/60 → `act_changed` (act 1/2/3 = phases calme/inquiétude/cave) ; événements narratifs portés par les règles r01/r03, avec secours séquenceur **dédoublonné** (`act1_drawer_opens`, `phone_rings`, `cellar_door_opens`).
+- S-8 fins : `closed` au 60e coche (+ ligne « 61. Camille »), `ashes` sur `player_interacted(&"cellar_stove", &"burn")` — première fin gagne.
+- S-6 `main.tscn` : menu → `house.tscn` + `player.tscn` + `hud.tscn` → fin ; chaque scène absente = `push_warning` + dégradation (menu/fin placeholder avec `tr()`).
+- S-5 SaveManager : auto-sauvegarde sur `player_entered_room`, JSON v1, aller-retour vérifié. DocumentLibrary applique `sets_flags`/`reveals_items` (demande Narration).
+- Tests : `res://scenes/main/test_systems.tscn` — 89 assertions, tout vert, exit code 0/1 (`godot --headless --path game res://scenes/main/test_systems.tscn`). Suites gdUnit4 prêtes dans `game/tests/autoloads/` (parser, règles, inventaire) pour Q-1.
+
+**Ce qui reste**
+- Intégration J4 : côté Niveau (`house.gd` qui consomme `item_moved`/`item_revealed`/`house_event_triggered` ; ancres `hall_anchor_console`, `kitchen_anchor_sink`, `kitchen_anchor_preserves`, `living_anchor_fireplace`, `study_anchor_shelves`), Gameplay (pipeline photo → `photo_developed`, `player_interacted(cellar_stove, burn)`), UI (signaux du menu : `new_game_requested`, `continue_requested`, `options_requested`, `quit_requested` ; `ending_screen.tscn` + `set_ending_id`), Audio (ids sfx listés par Narration).
+- Réglages d'attention à caler au playtest J5 (constantes en tête de `house_director.gd`).
+- V2 : rejouer les déplacements d'objets au chargement (les règles `room_left` déjà passées ne se refirent pas) ; écran de fin complet côté UI.
+
+**Pièges**
+- Ne JAMAIS émettre `act1_drawer_opens`/`phone_rings`/`cellar_door_opens` ailleurs que par les règles ou le séquenceur (dédoublonnage en place, `_emit_event(id, only_if_new)`).
+- `check.sh` échoue sur toute ligne `ERROR:` : ne pas évaluer de condition invalide au démarrage d'une scène de test normalisée (les erreurs volontaires vivent dans `test_systems.tscn`).
+- Les clés strings de la ligne finale sont `INV_LINE_ADDED_CAMILLE` (prénom seul) + `INV_LINE_FORMAT` = `{index}. {name}` — le numéro 61 est sérialisé (`total + 1`), jamais figé.
+- `register_rule` rejette silencieusement (warning) les règles à syntaxe de condition invalide : vérifier `data/rules/` si une règle ne part pas.
 
 ## Module Niveau `[Niveau]` — `scenes/house/`, `scenes/items/`, `assets/models|textures`
 
@@ -259,6 +293,10 @@
 - `[Narration → Systèmes]` (2026-10-17) **DocumentLibrary doit appliquer les données.** Sur `mark_found()` : appliquer `DocumentData.sets_flags` (`GameState.set_flag`) et `DocumentData.reveals_items` (`InventoryManager.reveal_item`). Le stub actuel ne le fait pas ; sinon 5 fantômes ne se révèlent que par `reveal_condition`.
 - `[Narration → Systèmes]` (2026-10-17) **Chargement des règles.** Personne ne charge `res://data/rules/*.tres` aujourd'hui : il faut un `_ready()` dans HouseDirector qui instancie et `register_rule()` chaque `.tres` (18 fichiers V1). Prévu en S-3 normalement — je le note pour ne pas l'oublier.
 - `[Narration → Systèmes]` (2026-10-17) **Négation `!item_checked:<id>` demandée.** ARCHITECTURE §6 ne documente que `!flag:<nom>`. Quatre règles de déplacement en dépendent (`r07` à `r10`, plus `r11`). Si vous refusez, dites-le et je convertirai en règles `flagged` déclenchées par un compteur `GameState.add_counter`.
+- `[Systèmes → UI]` (2026-10-17) **Protocole main ↔ menu/écrans.** `main.tscn` charge `res://scenes/ui/main_menu.tscn` (menu principal), `res://scenes/ui/hud.tscn` (HUD en jeu), `res://scenes/ui/ending_screen.tscn` (écrans de fin). Si la racine de `main_menu.tscn` expose les signaux `new_game_requested()`, `continue_requested()`, `options_requested()`, `quit_requested()`, main les connecte automatiquement ; sinon menu placeholder utilisé (dégradation). `ending_screen.tscn` peut exposer `set_ending_id(id: StringName)` pour connaître la fin (`closed`/`ashes`). — EN COURS
+
+**Réponses Systèmes (2026-10-17, S-3)** aux demandes Narration : révélation des fantômes par HouseDirector **OK** ; chargement `data/rules/` + `register_rule()` **OK** ; DocumentLibrary applique `sets_flags`/`reveals_items` **OK** ; négation `!item_checked:` **OK** (et `!` sur tout prédicat). Le séquenceur (S-7) respecte les seuils de règles 20/30/45/52 (événements narratifs portés par les règles) et pilote `act_changed` sur 20/45 (phases V1) + fin à 60.
+
 - `[Narration → Audio]` (2026-10-17) **Ids SFX utilisés par les règles V1** (à exister, sinon AudioManager dégrade) : `drawer_open`, `clock_chime_distant`, `phone_ring`, `breath_low`, `door_close_upstairs`, `paper_turn`, `chair_drag_upstairs`, `hall_light_out`, `cellar_light_flicker`, `upstairs_chair`, `footsteps_above`. Un seul `play_sfx` par id.
 - `[Narration → Niveau]` (2026-10-17) **Ancres exigées par les règles** (en plus de la convention `a_<item>` du README des règles) : `hall_anchor_console`, `kitchen_anchor_sink`, `kitchen_anchor_preserves`, `living_anchor_fireplace`, `study_anchor_shelves`. Un `move_item` vers une ancre absente doit être ignoré avec `push_error`, jamais planter.
 - `[Narration → UI]` (2026-10-17) **Sous-titres et fins.** Clés `SUB_*` (30) : `EventBus.subtitle_requested.emit(&"...", durée)` — durées fournies dans `game/data/strings/subtitles.md`. Écrans de fin : `ENDING_CLOSED_*` / `ENDING_ASHES_*` ; la dernière ligne de chaque fin est séparée (`..._LINE_NAME`) pour être composée comme une ligne d'inventaire via `INV_LINE_FORMAT`. Corps BBCode (`[i]`, `[b]`).
@@ -266,7 +304,7 @@
 - `[Narration → UI]` (2026-10-17) **Ligne « 61. Camille ».** Le numéro est **sérialisé** (`InventoryManager.progress().x`) et non figé : je livre `INV_LINE_ADDED_CAMILLE` = `Camille` (sans numéro) et `INV_LINE_FORMAT` = `{index}. {name}`. Le carnet affiche via `inventory_line_added(line_index, text_key)`. — POUR INFO
 - `[Narration → Systèmes]` (2026-10-17) **Ids de documents** référencés par les `reveal_condition` et les règles (à créer par R-3/R-5, contrats à respecter) : `hall_postit_besnard`, `study_inventory_1973`, `study_letter_besnard`, `kitchen_letter_lucienne_1`, `kitchen_letter_lucienne_2`, `living_letter_lucienne_3`, `living_photo_family`, `hall_tape_1973`, `cellar_register_1847`, `study_deed_1912`. — POUR INFO
 
-- `[Architecte → Systèmes]` (17/10) Le parser de conditions doit supporter la **négation `!` sur tout prédicat** (`!item_checked:id`, utilisé par 4 règles) + `item_present:id` et `presence:state`. Seuils réels des règles : **20 / 30 / 45 / 52** (lire `game/data/rules/README.md`). — TODO
+- `[Architecte → Systèmes]` (17/10) Le parser de conditions doit supporter la **négation `!` sur tout prédicat** (`!item_checked:id`, utilisé par 4 règles) + `item_present:id` et `presence:state`. Seuils réels des règles : **20 / 30 / 45 / 52** (lire `game/data/rules/README.md`). — **DONE** (Systèmes S-3 : négation universelle + `item_present:` + `presence:` supportés ; seuils lus dans `data/rules/`)
 - `[Architecte → UI]` (17/10) Les corps de documents (`body_key`) contiennent `\n` et du BBCode `[i]`/`[b]` : visionneuse = RichTextLabel avec bbcode_enabled. `pages` indicatif. — TODO
 - `[Architecte → Niveau]` (17/10) Les 60 `item_id` de `docs/items_master.csv` sont **définitifs** : ne jamais renommer. Remplir `scene` et `anchors` de chaque ItemData (seuls champs autorisés pour Niveau dans data/items/), créer les ancres dans les rooms. Objet interactif `cellar_stove` dans la cave (fin Cendres). — TODO
 - `[Architecte → Gameplay]` (17/10) L'interaction longue « brûler » cible `cellar_stove` et émet `player_interacted(&"cellar_stove", &"burn")`. — TODO
@@ -290,6 +328,9 @@
 - `[Architecte → Audio]` (17/10) Ids SFX à faire exister en priorité : `camera_raise`, `camera_shutter`, `camera_flash`, `photo_slide`, `flashlight_click` (+ ceux listés par Gameplay ci-dessus). — TODO
 
 - `[Gameplay → UI]` (2026-10-17, session 2) **Format des réglages consommés par le joueur** (`EventBus.settings_changed`) : `mouse_sensitivity` = **normalisé 0..1** (défaut recommandé 0,15 ; toute valeur < 0,02 est interprétée comme des rad/px bruts), `fov` = degrés bornés 55..110 (défaut 75), `flashlight_strong` = bool (défaut false). Les autres clés (`volume_*`, `subtitles`, `fullscreen`) sont ignorées en silence par le joueur — aucune erreur si l'UI en ajoute. Rappel : l'UI doit émettre chaque clé une fois au démarrage (ARCHITECTURE §7), **après l'instanciation du joueur** (un `call_deferred` suffit) — sinon le joueur garde ses valeurs par défaut ; en complément, réémettre sur `game_loaded` couvre le chargement d'une partie.
+- `[Architecte → Gameplay]` (17/10, playtest utilisateur) **Bug Échap** : la touche Échap n'affiche pas la souris. Attendu : Échap bascule `Input.mouse_mode` CAPTURED ↔ VISIBLE **et** émet `pause_toggled`. Le reste du feeling (flash, développement, déplacements, grain) validé par l'utilisateur en F6 sur `test_room.tscn` : « tout marche ». — TODO
+- `[Architecte → Niveau]` (17/10) **Noms d'ancres déjà référencés par les règles de Narration** (doivent exister dans les rooms, sinon `item_moved` est ignoré) : `hall_anchor_console`, `kitchen_anchor_preserves`, `kitchen_anchor_sink`, `living_anchor_fireplace`, `study_anchor_shelves`. Convention : `<room>_anchor_<nom>`. Les autres ancres (position initiale des 60 objets) sont à ton choix, à documenter dans `docs/anchors.md` et à écrire dans `ItemData.anchors[0]`. — TODO
+- `[Architecte → UI]` (17/10) Systèmes a documenté le protocole menu ↔ main dans `docs/TASKS.md` (section Systèmes) : signaux `new_game_requested`, `continue_requested`, `options_requested`, `quit_requested` sur `scenes/ui/main_menu.tscn`, `scenes/ui/hud.tscn`, `scenes/ui/ending_screen.tscn` avec `set_ending_id(id)`. Respecter ces noms. — TODO
 
 ## Journal des décisions
 
