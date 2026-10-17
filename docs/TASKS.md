@@ -57,11 +57,13 @@
 | S-4 | DocumentLibrary | M1 | TODO |
 | S-5 | SaveManager : JSON, auto-save à `player_entered_room`, versionnage | M2 | TODO |
 | S-6 | main.tscn : séquence de démarrage (menu → chargement maison → spawn joueur → UI), gestion des fins (`ending_reached` → scène de fin) | M2 | TODO |
-| S-7 | Séquenceur d'actes : seuils 60/140 → `act_changed`, événements de fin d'acte | M2 | TODO |
-| S-8 | Logique des 4 fins (conditions, déclenchement) | M3 | TODO |
+| S-7 | Séquenceur d'actes : seuils 60/140 → `act_changed`, événements de fin d'acte | M2 | DONE |
+| S-8 | Logique des 4 fins (conditions, déclenchement) | M3 | DONE |
 
 ### Notes Systèmes
 
+- **S-7** (2026-10-17) — Séquenceur V1 dans HouseDirector : seuils 20/45/60 → `act_changed` (phases calme/inquiétude/cave = act 1/2/3 sur le signal existant, pas de changement de contrat) + `house_event_triggered` en secours (`act1_drawer_opens`, `phone_rings`, `cellar_door_opens`) **dédoublonné avec les règles** (les règles r01/r03 portent ces événements ; le séquenceur ne les réémet pas s'ils le sont déjà). Rattrapage après `game_loaded`.
+- **S-8** (2026-10-17) — 2 fins V1 : `closed` au 60e objet coché (+ ligne « 61. Camille » via `inventory_line_added(61, &"INV_LINE_ADDED_CAMILLE")`), `ashes` sur `player_interacted(&"cellar_stove", &"burn")`. Première fin gagne ; la ligne finale est supprimée après `ashes` (carnet brûlé).
 - **S-3** (2026-10-17) — HouseDirector : parser complet (tous prédicats §6 + négation `!` universelle, `item_present:`, `presence:`, `&&`/`||`/parenthèses ; invalide = `push_error` + `false`), moteur de règles (9 triggers, 5 actions, `once`/`cooldown`, validation douce au chargement), attention (+3/flash, +6×bruit, −1.5/s après 20 s d'immobilité, valeurs calables), révélation des fantômes sur `document_read`/`item_checked`/`inventory_progress`/`player_entered_room`. Les 18 règles de `data/rules/` se chargent et se déclenchent. DocumentLibrary applique `sets_flags`/`reveals_items` au `mark_found` (demande Narration). Vérifié par `scenes/main/test_systems.tscn` (62 assertions).
 - **S-2** (2026-10-17) — Chargement `data/items/` robuste (ids vides/dupliqués → erreur sans crash, tri par `list_index` dans `get_items_in_room`), garde-fous `check_item`/`reveal_item`/photo nulle. À toute la liste cochée : `inventory_line_added(total+1, &"INV_LINE_ADDED_CAMILLE")` (« 61. Camille », numéro sérialisé via `INV_LINE_FORMAT` côté UI).
 

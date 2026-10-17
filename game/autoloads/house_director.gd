@@ -19,6 +19,16 @@ const KNOWN_TRIGGERS: Array[String] = [
 	"doc_read", "flash_count", "idle", "item_checked", "noise",
 ]
 const KNOWN_ACTIONS: Array[String] = ["move_item", "event", "attention", "presence", "sfx"]
+
+## Séquenceur V1 (PLAN_HALLOWEEN §1) : calme 0-20, inquiétude 20-45, cave 45-60.
+const THRESHOLD_ACT2 := 20
+const THRESHOLD_ACT3 := 45
+const THRESHOLD_ENDING_CLOSED := 60
+## Événements de secours du séquenceur : émis seulement si aucune règle ne les a déjà émis
+## (les règles V1 r01/r03 portent ces événements — voir data/rules/README.md).
+const EVENT_ACT2 := &"act1_drawer_opens"
+const EVENT_ACT3_PHONE := &"phone_rings"
+const EVENT_ACT3_CELLAR := &"cellar_door_opens"
 const ROOM_IDS: Array[StringName] = [
 	&"exterior", &"hall", &"kitchen", &"dining", &"living", &"study", &"stairs",
 	&"bedroom_m", &"bedroom_child", &"bathroom", &"laundry", &"attic", &"cellar",
@@ -36,6 +46,8 @@ var _presence_state: StringName = &"dormant"
 var _emitted_events: Dictionary = {}   # StringName -> true (déjà émis cette partie)
 var _idle_time: float = 0.0
 var _idle_poll: float = 0.0
+var _ending_reached: bool = false
+var _ending_id: StringName = &""
 
 # --- État du parser (non réentrant, usage interne) ---
 var _cond_src: String = ""
@@ -55,6 +67,7 @@ func _ready() -> void:
 	EventBus.flash_fired.connect(_on_flash_fired)
 	EventBus.player_noise.connect(_on_player_noise)
 	EventBus.player_interacted.connect(_on_player_interacted)
+	EventBus.game_loaded.connect(_on_game_loaded)
 
 
 func _process(delta: float) -> void:
@@ -132,6 +145,7 @@ func to_save_dict() -> Dictionary:
 		"presence": String(_presence_state),
 		"rules_fired": fired,
 		"events": events,
+		"ending": String(_ending_id),
 	}
 
 
@@ -145,6 +159,8 @@ func from_save_dict(d: Dictionary) -> void:
 	_emitted_events.clear()
 	for k: String in d.get("events", []):
 		_emitted_events[StringName(k)] = true
+	_ending_id = StringName(d.get("ending", ""))
+	_ending_reached = _ending_id != StringName()
 
 
 ## Remise à zéro complète pour la scène de test Systèmes (usage interne uniquement).
@@ -155,6 +171,8 @@ func _reset_for_tests() -> void:
 	_invalid_reveal.clear()
 	_presence_state = &"dormant"
 	_idle_time = 0.0
+	_ending_reached = false
+	_ending_id = &""
 	GameState.attention = 0.0
 
 
@@ -365,6 +383,45 @@ func _on_item_checked(item_id: StringName, _photo: PhotoData) -> void:
 func _on_inventory_progress(checked: int, _total: int) -> void:
 	_update_phantom_reveals()
 	_evaluate_trigger_rules("progress", str(checked))
+	_update_progression(checked)
+
+
+# --- Séquenceur de progression V1 (S-7) et fins (S-8) ---
+
+func _update_progression(checked: int) -> void:
+	var target := 1
+	if checked >= THRESHOLD_ACT3:
+		target = 3
+	elif checked >= THRESHOLD_ACT2:
+		target = 2
+	if target > GameState.current_act:
+		if target >= 2:
+			_emit_event(EVENT_ACT2, true)
+		if target >= 3:
+			_emit_event(EVENT_ACT3_PHONE, true)
+			_emit_event(EVENT_ACT3_CELLAR, true)
+		GameState.current_act = target
+		EventBus.act_changed.emit(target)
+	if checked >= THRESHOLD_ENDING_CLOSED:
+		_trigger_ending(&"closed")
+
+
+## Première fin atteinte gagne : `closed` au 60e objet coché, `ashes` sur le poêle.
+func _trigger_ending(ending_id: StringName) -> void:
+	if _ending_reached:
+		return
+	_ending_reached = true
+	_ending_id = ending_id
+	EventBus.ending_reached.emit(ending_id)
+
+
+func _on_game_loaded() -> void:
+	_idle_time = 0.0
+	_invalid_reveal.clear()
+	var checked := InventoryManager.progress().x
+	_update_progression(checked)
+	_update_phantom_reveals()
+	_evaluate_trigger_rules("progress", str(checked))
 
 
 func _on_flash_fired(_world_position: Vector3, _room_id: StringName) -> void:
@@ -380,8 +437,11 @@ func _on_player_noise(level: float, _world_position: Vector3) -> void:
 	_evaluate_trigger_rules("noise", str(clampf(level, 0.0, 1.0)))
 
 
-func _on_player_interacted(_target_id: StringName, _kind: StringName) -> void:
+func _on_player_interacted(target_id: StringName, kind: StringName) -> void:
 	_idle_time = 0.0
+	# Fin « Cendres » : brûler le carnet dans le poêle de la cave (S-8).
+	if target_id == &"cellar_stove" and kind == &"burn":
+		_trigger_ending(&"ashes")
 
 
 # --- Parser du mini-langage (ARCHITECTURE §6) ---

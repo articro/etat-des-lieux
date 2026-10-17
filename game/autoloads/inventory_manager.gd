@@ -17,6 +17,7 @@ var _final_line_added: bool = false
 func _ready() -> void:
 	_load_items()
 	EventBus.photo_developed.connect(_on_photo_developed)
+	EventBus.ending_reached.connect(_on_ending_reached)
 
 
 func get_item(item_id: StringName) -> ItemData:
@@ -128,6 +129,11 @@ func _maybe_add_final_line() -> void:
 		return
 	_final_line_added = true
 	EventBus.inventory_line_added.emit(_items.size() + 1, FINAL_LINE_KEY)
+
+
+## Après une fin (ex. « Cendres » : le carnet brûle), le carnet ne s'écrit plus.
+func _on_ending_reached(_ending_id: StringName) -> void:
+	_final_line_added = true
 
 
 func _load_items() -> void:

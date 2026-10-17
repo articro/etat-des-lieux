@@ -30,6 +30,8 @@ func _ready() -> void:
 
 	_test_parser()
 	_test_rules_and_reveals()
+	_test_sequencer_closed()
+	_test_sequencer_ashes()
 	_report()
 
 
@@ -225,6 +227,79 @@ func _test_rules_and_reveals() -> void:
 
 	# État de présence sauvegardé.
 	_expect(HouseDirector.to_save_dict().get("presence", "") == "offscreen", "to_save_dict presence")
+
+
+# --- Séquenceur V1 (S-7) + fin « Inventaire clos » (S-8) ---
+
+func _test_sequencer_closed() -> void:
+	_reset_scenario()
+	_register_items(60)
+
+	for i: int in range(1, 60):
+		InventoryManager.check_item(StringName("t%02d" % i), PhotoData.new())
+	_expect(_acts == [2, 3], "act_changed 2 puis 3 aux seuils 20/45 (avant le 60e)")
+	_expect(_endings.is_empty(), "pas de fin avant le 60e objet")
+	_expect(&"act1_drawer_opens" in _events, "secours séquenceur : event seuil 20")
+	_expect(&"phone_rings" in _events, "secours séquenceur : event seuil 45")
+	_expect(&"cellar_door_opens" in _events, "secours séquenceur : trappe seuil 45")
+
+	InventoryManager.check_item(&"t60", PhotoData.new())
+	_expect(_endings == [&"closed"], "fin closed au 60e objet coché")
+	_expect(_acts == [2, 3], "act_changed sans doublon")
+	_expect(_events.count(&"act1_drawer_opens") == 1, "event de seuil émis une seule fois")
+	_expect(_lines.size() == 1, "une ligne ajoutée à la fin")
+	if _lines.size() == 1:
+		_expect(_lines[0][0] == 61, "ligne index 61 (numéro sérialisé)")
+		_expect(_lines[0][1] == &"INV_LINE_ADDED_CAMILLE", "ligne clé INV_LINE_ADDED_CAMILLE")
+
+
+# --- Fin « Cendres » (S-8) + garde première fin + dédoublonnage règle/séquenceur ---
+
+func _test_sequencer_ashes() -> void:
+	_reset_scenario()
+	_register_items(60)
+
+	# Une règle porte déjà l'événement du seuil 20 : le séquenceur ne doit pas le réémettre.
+	var rule := HouseRule.new()
+	rule.id = &"test_rule_drawer"
+	rule.trigger = "progress"
+	rule.trigger_param = "20"
+	rule.actions = ["event:act1_drawer_opens"]
+	rule.once = true
+	HouseDirector.register_rule(rule)
+
+	for i: int in range(1, 46):
+		InventoryManager.check_item(StringName("t%02d" % i), PhotoData.new())
+	_expect(_acts == [2, 3], "actes 2 et 3 atteints")
+	_expect(_events.count(&"act1_drawer_opens") == 1, "event règle/séquenceur dédoublonné")
+
+	# Interactions qui ne déclenchent pas la fin.
+	EventBus.player_interacted.emit(&"cellar_stove", &"open")
+	EventBus.player_interacted.emit(&"other", &"burn")
+	_expect(_endings.is_empty(), "pas de fin sur interaction inattendue")
+
+	EventBus.player_interacted.emit(&"cellar_stove", &"burn")
+	_expect(_endings == [&"ashes"], "fin ashes sur player_interacted(cellar_stove, burn)")
+
+	for i: int in range(46, 61):
+		InventoryManager.check_item(StringName("t%02d" % i), PhotoData.new())
+	_expect(_endings == [&"ashes"], "closed supprimée après ashes (première fin gagne)")
+	_expect(_lines.is_empty(), "ligne « 61. Camille » supprimée après ashes")
+
+
+func _reset_scenario() -> void:
+	InventoryManager._reset_for_tests()
+	HouseDirector._reset_for_tests()
+	GameState.from_save_dict({})
+	DocumentLibrary.from_save_dict({})
+	_events.clear()
+	_moves.clear()
+	_acts.clear()
+	_endings.clear()
+	_lines.clear()
+	_revealed.clear()
+	_attention_log.clear()
+	_presence_log.clear()
 
 
 # --- Divers ---
