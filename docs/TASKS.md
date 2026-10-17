@@ -169,6 +169,20 @@
 - **2026-10-17 — N-1 REVIEW.** Plan schématique des 6 zones livré dans `game/scenes/house/plan_maison.png` (source `plan_maison.svg`) : cour → hall → cuisine/salon/bureau, trappe cuisine → cave; répartition des 60 objets alignée avec `docs/items_master.csv`.
 - **Périmètre à confirmer avant N-2.** N-1 demande un fichier dans `docs/`, mais le brief interdit les modifications de docs hors `TASKS.md` (seul `docs/anchors.md` est listé au périmètre) : le plan reste dans `game/scenes/house/` en attendant l'accord de l'Architecte; validation du schéma également requise.
 
+### HANDOFF — Niveau (17 oct. 2026, session 1)
+
+**Ce qui marche**
+- Plan V1 livré (`game/scenes/house/plan_maison.png`, source `plan_maison.svg`) : 6 zones, liens hall → 3 pièces, cave par trappe cuisine, répartition 60 objets conforme à la liste maîtresse.
+- Godot 4.7.2 installé; `bash game/tools/check.sh` passe sans erreur. Commit `897d65d` poussé sur `agent/level`.
+
+**Ce qui reste**
+- N-1 est en REVIEW : validation du plan par l'Architecte et décision sur son emplacement dans `docs/` avant N-2.
+- Après validation : blockout de l'entrée et du bureau (N-2), puis `house.gd` et prefab Item (N-3/N-4).
+
+**Pièges connus**
+- PLAN_HALLOWEEN prime sur les descriptions V2 de TASKS/GDD : la V1 comprend 6 zones et 60 objets, pas 13 zones/212.
+- Le fichier `docs/plan_maison.png` n'a pas été créé : le périmètre strict ne l'autorise pas; le plan est temporairement dans `game/scenes/house/`.
+
 ## Module Narration `[Narration]` — `data/`
 
 | ID | Tâche | Jalon | Statut |
