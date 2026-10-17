@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://btestroom0player"]
+[gd_scene load_steps=27 format=3 uid="uid://btestroom0player"]
 
 [ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="2_playertsn"]
 [ext_resource type="Script" path="res://scripts/item_data.gd" id="3_itemdata"]
@@ -64,6 +64,15 @@ size = Vector3(1.2, 1.8, 0.12)
 
 [sub_resource type="BoxShape3D" id="Shape_room_zone"]
 size = Vector3(15.4, 2.8, 15.4)
+
+[sub_resource type="BoxMesh" id="Mesh_readable"]
+size = Vector3(0.6, 0.35, 0.06)
+
+[sub_resource type="BoxShape3D" id="Shape_readable"]
+size = Vector3(0.6, 0.35, 0.06)
+
+[sub_resource type="BoxMesh" id="Mesh_stove"]
+size = Vector3(0.5, 0.8, 0.4)
 
 [sub_resource type="Resource" id="Data_test_item_a"]
 script = ExtResource("3_itemdata")
@@ -163,6 +172,27 @@ surface_material_override/0 = SubResource("Material_wall")
 
 [node name="Collision" type="CollisionShape3D" parent="Occluder"]
 shape = SubResource("Shape_panel")
+
+[node name="TestReadable" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.55, 4.6)
+metadata/document_id = &"hall_postit_besnard"
+
+[node name="Mesh" type="MeshInstance3D" parent="TestReadable"]
+mesh = SubResource("Mesh_readable")
+surface_material_override/0 = SubResource("Material_wall")
+
+[node name="Collision" type="CollisionShape3D" parent="TestReadable"]
+shape = SubResource("Shape_readable")
+
+[node name="TestStove" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2, 0.4, 3)
+metadata/interact_id = &"cellar_stove"
+metadata/interact_kind = &"burn"
+metadata/interact_duration = 0.2
+
+[node name="Mesh" type="MeshInstance3D" parent="TestStove"]
+mesh = SubResource("Mesh_stove")
+surface_material_override/0 = SubResource("Material_item_a")
 
 [node name="Items" type="Node3D" parent="."]
 

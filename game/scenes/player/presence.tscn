@@ -1,0 +1,64 @@
+[gd_scene load_steps=9 format=3 uid="uid://bpresence0player"]
+
+[ext_resource type="Script" path="res://scenes/player/presence.gd" id="1_presence"]
+
+[sub_resource type="CapsuleShape3D" id="Shape_presence"]
+radius = 0.3
+height = 1.8
+
+[sub_resource type="CapsuleMesh" id="Mesh_presence"]
+radius = 0.28
+height = 1.8
+
+[sub_resource type="StandardMaterial3D" id="Material_presence"]
+albedo_color = Color(0.022, 0.022, 0.028, 1)
+roughness = 1.0
+
+[sub_resource type="BoxMesh" id="Mesh_stand_floor"]
+size = Vector3(12, 0.2, 12)
+
+[sub_resource type="BoxShape3D" id="Shape_stand_floor"]
+size = Vector3(12, 0.2, 12)
+
+[sub_resource type="StandardMaterial3D" id="Material_stand_floor"]
+albedo_color = Color(0.17, 0.16, 0.15, 1)
+roughness = 0.95
+
+[node name="Presence" type="CharacterBody3D"]
+script = ExtResource("1_presence")
+
+[node name="Collision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("Shape_presence")
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+mesh = SubResource("Mesh_presence")
+surface_material_override/0 = SubResource("Material_presence")
+
+[node name="StandaloneCamera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 6)
+current = false
+fov = 70.0
+near = 0.05
+far = 100.0
+
+[node name="StandaloneFloor" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
+visible = false
+mesh = SubResource("Mesh_stand_floor")
+surface_material_override/0 = SubResource("Material_stand_floor")
+
+[node name="Body" type="StaticBody3D" parent="StandaloneFloor"]
+collision_layer = 0
+collision_mask = 0
+
+[node name="Collision" type="CollisionShape3D" parent="StandaloneFloor/Body"]
+shape = SubResource("Shape_stand_floor")
+
+[node name="StandaloneLamp" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 2)
+visible = false
+light_color = Color(0.85, 0.85, 1, 1)
+light_energy = 0.8
+omni_range = 10.0

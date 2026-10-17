@@ -58,6 +58,7 @@ var _standalone: bool = false
 
 
 func _ready() -> void:
+	add_to_group(&"player")
 	InputActions.ensure_defaults()
 	_spawn = global_transform
 	_apply_height(STAND_HEIGHT)

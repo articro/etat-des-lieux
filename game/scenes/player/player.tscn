@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://bplayer0scene01"]
+[gd_scene load_steps=19 format=3 uid="uid://bplayer0scene01"]
 
 [ext_resource type="Script" path="res://scenes/player/player.gd" id="1_player"]
 [ext_resource type="Script" path="res://scenes/player/room_sensor.gd" id="2_sensor"]
@@ -6,6 +6,9 @@
 [ext_resource type="Script" path="res://scenes/player/photo_in_hand.gd" id="4_inhand"]
 [ext_resource type="Script" path="res://scenes/player/viewfinder.gd" id="5_viewfinder"]
 [ext_resource type="Shader" path="res://scenes/fx/photo_develop.gdshader" id="6_develop"]
+[ext_resource type="Script" path="res://scenes/player/interactor.gd" id="7_interact"]
+[ext_resource type="Script" path="res://scenes/player/flashlight.gd" id="8_flashlight"]
+[ext_resource type="PackedScene" path="res://scenes/fx/post_process.tscn" id="9_postprocess"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.32
@@ -63,6 +66,22 @@ light_energy = 6.0
 omni_range = 14.0
 shadow_enabled = true
 
+[node name="Flashlight" type="SpotLight3D" parent="Head/Camera"]
+visible = false
+position = Vector3(0.12, -0.1, 0)
+spot_range = 9.0
+spot_angle = 24.0
+spot_angle_attenuation = 1.1
+light_color = Color(1, 0.93, 0.78, 1)
+light_energy = 2.4
+shadow_enabled = true
+script = ExtResource("8_flashlight")
+
+[node name="InteractRay" type="RayCast3D" parent="Head/Camera"]
+target_position = Vector3(0, 0, -2.5)
+collide_with_areas = true
+script = ExtResource("7_interact")
+
 [node name="CameraBody" type="MeshInstance3D" parent="Head/Camera"]
 position = Vector3(0.13, -0.26, -0.3)
 rotation_degrees = Vector3(-14, 8, 0)
@@ -114,6 +133,21 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(1, 1, 1, 1)
 
+[node name="LongAction" type="ProgressBar" parent="HUD"]
+visible = false
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -130.0
+offset_top = -110.0
+offset_right = 130.0
+offset_bottom = -98.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+show_percentage = false
+
 [node name="Viewfinder" type="Control" parent="HUD"]
 visible = false
 anchor_right = 1.0
@@ -122,6 +156,8 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("5_viewfinder")
+
+[node name="PostProcess" parent="." instance=ExtResource("9_postprocess")]
 
 [node name="StandaloneFloor" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)

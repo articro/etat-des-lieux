@@ -35,6 +35,9 @@ func _ready() -> void:
 	await _spawn_room()
 	await _test_detection()
 	await _test_photo_shot()
+	await _test_interaction()
+	await _test_flashlight()
+	await _test_presence()
 	await _test_room_sensor()
 	await _test_walk()
 	await _test_crouch()
@@ -122,6 +125,112 @@ func _test_photo_shot() -> void:
 		_check(_developed[0].developed, "PhotoData.developed = true")
 	device.aim(false)
 	await _wait_physics(2)
+
+
+func _test_interaction() -> void:
+	print("[Interaction]")
+	var interactor := _player.get_node_or_null("Head/Camera/InteractRay") as Interactor
+	_check(interactor != null, "InteractRay (raycast 2,5 m) présent")
+	if interactor == null:
+		return
+	_player.global_position = Vector3(0.0, 0.0, 6.0)
+	_player.rotation = Vector3.ZERO
+	_player.get_node("Head").rotation = Vector3.ZERO
+	await _wait_physics(4)
+	_check(interactor.current_target_id() == &"hall_postit_besnard", "cible lue = hall_postit_besnard")
+	_check(interactor.current_kind() == &"read", "kind = read pour un document")
+	var interacted: Array = []
+	var interacted_cb := func(id: StringName, kind: StringName) -> void:
+		interacted.append([id, kind])
+	var read_ids: Array[StringName] = []
+	var read_cb := func(id: StringName) -> void:
+		read_ids.append(id)
+	EventBus.player_interacted.connect(interacted_cb)
+	EventBus.document_read.connect(read_cb)
+	var before := interacted.size()
+	interactor.interact()
+	await get_tree().process_frame
+	_check(interacted.size() == before + 1, "player_interacted émis à l'appui sur E")
+	if interacted.size() > before:
+		var entry: Array = interacted[before]
+		_check(entry[0] == &"hall_postit_besnard" and entry[1] == &"read", "player_interacted(hall_postit_besnard, read)")
+	_check(read_ids.has(&"hall_postit_besnard"), "la lecture appelle DocumentLibrary.mark_read")
+	var stove := _room.get_node_or_null("TestStove")
+	interactor.force_target(stove)
+	_check(interactor.current_duration() > 0.0, "interaction longue : durée détectée")
+	var count_before := interacted.size()
+	interactor.interact()
+	await get_tree().process_frame
+	_check(interacted.size() == count_before, "un appui court n'achève pas une action longue")
+	interactor.advance_hold(0.1)
+	interactor.advance_hold(0.15)
+	await get_tree().process_frame
+	_check(interacted.size() == count_before + 1, "maintenir E achève l'action longue")
+	if interacted.size() > count_before:
+		var done: Array = interacted[count_before]
+		_check(done[0] == &"cellar_stove" and done[1] == &"burn", "player_interacted(cellar_stove, burn)")
+	EventBus.player_interacted.disconnect(interacted_cb)
+	EventBus.document_read.disconnect(read_cb)
+	_player.rotation = Vector3.ZERO
+	_player.get_node("Head").rotation = Vector3.ZERO
+
+
+func _test_flashlight() -> void:
+	print("[Lampe]")
+	var lamp := _player.get_node_or_null("Head/Camera/Flashlight") as Flashlight
+	_check(lamp != null, "lampe présente")
+	if lamp == null:
+		return
+	_check(not lamp.is_on(), "lampe éteinte au départ")
+	lamp.toggle()
+	await get_tree().process_frame
+	_check(lamp.is_on(), "la lampe s'allume (F)")
+	lamp.toggle()
+	await get_tree().process_frame
+	_check(not lamp.is_on(), "la lampe s'éteint (F)")
+
+
+func _test_presence() -> void:
+	print("[Présence]")
+	var presence_scene := load("res://scenes/player/presence.tscn") as PackedScene
+	_check(presence_scene != null, "presence.tscn se charge")
+	if presence_scene == null:
+		return
+	var presence := presence_scene.instantiate() as Presence
+	_room.add_child(presence)
+	presence.global_position = Vector3(1.2, 0.0, 3.6)
+	_player.global_position = Vector3(0.0, 0.0, 6.0)
+	await _wait_physics(3)
+	_check(not presence.is_active(), "la Présence est dormante par défaut")
+	if presence.is_active():
+		return
+	var caught := [0]
+	var catch_cb := func() -> void:
+		caught[0] += 1
+	EventBus.player_caught.connect(catch_cb)
+	EventBus.presence_state_changed.emit(&"physical")
+	await _wait_physics(2)
+	_check(presence.is_active(), "l'état physical la fait apparaître")
+	var start_distance := presence.global_position.distance_to(_player.global_position)
+	await _wait_physics(30)
+	var moved_distance := presence.global_position.distance_to(_player.global_position)
+	_check(moved_distance < start_distance - 0.1, "elle avance vers le joueur (%.2f -> %.2f m)" % [start_distance, moved_distance])
+	presence.freeze_time = 0.2
+	var photo := PhotoData.new()
+	photo.camera_transform = _player.get_eye_camera().global_transform
+	EventBus.photo_taken.emit(photo)
+	await get_tree().process_frame
+	_check(presence.is_frozen(), "photographiée : figée")
+	var frozen_position := presence.global_position
+	await _wait_physics(6)
+	_check(presence.global_position.distance_to(frozen_position) < 0.01, "elle ne bouge plus pendant le figeage")
+	await get_tree().create_timer(0.35).timeout
+	presence.global_position = Vector3(0.0, 0.0, 4.95)
+	await _wait_physics(12)
+	_check(caught[0] == 1, "au contact : player_caught émis")
+	EventBus.player_caught.disconnect(catch_cb)
+	presence.queue_free()
+	await get_tree().process_frame
 
 
 func _test_room_sensor() -> void:
