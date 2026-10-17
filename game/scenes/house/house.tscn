@@ -1,0 +1,43 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scenes/house/house.gd" id="1_house"]
+[ext_resource type="PackedScene" path="res://scenes/house/rooms/hall.tscn" id="2_hall"]
+[ext_resource type="PackedScene" path="res://scenes/house/rooms/study.tscn" id="3_study"]
+[ext_resource type="PackedScene" path="res://scenes/house/rooms/cellar.tscn" id="4_cellar"]
+
+[node name="House" type="Node3D"]
+script = ExtResource("1_house")
+
+[node name="Rooms" type="Node3D" parent="."]
+
+[node name="Hall" parent="Rooms" instance=ExtResource("2_hall")]
+
+[node name="Study" parent="Rooms" instance=ExtResource("3_study")]
+position = Vector3(3.75, 0, 0)
+
+[node name="Cellar" parent="Rooms" instance=ExtResource("4_cellar")]
+position = Vector3(-3.75, -3.5, 0)
+
+[node name="StandaloneCamera" type="Camera3D" parent="."]
+position = Vector3(0, 1.55, -4.0)
+rotation_degrees = Vector3(0, 180, 0)
+current = false
+fov = 72.0
+near = 0.05
+far = 80.0
+
+[node name="StandaloneLights" type="Node3D" parent="."]
+
+[node name="HallPreviewOmni" type="OmniLight3D" parent="StandaloneLights"]
+position = Vector3(0, 2.25, 1.0)
+light_color = Color(0.83, 0.81, 0.75, 1)
+light_energy = 1.1
+omni_range = 11.0
+shadow_enabled = false
+
+[node name="StudyPreviewOmni" type="OmniLight3D" parent="StandaloneLights"]
+position = Vector3(3.75, 2.2, 0.5)
+light_color = Color(0.83, 0.81, 0.75, 1)
+light_energy = 0.9
+omni_range = 8.0
+shadow_enabled = false

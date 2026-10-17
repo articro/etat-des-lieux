@@ -1,0 +1,42 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scenes/items/item.gd" id="1_item"]
+
+[sub_resource type="BoxMesh" id="ItemMesh"]
+size = Vector3(0.45, 0.45, 0.45)
+
+[sub_resource type="StandardMaterial3D" id="ItemMaterial"]
+albedo_color = Color(0.39, 0.39, 0.37, 1)
+roughness = 0.94
+
+[sub_resource type="BoxShape3D" id="ItemShape"]
+size = Vector3(0.45, 0.45, 0.45)
+
+[sub_resource type="BoxMesh" id="HighlightMesh"]
+size = Vector3(0.50, 0.50, 0.50)
+
+[sub_resource type="StandardMaterial3D" id="HighlightMaterial"]
+albedo_color = Color(0.76, 0.70, 0.53, 0.22)
+roughness = 1.0
+transparency = 1
+shading_mode = 1
+cull_mode = 1
+
+[node name="Item" type="Node3D"]
+script = ExtResource("1_item")
+
+[node name="Visual" type="MeshInstance3D" parent="."]
+mesh = SubResource("ItemMesh")
+material_override = SubResource("ItemMaterial")
+
+[node name="Highlight" type="MeshInstance3D" parent="."]
+visible = false
+mesh = SubResource("HighlightMesh")
+material_override = SubResource("HighlightMaterial")
+
+[node name="Collision" type="StaticBody3D" parent="."]
+collision_layer = 1
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape3D" parent="Collision"]
+shape = SubResource("ItemShape")
