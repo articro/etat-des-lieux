@@ -71,6 +71,28 @@
 - **S-3** (2026-10-17) — HouseDirector : parser complet (tous prédicats §6 + négation `!` universelle, `item_present:`, `presence:`, `&&`/`||`/parenthèses ; invalide = `push_error` + `false`), moteur de règles (9 triggers, 5 actions, `once`/`cooldown`, validation douce au chargement), attention (+3/flash, +6×bruit, −1.5/s après 20 s d'immobilité, valeurs calables), révélation des fantômes sur `document_read`/`item_checked`/`inventory_progress`/`player_entered_room`. Les 18 règles de `data/rules/` se chargent et se déclenchent. DocumentLibrary applique `sets_flags`/`reveals_items` au `mark_found` (demande Narration). Vérifié par `scenes/main/test_systems.tscn` (62 assertions).
 - **S-2** (2026-10-17) — Chargement `data/items/` robuste (ids vides/dupliqués → erreur sans crash, tri par `list_index` dans `get_items_in_room`), garde-fous `check_item`/`reveal_item`/photo nulle. À toute la liste cochée : `inventory_line_added(total+1, &"INV_LINE_ADDED_CAMILLE")` (« 61. Camille », numéro sérialisé via `INV_LINE_FORMAT` côté UI).
 
+### HANDOFF — Systèmes (session 1, 2026-10-17)
+
+**Ce qui marche**
+- S-2 InventoryManager : chargement `data/items/` (60 objets OK), check/reveal/film/progress, ligne finale `inventory_line_added(total+1, &"INV_LINE_ADDED_CAMILLE")` quand toute la liste est cochée (supprimée si une fin est déjà survenue).
+- S-3 HouseDirector : parser mini-langage complet (§6 + négation `!` universelle, `item_present:`, `presence:`) — invalide = `push_error` + `false` ; moteur de règles (les 18 règles de `data/rules/` chargées et déclenchées : 9 triggers, 5 actions, `once`/`cooldown`) ; attention (flash +3, bruit +6×niveau, −1.5/s après 20 s d'immobilité) ; révélation des fantômes sur `document_read`/`item_checked`/`inventory_progress`/`player_entered_room`.
+- S-7 séquenceur : seuils 20/45/60 → `act_changed` (act 1/2/3 = phases calme/inquiétude/cave) ; événements narratifs portés par les règles r01/r03, avec secours séquenceur **dédoublonné** (`act1_drawer_opens`, `phone_rings`, `cellar_door_opens`).
+- S-8 fins : `closed` au 60e coche (+ ligne « 61. Camille »), `ashes` sur `player_interacted(&"cellar_stove", &"burn")` — première fin gagne.
+- S-6 `main.tscn` : menu → `house.tscn` + `player.tscn` + `hud.tscn` → fin ; chaque scène absente = `push_warning` + dégradation (menu/fin placeholder avec `tr()`).
+- S-5 SaveManager : auto-sauvegarde sur `player_entered_room`, JSON v1, aller-retour vérifié. DocumentLibrary applique `sets_flags`/`reveals_items` (demande Narration).
+- Tests : `res://scenes/main/test_systems.tscn` — 89 assertions, tout vert, exit code 0/1 (`godot --headless --path game res://scenes/main/test_systems.tscn`). Suites gdUnit4 prêtes dans `game/tests/autoloads/` (parser, règles, inventaire) pour Q-1.
+
+**Ce qui reste**
+- Intégration J4 : côté Niveau (`house.gd` qui consomme `item_moved`/`item_revealed`/`house_event_triggered` ; ancres `hall_anchor_console`, `kitchen_anchor_sink`, `kitchen_anchor_preserves`, `living_anchor_fireplace`, `study_anchor_shelves`), Gameplay (pipeline photo → `photo_developed`, `player_interacted(cellar_stove, burn)`), UI (signaux du menu : `new_game_requested`, `continue_requested`, `options_requested`, `quit_requested` ; `ending_screen.tscn` + `set_ending_id`), Audio (ids sfx listés par Narration).
+- Réglages d'attention à caler au playtest J5 (constantes en tête de `house_director.gd`).
+- V2 : rejouer les déplacements d'objets au chargement (les règles `room_left` déjà passées ne se refirent pas) ; écran de fin complet côté UI.
+
+**Pièges**
+- Ne JAMAIS émettre `act1_drawer_opens`/`phone_rings`/`cellar_door_opens` ailleurs que par les règles ou le séquenceur (dédoublonnage en place, `_emit_event(id, only_if_new)`).
+- `check.sh` échoue sur toute ligne `ERROR:` : ne pas évaluer de condition invalide au démarrage d'une scène de test normalisée (les erreurs volontaires vivent dans `test_systems.tscn`).
+- Les clés strings de la ligne finale sont `INV_LINE_ADDED_CAMILLE` (prénom seul) + `INV_LINE_FORMAT` = `{index}. {name}` — le numéro 61 est sérialisé (`total + 1`), jamais figé.
+- `register_rule` rejette silencieusement (warning) les règles à syntaxe de condition invalide : vérifier `data/rules/` si une règle ne part pas.
+
 ## Module Niveau `[Niveau]` — `scenes/house/`, `scenes/items/`, `assets/models|textures`
 
 | ID | Tâche | Jalon | Statut |
