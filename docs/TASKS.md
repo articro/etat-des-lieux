@@ -29,6 +29,7 @@
 | A0-3 | Dépôt GitHub `articro/etat-des-lieux`, push initial, 6 branches agents | DONE |
 | A0-7 | Intégration Narration session 1 (60 objets, 10 docs, 18 règles) sur main, traduction enregistrée | DONE |
 | A0-8 | Intégration Narration session 2 (relecture, itch_textes.md) | DONE |
+| A0-14 | Intégration Audio S1 (67 OGG, 52 ids, AudioManager complet) — les 6 modules ont livré leur priorité V1 en J1 | DONE |
 | A0-13 | Intégration Niveau S1 (hall/bureau/cave, 47 tests) + Systèmes S3 + Gameplay S3 + UI S2 — 372 assertions vertes | DONE |
 | A0-12 | Intégration UI S1 (92 tests) + Systèmes S2 + Gameplay S2 ; signal interact_target_changed ; API all_items | DONE |
 | A0-11 | Validation N-1 (plan maison) + consignes dimensions/ancres | DONE |
