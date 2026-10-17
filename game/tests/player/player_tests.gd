@@ -45,6 +45,8 @@ func _ready() -> void:
 	await _test_pause()
 	await _test_persisted_settings()
 	await _test_exit_releases_mouse()
+	await _test_interact_target_signal()
+	await _test_pause_with_ui()
 
 	_report()
 
@@ -281,11 +283,18 @@ func _test_settings() -> void:
 	print("[Réglages (settings_changed)]")
 	var camera := _player.get_eye_camera()
 	var lamp := _player.get_node_or_null("Head/Camera/Flashlight") as Flashlight
-	EventBus.settings_changed.emit(&"mouse_sensitivity", 0.5)
-	_check(is_equal_approx(_player.get_sensitivity(), 0.0043),
-		"sensibilité normalisée 0,5 → 0,0043 rad/px (%.4f)" % _player.get_sensitivity())
+	EventBus.settings_changed.emit(&"mouse_sensitivity", 1.0)
+	_check(is_equal_approx(_player.get_sensitivity(), 0.0022),
+		"multiplicateur UI 1,0 → 0,0022 rad/px (%.4f)" % _player.get_sensitivity())
+	EventBus.settings_changed.emit(&"mouse_sensitivity", 2.0)
+	_check(is_equal_approx(_player.get_sensitivity(), 0.0044),
+		"multiplicateur UI 2,0 → 0,0044 rad/px (%.4f)" % _player.get_sensitivity())
+	EventBus.settings_changed.emit(&"mouse_sensitivity", 10.0)
+	_check(is_equal_approx(_player.get_sensitivity(), 0.0066),
+		"multiplicateur borné à 3,0 (%.4f)" % _player.get_sensitivity())
 	EventBus.settings_changed.emit(&"mouse_sensitivity", 0.003)
 	_check(is_equal_approx(_player.get_sensitivity(), 0.003), "sensibilité brute (rad/px) conservée")
+	EventBus.settings_changed.emit(&"mouse_sensitivity", 1.0)
 	EventBus.settings_changed.emit(&"fov", 95.0)
 	_check(is_equal_approx(_player.get_base_fov(), 95.0), "FOV 95 pris en compte")
 	await _wait_physics(40)
@@ -372,18 +381,20 @@ func _test_persisted_settings() -> void:
 	var missing := SettingsSource.read("user://__absent__.cfg")
 	_check(missing.is_empty(), "fichier absent : aucune valeur, pas d'erreur")
 	var config := ConfigFile.new()
-	config.set_value("options", "fov", 88.0)
-	config.set_value("options", "mouse_sensitivity", 0.25)
+	config.set_value("settings", "fov", 88.0)
+	config.set_value("settings", "mouse_sensitivity", 2.0)
 	config.set_value("options", "flashlight_strong", true)
 	config.set_value("options", "volume_master", 0.5)
 	_check(config.save(path) == OK, "fichier de réglages écrit")
 	var stored := SettingsSource.read(path)
 	_check(stored.has(&"fov") and is_equal_approx(float(stored[&"fov"]), 88.0), "fov relu (88)")
 	_check(stored.has(&"flashlight_strong") and bool(stored[&"flashlight_strong"]), "flashlight_strong relu")
+	_check(is_equal_approx(float(stored[&"mouse_sensitivity"]), 2.0), "sensibilité (multiplicateur) relue")
 	_check(not stored.has(&"volume_master"), "clé hors périmètre ignorée")
 	_player.apply_persisted_settings()
 	await get_tree().process_frame
 	_check(is_equal_approx(_player.get_base_fov(), 88.0), "réglages appliqués au démarrage du joueur")
+	_check(is_equal_approx(_player.get_sensitivity(), 0.0044), "sensibilité du fichier appliquée (0,0044)")
 	var lamp := _player.get_node_or_null("Head/Camera/Flashlight") as Flashlight
 	_check(lamp != null and lamp.is_strong(), "lampe forte restaurée")
 	# Nettoyage : on rend le fichier à son état d'origine.
@@ -414,6 +425,73 @@ func _test_exit_releases_mouse() -> void:
 	_check(_player.get_intended_mouse_mode() == Input.MOUSE_MODE_CAPTURED,
 		"la libération d'une instance ne casse pas le joueur principal")
 	_check(not _player.is_paused(), "toujours hors pause")
+
+
+func _test_interact_target_signal() -> void:
+	print("[Signal interact_target_changed]")
+	var events: Array = []
+	var cb := func(target_id: StringName, kind: StringName) -> void:
+		events.append([target_id, kind])
+	EventBus.interact_target_changed.connect(cb)
+	var interactor := _player.get_node_or_null("Head/Camera/InteractRay") as Interactor
+	if interactor == null:
+		_check(false, "InteractRay absent")
+		return
+	_player.global_position = Vector3(0.0, 0.0, 6.0)
+	_player.rotation = Vector3.ZERO
+	_player.get_node("Head").rotation = Vector3.ZERO
+	await _wait_physics(4)
+	var last := events.size() - 1
+	_check(last >= 0, "au moins un événement émis au départ")
+	if last >= 0:
+		_check(events[last][0] == &"hall_postit_besnard" and events[last][1] == &"read",
+			"cible sous le réticule : (hall_postit_besnard, read)")
+	var stable := events.size()
+	await _wait_physics(6)
+	_check(events.size() == stable, "aucune réémission tant que la cible ne change pas")
+	_player.rotation.y = PI
+	await _wait_physics(6)
+	last = events.size() - 1
+	_check(last >= 0 and events[last][0] == &"" and events[last][1] == &"",
+		"plus rien sous le réticule : (\"\", \"\") émis")
+	_player.rotation.y = 0.0
+	await _wait_physics(6)
+	last = events.size() - 1
+	_check(events[last][0] == &"hall_postit_besnard", "retour sur la cible : réémise une fois")
+	EventBus.interact_target_changed.disconnect(cb)
+
+
+## Intégration réelle : le menu pause de l'UI (scènes/ui/pause_menu.tscn) est
+## ajouté APRÈS le joueur, comme dans main.tscn. Il capte Échap en premier,
+## met l'arbre en pause et émet pause_toggled : le joueur doit s'aligner sans
+## double bascule, et la souris doit être rendue.
+func _test_pause_with_ui() -> void:
+	print("[Pause avec l'UI]")
+	var scene := load("res://scenes/ui/pause_menu.tscn") as PackedScene
+	_check(scene != null, "pause_menu.tscn se charge")
+	if scene == null:
+		return
+	var menu := scene.instantiate() as CanvasLayer
+	add_child(menu)
+	await get_tree().process_frame
+	_check(not menu.visible, "menu pause masqué au départ")
+	_send_escape()
+	await get_tree().process_frame
+	await get_tree().process_frame
+	_check(get_tree().paused, "Échap met l'arbre en pause (UI)")
+	_check(menu.visible, "le menu pause s'affiche")
+	_check(_player.is_paused(), "le joueur s'aligne sur la pause de l'UI")
+	_check(_player.get_intended_mouse_mode() == Input.MOUSE_MODE_VISIBLE, "la souris est rendue")
+	_send_escape()
+	await get_tree().process_frame
+	await get_tree().process_frame
+	_check(not get_tree().paused, "second Échap : l'arbre reprend")
+	_check(not menu.visible, "le menu pause se ferme")
+	_check(not _player.is_paused(), "le joueur reprend")
+	_check(_player.get_intended_mouse_mode() == Input.MOUSE_MODE_CAPTURED, "la souris est recapturée")
+	menu.queue_free()
+	await get_tree().process_frame
+	get_tree().paused = false
 
 
 func _on_photo_taken(photo: PhotoData) -> void:

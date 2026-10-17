@@ -40,11 +40,13 @@ const SETTING_SENSITIVITY: StringName = &"mouse_sensitivity"
 const SETTING_FOV: StringName = &"fov"
 const SETTING_FLASHLIGHT_STRONG: StringName = &"flashlight_strong"
 
-## La sensibilité arrive normalisée 0..1 (curseur UI) et devient des rad/px.
-## Une valeur < 0.02 est prise comme des rad/px bruts (compatibilité).
-const SENSITIVITY_NORMALIZED_MIN: float = 0.0006
-const SENSITIVITY_NORMALIZED_MAX: float = 0.0080
-const SENSITIVITY_RAW_THRESHOLD: float = 0.02
+## L'UI (UiSettings) envoie un MULTIPLICATEUR 0,2..3,0 avec 1,0 = réglage par
+## défaut (ARCHITECTURE §7). On le convertit en rad/px autour de SENSITIVITY_BASE.
+## Une valeur < 0,1 est prise comme des rad/px bruts (compatibilité, tests).
+const SENSITIVITY_BASE: float = 0.0022
+const SENSITIVITY_MULT_MIN: float = 0.2
+const SENSITIVITY_MULT_MAX: float = 3.0
+const SENSITIVITY_RAW_THRESHOLD: float = 0.1
 const SENSITIVITY_RAW_MIN: float = 0.0004
 const SENSITIVITY_RAW_MAX: float = 0.0120
 const FOV_MIN: float = 55.0
@@ -224,8 +226,8 @@ func _apply_sensitivity(value: Variant) -> void:
 	if raw < SENSITIVITY_RAW_THRESHOLD:
 		mouse_sensitivity = clampf(raw, SENSITIVITY_RAW_MIN, SENSITIVITY_RAW_MAX)
 	else:
-		mouse_sensitivity = lerpf(
-			SENSITIVITY_NORMALIZED_MIN, SENSITIVITY_NORMALIZED_MAX, clampf(raw, 0.0, 1.0))
+		var multiplier := clampf(raw, SENSITIVITY_MULT_MIN, SENSITIVITY_MULT_MAX)
+		mouse_sensitivity = SENSITIVITY_BASE * multiplier
 
 
 func _apply_fov(value: Variant) -> void:
