@@ -52,13 +52,17 @@
 | ID | Tâche | Jalon | Statut |
 |---|---|---|---|
 | S-1 | GameState complet + to/from_save_dict | M1 | TODO |
-| S-2 | InventoryManager : chargement de `data/items/*.tres`, check/reveal/film, progression, signaux | M1 | TODO |
+| S-2 | InventoryManager : chargement de `data/items/*.tres`, check/reveal/film, progression, signaux | M1 | DONE |
 | S-3 | HouseDirector : moteur de règles (HouseRule), parser du mini-langage de condition, attention (montée/descente), actions (`move_item`, `event`, `attention`, `presence`, `sfx`) | M1 | TODO |
 | S-4 | DocumentLibrary | M1 | TODO |
 | S-5 | SaveManager : JSON, auto-save à `player_entered_room`, versionnage | M2 | TODO |
 | S-6 | main.tscn : séquence de démarrage (menu → chargement maison → spawn joueur → UI), gestion des fins (`ending_reached` → scène de fin) | M2 | TODO |
 | S-7 | Séquenceur d'actes : seuils 60/140 → `act_changed`, événements de fin d'acte | M2 | TODO |
 | S-8 | Logique des 4 fins (conditions, déclenchement) | M3 | TODO |
+
+### Notes Systèmes
+
+- **S-2** (2026-10-17) — Chargement `data/items/` robuste (ids vides/dupliqués → erreur sans crash, tri par `list_index` dans `get_items_in_room`), garde-fous `check_item`/`reveal_item`/photo nulle. À toute la liste cochée : `inventory_line_added(total+1, &"INV_LINE_ADDED_CAMILLE")` (« 61. Camille », numéro sérialisé via `INV_LINE_FORMAT` côté UI).
 
 ## Module Niveau `[Niveau]` — `scenes/house/`, `scenes/items/`, `assets/models|textures`
 
