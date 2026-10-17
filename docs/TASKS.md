@@ -55,13 +55,16 @@
 | S-2 | InventoryManager : chargement de `data/items/*.tres`, check/reveal/film, progression, signaux | M1 | DONE |
 | S-3 | HouseDirector : moteur de règles (HouseRule), parser du mini-langage de condition, attention (montée/descente), actions (`move_item`, `event`, `attention`, `presence`, `sfx`) | M1 | DONE |
 | S-4 | DocumentLibrary | M1 | TODO |
-| S-5 | SaveManager : JSON, auto-save à `player_entered_room`, versionnage | M2 | TODO |
+| S-5 | SaveManager : JSON, auto-save à `player_entered_room`, versionnage | M2 | DONE |
 | S-6 | main.tscn : séquence de démarrage (menu → chargement maison → spawn joueur → UI), gestion des fins (`ending_reached` → scène de fin) | M2 | DONE |
 | S-7 | Séquenceur d'actes : seuils 60/140 → `act_changed`, événements de fin d'acte | M2 | DONE |
 | S-8 | Logique des 4 fins (conditions, déclenchement) | M3 | DONE |
 
 ### Notes Systèmes
 
+- **Tests** (2026-10-17) — `game/scenes/main/test_systems.tscn` (scène de test autonome, 89 assertions, exit code CI) + suites gdUnit4 dans `game/tests/autoloads/` (parser, règles, inventaire) prêtes pour Q-1 : elles attendent l'installation de gdUnit4 (`tools/run_tests.sh` les ignorera jusque-là). Les cas de syntaxe invalide (push_error spéculés) sont dans `test_systems.tscn` pour ne pas faire échouer gdUnit4 sur les erreurs volontaires.
+
+- **S-5** (2026-10-17) — SaveManager vérifié : JSON versionné (v1), auto-sauvegarde ajoutée sur `player_entered_room`, `save_requested` OK, chargement en dégradé si version différente. Aller-retour save/load couvert par `test_systems.tscn`. Limite connue : les déplacements d'objets (`item_moved`) déjà consommés par Niveau ne sont pas rejoués au chargement (les règles `room_left` passées ne se refirent pas) — à noter pour la V2 si besoin.
 - **S-6** (2026-10-17) — `main.tscn` : menu (UI `main_menu.tscn` si présent, sinon placeholder `tr()` avec `UI_*`) → jeu (`house.tscn` + `player.tscn` + `hud.tscn`, chargés par chemin avec `push_warning` si absents) → fin (`ending_reached` → `ending_screen.tscn` ou placeholder `ENDING_*_TITLE`). Nouvelle partie réinitialise les autoloads (`from_save_dict({})`) ; Continuer charge la sauvegarde APRÈS instanciation maison/joueur (rattrapage `game_loaded`).
 - **S-7** (2026-10-17) — Séquenceur V1 dans HouseDirector : seuils 20/45/60 → `act_changed` (phases calme/inquiétude/cave = act 1/2/3 sur le signal existant, pas de changement de contrat) + `house_event_triggered` en secours (`act1_drawer_opens`, `phone_rings`, `cellar_door_opens`) **dédoublonné avec les règles** (les règles r01/r03 portent ces événements ; le séquenceur ne les réémet pas s'ils le sont déjà). Rattrapage après `game_loaded`.
 - **S-8** (2026-10-17) — 2 fins V1 : `closed` au 60e objet coché (+ ligne « 61. Camille » via `inventory_line_added(61, &"INV_LINE_ADDED_CAMILLE")`), `ashes` sur `player_interacted(&"cellar_stove", &"burn")`. Première fin gagne ; la ligne finale est supprimée après `ashes` (carnet brûlé).
