@@ -41,6 +41,7 @@ func _ready() -> void:
 	await _test_room_sensor()
 	await _test_walk()
 	await _test_crouch()
+	await _test_settings()
 
 	_report()
 
@@ -271,6 +272,38 @@ func _test_crouch() -> void:
 	Input.action_release(&"crouch")
 	await _wait_physics(20)
 	_check(not _player.is_crouching(), "l'accroupissement se relâche")
+
+
+func _test_settings() -> void:
+	print("[Réglages (settings_changed)]")
+	var camera := _player.get_eye_camera()
+	var lamp := _player.get_node_or_null("Head/Camera/Flashlight") as Flashlight
+	EventBus.settings_changed.emit(&"mouse_sensitivity", 0.5)
+	_check(is_equal_approx(_player.get_sensitivity(), 0.0043),
+		"sensibilité normalisée 0,5 → 0,0043 rad/px (%.4f)" % _player.get_sensitivity())
+	EventBus.settings_changed.emit(&"mouse_sensitivity", 0.003)
+	_check(is_equal_approx(_player.get_sensitivity(), 0.003), "sensibilité brute (rad/px) conservée")
+	EventBus.settings_changed.emit(&"fov", 95.0)
+	_check(is_equal_approx(_player.get_base_fov(), 95.0), "FOV 95 pris en compte")
+	await _wait_physics(40)
+	_check(absf(camera.fov - 95.0) < 1.0, "la caméra converge vers le FOV réglé (%.1f)" % camera.fov)
+	EventBus.settings_changed.emit(&"fov", 140.0)
+	_check(is_equal_approx(_player.get_base_fov(), 110.0), "FOV borné à 110°")
+	EventBus.settings_changed.emit(&"fov", 75.0)
+	await _wait_physics(30)
+	_check(lamp != null, "lampe présente pour le réglage d'accessibilité")
+	if lamp != null:
+		var energy_before := lamp.light_energy
+		EventBus.settings_changed.emit(&"flashlight_strong", true)
+		_check(lamp.is_strong() and lamp.light_energy > energy_before,
+			"lampe plus forte : énergie %.1f → %.1f" % [energy_before, lamp.light_energy])
+		_check(not lamp.is_on(), "le réglage ne change pas l'état allumé/éteint")
+		EventBus.settings_changed.emit(&"flashlight_strong", false)
+		_check(not lamp.is_strong() and is_equal_approx(lamp.light_energy, energy_before),
+			"retour au profil normal")
+	EventBus.settings_changed.emit(&"volume_master", 0.4)
+	EventBus.settings_changed.emit(&"inconnue", Vector3.ZERO)
+	_check(true, "clés inconnues ignorées sans erreur")
 
 
 func _on_photo_taken(photo: PhotoData) -> void:

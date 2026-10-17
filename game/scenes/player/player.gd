@@ -35,7 +35,22 @@ const NOISE_RUN: float = 0.85
 
 const FALL_RESET_Y: float = -25.0
 
-## Sensibilité souris (rad/px). Remplacée plus tard par l'option UI.
+# --- Réglages (EventBus.settings_changed, ARCHITECTURE §4 et §7) ---
+const SETTING_SENSITIVITY: StringName = &"mouse_sensitivity"
+const SETTING_FOV: StringName = &"fov"
+const SETTING_FLASHLIGHT_STRONG: StringName = &"flashlight_strong"
+
+## La sensibilité arrive normalisée 0..1 (curseur UI) et devient des rad/px.
+## Une valeur < 0.02 est prise comme des rad/px bruts (compatibilité).
+const SENSITIVITY_NORMALIZED_MIN: float = 0.0006
+const SENSITIVITY_NORMALIZED_MAX: float = 0.0080
+const SENSITIVITY_RAW_THRESHOLD: float = 0.02
+const SENSITIVITY_RAW_MIN: float = 0.0004
+const SENSITIVITY_RAW_MAX: float = 0.0120
+const FOV_MIN: float = 55.0
+const FOV_MAX: float = 110.0
+
+## Sensibilité souris (rad/px). Pilotée par l'option UI (settings_changed).
 @export var mouse_sensitivity: float = 0.0022
 @export var base_fov: float = 75.0
 
@@ -65,6 +80,7 @@ func _ready() -> void:
 	_camera.fov = base_fov
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	EventBus.pause_toggled.connect(_on_pause_toggled)
+	EventBus.settings_changed.connect(_on_settings_changed)
 	# Lancée seule (F6) : un sol de secours évite une chute infinie.
 	_standalone = get_tree().current_scene == self
 	_standalone_floor.visible = _standalone
@@ -168,6 +184,42 @@ func _reset_if_fallen() -> void:
 		push_warning("PlayerController : chute hors carte, retour au point d'apparition.")
 
 
+## Réglages émis par l'UI (menu Options) — on ignore en silence les clés qui ne
+## concernent pas le joueur (volumes, sous-titres, plein écran…).
+func _on_settings_changed(key: StringName, value: Variant) -> void:
+	match key:
+		SETTING_SENSITIVITY:
+			_apply_sensitivity(value)
+		SETTING_FOV:
+			_apply_fov(value)
+		SETTING_FLASHLIGHT_STRONG:
+			var lamp := get_node_or_null("Head/Camera/Flashlight")
+			if lamp != null and lamp.has_method(&"set_strong"):
+				lamp.call(&"set_strong", bool(value))
+
+
+func _apply_sensitivity(value: Variant) -> void:
+	if not (value is float or value is int):
+		push_warning("PlayerController : sensibilité ignorée (valeur non numérique).")
+		return
+	var raw := float(value)
+	if raw <= 0.0:
+		return
+	if raw < SENSITIVITY_RAW_THRESHOLD:
+		mouse_sensitivity = clampf(raw, SENSITIVITY_RAW_MIN, SENSITIVITY_RAW_MAX)
+	else:
+		mouse_sensitivity = lerpf(
+			SENSITIVITY_NORMALIZED_MIN, SENSITIVITY_NORMALIZED_MAX, clampf(raw, 0.0, 1.0))
+
+
+func _apply_fov(value: Variant) -> void:
+	if not (value is float or value is int):
+		push_warning("PlayerController : FOV ignoré (valeur non numérique).")
+		return
+	base_fov = clampf(float(value), FOV_MIN, FOV_MAX)
+	_camera.fov = base_fov
+
+
 func _on_pause_toggled(paused: bool) -> void:
 	_input_enabled = not paused
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE if paused else Input.MOUSE_MODE_CAPTURED
@@ -197,3 +249,12 @@ func is_standalone() -> bool:
 
 func set_input_enabled(enabled: bool) -> void:
 	_input_enabled = enabled
+
+
+## Réglages appliqués (lecture seule, pour les tests et l'UI).
+func get_base_fov() -> float:
+	return base_fov
+
+
+func get_sensitivity() -> float:
+	return mouse_sensitivity
