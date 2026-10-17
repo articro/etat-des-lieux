@@ -13,6 +13,7 @@ const BLIND_DURATION: float = 1.5
 const BLIND_PEAK: float = 0.92
 const BLIND_RISE: float = 0.06
 const AIM_FOV_DELTA: float = 20.0
+const AIM_FOV_MIN: float = 45.0
 const AIM_LERP: float = 9.0
 const REVIEW_LERP: float = 10.0
 const CAPTURE_SIZE: Vector2i = Vector2i(1280, 720)
@@ -68,10 +69,19 @@ func _ready() -> void:
 		_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
 		if _photo_camera != null:
 			_photo_camera.current = true
+	EventBus.pause_toggled.connect(_on_pause_toggled)
 	if _photo_camera == null:
 		push_warning("PhotoDevice : SubViewport de capture absent — photos sans texture.")
 	if _flash == null:
 		push_warning("PhotoDevice : FlashBulb absent — pas de lumière de flash.")
+
+
+## En pause : on baisse l'appareil (sinon il resterait levé après reprise, le
+## relâchement du clic droit n'étant plus capté quand la souris est visible).
+func _on_pause_toggled(paused: bool) -> void:
+	if paused:
+		aim(false)
+		_reviewing = false
 
 
 func _find_player() -> PlayerController:
@@ -99,7 +109,9 @@ func _unhandled_input(event: InputEvent) -> void:
 func _process(delta: float) -> void:
 	if _player == null:
 		return
-	var target_fov: float = _player.base_fov - AIM_FOV_DELTA if _raised else _player.base_fov
+	var target_fov: float = _player.base_fov
+	if _raised:
+		target_fov = maxf(_player.base_fov - AIM_FOV_DELTA, AIM_FOV_MIN)
 	_camera.fov = lerpf(_camera.fov, target_fov, clampf(delta * AIM_LERP, 0.0, 1.0))
 	if _photo_hold != null:
 		var target: Transform3D = _hold_center if _reviewing else _hold_rest

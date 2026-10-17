@@ -41,6 +41,10 @@ func _ready() -> void:
 	await _test_room_sensor()
 	await _test_walk()
 	await _test_crouch()
+	await _test_settings()
+	await _test_pause()
+	await _test_persisted_settings()
+	await _test_exit_releases_mouse()
 
 	_report()
 
@@ -271,6 +275,145 @@ func _test_crouch() -> void:
 	Input.action_release(&"crouch")
 	await _wait_physics(20)
 	_check(not _player.is_crouching(), "l'accroupissement se relâche")
+
+
+func _test_settings() -> void:
+	print("[Réglages (settings_changed)]")
+	var camera := _player.get_eye_camera()
+	var lamp := _player.get_node_or_null("Head/Camera/Flashlight") as Flashlight
+	EventBus.settings_changed.emit(&"mouse_sensitivity", 0.5)
+	_check(is_equal_approx(_player.get_sensitivity(), 0.0043),
+		"sensibilité normalisée 0,5 → 0,0043 rad/px (%.4f)" % _player.get_sensitivity())
+	EventBus.settings_changed.emit(&"mouse_sensitivity", 0.003)
+	_check(is_equal_approx(_player.get_sensitivity(), 0.003), "sensibilité brute (rad/px) conservée")
+	EventBus.settings_changed.emit(&"fov", 95.0)
+	_check(is_equal_approx(_player.get_base_fov(), 95.0), "FOV 95 pris en compte")
+	await _wait_physics(40)
+	_check(absf(camera.fov - 95.0) < 1.0, "la caméra converge vers le FOV réglé (%.1f)" % camera.fov)
+	EventBus.settings_changed.emit(&"fov", 140.0)
+	_check(is_equal_approx(_player.get_base_fov(), 110.0), "FOV borné à 110°")
+	EventBus.settings_changed.emit(&"fov", 75.0)
+	await _wait_physics(30)
+	_check(lamp != null, "lampe présente pour le réglage d'accessibilité")
+	if lamp != null:
+		var energy_before := lamp.light_energy
+		EventBus.settings_changed.emit(&"flashlight_strong", true)
+		_check(lamp.is_strong() and lamp.light_energy > energy_before,
+			"lampe plus forte : énergie %.1f → %.1f" % [energy_before, lamp.light_energy])
+		_check(not lamp.is_on(), "le réglage ne change pas l'état allumé/éteint")
+		EventBus.settings_changed.emit(&"flashlight_strong", false)
+		_check(not lamp.is_strong() and is_equal_approx(lamp.light_energy, energy_before),
+			"retour au profil normal")
+	EventBus.settings_changed.emit(&"volume_master", 0.4)
+	EventBus.settings_changed.emit(&"inconnue", Vector3.ZERO)
+	_check(true, "clés inconnues ignorées sans erreur")
+
+
+func _test_pause() -> void:
+	print("[Pause (Échap)]")
+	var events: Array[bool] = []
+	var cb := func(paused: bool) -> void:
+		events.append(paused)
+	EventBus.pause_toggled.connect(cb)
+	_check(not _player.is_paused(), "non pausé au départ")
+	_check(_player.get_intended_mouse_mode() == Input.MOUSE_MODE_CAPTURED, "souris capturée au départ")
+	_check_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	_send_escape()
+	await get_tree().process_frame
+	await get_tree().process_frame
+	_check(_player.is_paused(), "Échap met en pause")
+	_check(_player.get_intended_mouse_mode() == Input.MOUSE_MODE_VISIBLE, "Échap libère la souris (VISIBLE)")
+	_check_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	_check(events.size() == 1 and events[0] == true, "pause_toggled(true) émis une fois")
+	_send_escape()
+	await get_tree().process_frame
+	await get_tree().process_frame
+	_check(not _player.is_paused(), "second Échap : reprise")
+	_check(_player.get_intended_mouse_mode() == Input.MOUSE_MODE_CAPTURED, "second Échap : souris recapturée")
+	_check_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	_check(events.size() == 2 and events[1] == false, "pause_toggled(false) émis")
+	# Un pause_toggled venu d'ailleurs (UI) aligne le joueur sans réémettre.
+	var before := events.size()
+	EventBus.pause_toggled.emit(true)
+	await get_tree().process_frame
+	_check(_player.is_paused(), "pause pilotée par l'UI : le joueur s'aligne")
+	_check(events.size() == before + 1, "aucune réémission en boucle depuis le joueur")
+	EventBus.pause_toggled.emit(false)
+	await get_tree().process_frame
+	_check(not _player.is_paused()
+		and _player.get_intended_mouse_mode() == Input.MOUSE_MODE_CAPTURED,
+		"reprise pilotée par l'UI : souris recapturée")
+	_check_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	EventBus.pause_toggled.disconnect(cb)
+
+
+## Le serveur headless ignore la capture de souris : on ne vérifie l'état réel
+## du curseur que sur un vrai serveur d'affichage.
+func _check_mouse_mode(expected: Input.MouseMode) -> void:
+	if DisplayServer.get_name() == "headless":
+		return
+	_check(Input.mouse_mode == expected, "Input.mouse_mode réel = %d" % expected)
+
+
+func _send_escape() -> void:
+	var event := InputEventKey.new()
+	event.physical_keycode = KEY_ESCAPE
+	event.pressed = true
+	Input.parse_input_event(event)
+
+
+func _test_persisted_settings() -> void:
+	print("[Réglages persistés]")
+	var path := "user://settings.cfg"
+	var had_file := FileAccess.file_exists(path)
+	var backup: PackedByteArray = PackedByteArray()
+	if had_file:
+		backup = FileAccess.get_file_as_bytes(path)
+	var missing := SettingsSource.read("user://__absent__.cfg")
+	_check(missing.is_empty(), "fichier absent : aucune valeur, pas d'erreur")
+	var config := ConfigFile.new()
+	config.set_value("options", "fov", 88.0)
+	config.set_value("options", "mouse_sensitivity", 0.25)
+	config.set_value("options", "flashlight_strong", true)
+	config.set_value("options", "volume_master", 0.5)
+	_check(config.save(path) == OK, "fichier de réglages écrit")
+	var stored := SettingsSource.read(path)
+	_check(stored.has(&"fov") and is_equal_approx(float(stored[&"fov"]), 88.0), "fov relu (88)")
+	_check(stored.has(&"flashlight_strong") and bool(stored[&"flashlight_strong"]), "flashlight_strong relu")
+	_check(not stored.has(&"volume_master"), "clé hors périmètre ignorée")
+	_player.apply_persisted_settings()
+	await get_tree().process_frame
+	_check(is_equal_approx(_player.get_base_fov(), 88.0), "réglages appliqués au démarrage du joueur")
+	var lamp := _player.get_node_or_null("Head/Camera/Flashlight") as Flashlight
+	_check(lamp != null and lamp.is_strong(), "lampe forte restaurée")
+	# Nettoyage : on rend le fichier à son état d'origine.
+	var restore := DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
+	if restore != OK:
+		push_warning("Test : impossible de supprimer %s (%s)" % [path, error_string(restore)])
+	if had_file:
+		var f := FileAccess.open(path, FileAccess.WRITE)
+		if f != null:
+			f.store_buffer(backup)
+			f.close()
+	EventBus.settings_changed.emit(&"fov", 75.0)
+	await get_tree().process_frame
+
+
+## Smoke test : un joueur libéré rend la souris sans erreur (fin de partie).
+## Le serveur headless ignore la capture réelle, on vérifie donc surtout
+## l'absence de régression et l'état du joueur principal.
+func _test_exit_releases_mouse() -> void:
+	print("[Sortie de scène]")
+	var second := (load("res://scenes/player/player.tscn") as PackedScene).instantiate() as PlayerController
+	_room.add_child(second)
+	await get_tree().process_frame
+	_check(second.get_intended_mouse_mode() == Input.MOUSE_MODE_CAPTURED, "le joueur instancié capture la souris")
+	second.queue_free()
+	await get_tree().process_frame
+	await get_tree().process_frame
+	_check(_player.get_intended_mouse_mode() == Input.MOUSE_MODE_CAPTURED,
+		"la libération d'une instance ne casse pas le joueur principal")
+	_check(not _player.is_paused(), "toujours hors pause")
 
 
 func _on_photo_taken(photo: PhotoData) -> void:

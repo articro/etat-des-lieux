@@ -35,7 +35,22 @@ const NOISE_RUN: float = 0.85
 
 const FALL_RESET_Y: float = -25.0
 
-## Sensibilité souris (rad/px). Remplacée plus tard par l'option UI.
+# --- Réglages (EventBus.settings_changed, ARCHITECTURE §4 et §7) ---
+const SETTING_SENSITIVITY: StringName = &"mouse_sensitivity"
+const SETTING_FOV: StringName = &"fov"
+const SETTING_FLASHLIGHT_STRONG: StringName = &"flashlight_strong"
+
+## La sensibilité arrive normalisée 0..1 (curseur UI) et devient des rad/px.
+## Une valeur < 0.02 est prise comme des rad/px bruts (compatibilité).
+const SENSITIVITY_NORMALIZED_MIN: float = 0.0006
+const SENSITIVITY_NORMALIZED_MAX: float = 0.0080
+const SENSITIVITY_RAW_THRESHOLD: float = 0.02
+const SENSITIVITY_RAW_MIN: float = 0.0004
+const SENSITIVITY_RAW_MAX: float = 0.0120
+const FOV_MIN: float = 55.0
+const FOV_MAX: float = 110.0
+
+## Sensibilité souris (rad/px). Pilotée par l'option UI (settings_changed).
 @export var mouse_sensitivity: float = 0.0022
 @export var base_fov: float = 75.0
 
@@ -45,7 +60,9 @@ var _exhausted: bool = false
 var _crouching: bool = false
 var _bob_phase: float = 0.0
 var _step_accum: float = 0.0
-var _input_enabled: bool = true
+var _input_enabled: bool = true   # verrou scripté (cinématique, fin de partie)
+var _paused: bool = false
+var _intended_mouse_mode: int = Input.MOUSE_MODE_CAPTURED
 var _spawn: Transform3D
 var _standalone: bool = false
 
@@ -63,16 +80,31 @@ func _ready() -> void:
 	_spawn = global_transform
 	_apply_height(STAND_HEIGHT)
 	_camera.fov = base_fov
-	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	_set_mouse_captured(true)
 	EventBus.pause_toggled.connect(_on_pause_toggled)
+	EventBus.settings_changed.connect(_on_settings_changed)
+	apply_persisted_settings()
 	# Lancée seule (F6) : un sol de secours évite une chute infinie.
 	_standalone = get_tree().current_scene == self
 	_standalone_floor.visible = _standalone
 	_standalone_body.collision_layer = 1 if _standalone else 0
 
 
+## Le joueur possède la capture souris : il la rend en quittant l'arbre (fin de
+## partie, changement de scène), sinon l'écran suivant hérite d'un curseur
+## invisible et ne peut plus être cliqué.
+func _exit_tree() -> void:
+	if _intended_mouse_mode == Input.MOUSE_MODE_CAPTURED:
+		_set_mouse_captured(false)
+
+
 func _unhandled_input(event: InputEvent) -> void:
-	if not _input_enabled:
+	# Échap est traité en premier : sinon un joueur en pause ne pourrait plus la quitter.
+	if event.is_action_pressed(&"pause"):
+		set_paused(not _paused)
+		get_viewport().set_input_as_handled()
+		return
+	if not _accepts_input():
 		return
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		var motion := event as InputEventMouseMotion
@@ -88,7 +120,7 @@ func _physics_process(delta: float) -> void:
 		velocity.y = 0.0
 
 	var input_dir := Vector2.ZERO
-	if _input_enabled:
+	if _accepts_input():
 		input_dir = Input.get_vector(&"move_left", &"move_right", &"move_forward", &"move_back")
 	var wish := global_transform.basis * Vector3(input_dir.x, 0.0, input_dir.y)
 	wish.y = 0.0
@@ -96,7 +128,7 @@ func _physics_process(delta: float) -> void:
 	if moving:
 		wish = wish.normalized()
 
-	var want_run := _input_enabled and Input.is_action_pressed(&"sprint") and not _crouching and moving
+	var want_run := _accepts_input() and Input.is_action_pressed(&"sprint") and not _crouching and moving
 	_update_stamina(delta, want_run)
 	var speed := WALK_SPEED
 	if _crouching:
@@ -119,7 +151,7 @@ func _physics_process(delta: float) -> void:
 
 ## Accroupissement maintenu (Ctrl ou C), interpolé sur la capsule et la tête.
 func _update_crouch(delta: float) -> void:
-	_crouching = _input_enabled and is_on_floor() and Input.is_action_pressed(&"crouch")
+	_crouching = _accepts_input() and is_on_floor() and Input.is_action_pressed(&"crouch")
 	var target_height := CROUCH_HEIGHT if _crouching else STAND_HEIGHT
 	var height := lerpf(_capsule.height, target_height, clampf(CROUCH_LERP * delta, 0.0, 1.0))
 	_apply_height(height)
@@ -168,9 +200,78 @@ func _reset_if_fallen() -> void:
 		push_warning("PlayerController : chute hors carte, retour au point d'apparition.")
 
 
+## Réglages émis par l'UI (menu Options) — on ignore en silence les clés qui ne
+## concernent pas le joueur (volumes, sous-titres, plein écran…).
+func _on_settings_changed(key: StringName, value: Variant) -> void:
+	match key:
+		SETTING_SENSITIVITY:
+			_apply_sensitivity(value)
+		SETTING_FOV:
+			_apply_fov(value)
+		SETTING_FLASHLIGHT_STRONG:
+			var lamp := get_node_or_null("Head/Camera/Flashlight")
+			if lamp != null and lamp.has_method(&"set_strong"):
+				lamp.call(&"set_strong", bool(value))
+
+
+func _apply_sensitivity(value: Variant) -> void:
+	if not (value is float or value is int):
+		push_warning("PlayerController : sensibilité ignorée (valeur non numérique).")
+		return
+	var raw := float(value)
+	if raw <= 0.0:
+		return
+	if raw < SENSITIVITY_RAW_THRESHOLD:
+		mouse_sensitivity = clampf(raw, SENSITIVITY_RAW_MIN, SENSITIVITY_RAW_MAX)
+	else:
+		mouse_sensitivity = lerpf(
+			SENSITIVITY_NORMALIZED_MIN, SENSITIVITY_NORMALIZED_MAX, clampf(raw, 0.0, 1.0))
+
+
+func _apply_fov(value: Variant) -> void:
+	if not (value is float or value is int):
+		push_warning("PlayerController : FOV ignoré (valeur non numérique).")
+		return
+	base_fov = clampf(float(value), FOV_MIN, FOV_MAX)
+	_camera.fov = base_fov
+
+
+## Bascule pause (Échap) : souris libérée/recapturée et signal pause_toggled.
+## `notify = false` sert quand l'état vient déjà d'un autre émetteur (UI) : on
+## s'aligne sans réémettre, ce qui évite toute boucle.
+func set_paused(paused: bool, notify: bool = true) -> void:
+	if _paused == paused:
+		return
+	_paused = paused
+	_set_mouse_captured(not paused)
+	if paused:
+		_crouching = false
+	if notify:
+		EventBus.pause_toggled.emit(paused)
+
+
+func is_paused() -> bool:
+	return _paused
+
+
+## Mode souris voulu. Le serveur d'affichage headless ignore MOUSE_MODE_CAPTURED
+## (Input.mouse_mode reste VISIBLE) : cette valeur-là est testable, pas l'autre.
+func get_intended_mouse_mode() -> Input.MouseMode:
+	return _intended_mouse_mode as Input.MouseMode
+
+
+func _set_mouse_captured(captured: bool) -> void:
+	_intended_mouse_mode = Input.MOUSE_MODE_CAPTURED if captured else Input.MOUSE_MODE_VISIBLE
+	Input.mouse_mode = _intended_mouse_mode as Input.MouseMode
+
+
+## Entrées autorisées : ni pause, ni verrou scripté.
+func _accepts_input() -> bool:
+	return _input_enabled and not _paused
+
+
 func _on_pause_toggled(paused: bool) -> void:
-	_input_enabled = not paused
-	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE if paused else Input.MOUSE_MODE_CAPTURED
+	set_paused(paused, false)
 
 
 # --- API interne au module ---------------------------------------------------
@@ -197,3 +298,21 @@ func is_standalone() -> bool:
 
 func set_input_enabled(enabled: bool) -> void:
 	_input_enabled = enabled
+
+
+## Relit user://settings.cfg (écrit par l'UI) : couvre le cas où les
+## settings_changed du démarrage ont été émis avant l'instanciation du joueur.
+## Appelé au _ready() ; public pour les tests et un éventuel rechargement.
+func apply_persisted_settings() -> void:
+	var stored := SettingsSource.read()
+	for key: StringName in stored:
+		_on_settings_changed(key, stored[key])
+
+
+## Réglages appliqués (lecture seule, pour les tests et l'UI).
+func get_base_fov() -> float:
+	return base_fov
+
+
+func get_sensitivity() -> float:
+	return mouse_sensitivity
