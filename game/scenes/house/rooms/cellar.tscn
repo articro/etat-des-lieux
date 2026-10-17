@@ -1,0 +1,234 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://scenes/house/room.gd" id="1_room"]
+[ext_resource type="PackedScene" path="res://scenes/player/presence.tscn" id="2_presence"]
+
+[sub_resource type="StandardMaterial3D" id="FloorMat"]
+albedo_color = Color(0.25, 0.25, 0.24, 1)
+roughness = 0.97
+
+[sub_resource type="StandardMaterial3D" id="WallMat"]
+albedo_color = Color(0.34, 0.34, 0.32, 1)
+roughness = 0.96
+
+[sub_resource type="StandardMaterial3D" id="CeilingMat"]
+albedo_color = Color(0.22, 0.22, 0.21, 1)
+roughness = 0.98
+
+[sub_resource type="StandardMaterial3D" id="PropMat"]
+albedo_color = Color(0.43, 0.41, 0.37, 1)
+roughness = 0.95
+
+[sub_resource type="BoxShape3D" id="ZoneShape"]
+size = Vector3(6, 2.1, 4)
+
+[node name="Cellar" type="Node3D"]
+script = ExtResource("1_room")
+metadata/room_id = &"cellar"
+
+[node name="Blockout" type="Node3D" parent="."]
+
+[node name="Floor" type="CSGBox3D" parent="Blockout"]
+size = Vector3(6, 0.2, 4)
+position = Vector3(0, -0.1, 0)
+use_collision = true
+collision_layer = 1
+material = SubResource("FloorMat")
+
+[node name="CeilingLeft" type="CSGBox3D" parent="Blockout"]
+size = Vector3(4.7, 0.12, 4)
+position = Vector3(-0.65, 2.16, 0)
+use_collision = false
+collision_layer = 0
+material = SubResource("CeilingMat")
+
+[node name="CeilingRight" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.3, 0.12, 4)
+position = Vector3(2.85, 2.16, 0)
+use_collision = false
+collision_layer = 0
+material = SubResource("CeilingMat")
+
+[node name="CeilingHatchFront" type="CSGBox3D" parent="Blockout"]
+size = Vector3(1, 0.12, 0.5)
+position = Vector3(2.2, 2.16, -1.75)
+use_collision = false
+collision_layer = 0
+material = SubResource("CeilingMat")
+
+[node name="CeilingHatchBack" type="CSGBox3D" parent="Blockout"]
+size = Vector3(1, 0.12, 2.5)
+position = Vector3(2.2, 2.16, 0.75)
+use_collision = false
+collision_layer = 0
+material = SubResource("CeilingMat")
+
+[node name="WallWest" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.18, 2.1, 4)
+position = Vector3(-3.09, 1.05, 0)
+use_collision = true
+collision_layer = 1
+material = SubResource("WallMat")
+
+[node name="WallEast" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.18, 2.1, 4)
+position = Vector3(3.09, 1.05, 0)
+use_collision = true
+collision_layer = 1
+material = SubResource("WallMat")
+
+[node name="WallSouth" type="CSGBox3D" parent="Blockout"]
+size = Vector3(6, 2.1, 0.18)
+position = Vector3(0, 1.05, -2.09)
+use_collision = true
+collision_layer = 1
+material = SubResource("WallMat")
+
+[node name="WallNorth" type="CSGBox3D" parent="Blockout"]
+size = Vector3(6, 2.1, 0.18)
+position = Vector3(0, 1.05, 2.09)
+use_collision = true
+collision_layer = 1
+material = SubResource("WallMat")
+
+[node name="LadderRailLeft" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.07, 1.9, 0.07)
+position = Vector3(1.93, 1.05, -1)
+use_collision = true
+collision_layer = 1
+material = SubResource("PropMat")
+
+[node name="LadderRailRight" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.07, 1.9, 0.07)
+position = Vector3(2.47, 1.05, -1)
+use_collision = true
+collision_layer = 1
+material = SubResource("PropMat")
+
+[node name="LadderRung1" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.58, 0.05, 0.06)
+position = Vector3(2.2, 0.28, -1)
+use_collision = true
+collision_layer = 1
+material = SubResource("PropMat")
+
+[node name="LadderRung2" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.58, 0.05, 0.06)
+position = Vector3(2.2, 0.62, -1)
+use_collision = true
+collision_layer = 1
+material = SubResource("PropMat")
+
+[node name="LadderRung3" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.58, 0.05, 0.06)
+position = Vector3(2.2, 0.96, -1)
+use_collision = true
+collision_layer = 1
+material = SubResource("PropMat")
+
+[node name="LadderRung4" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.58, 0.05, 0.06)
+position = Vector3(2.2, 1.30, -1)
+use_collision = true
+collision_layer = 1
+material = SubResource("PropMat")
+
+[node name="LadderRung5" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.58, 0.05, 0.06)
+position = Vector3(2.2, 1.64, -1)
+use_collision = true
+collision_layer = 1
+material = SubResource("PropMat")
+
+[node name="RegisterTableTop" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.9, 0.10, 0.6)
+position = Vector3(-1.0, 0.46, 1.1)
+use_collision = true
+collision_layer = 1
+material = SubResource("PropMat")
+
+[node name="RegisterTableLegLeft" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.08, 0.42, 0.08)
+position = Vector3(-1.36, 0.21, 0.88)
+use_collision = true
+collision_layer = 1
+material = SubResource("PropMat")
+
+[node name="RegisterTableLegRight" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.08, 0.42, 0.08)
+position = Vector3(-0.64, 0.21, 0.88)
+use_collision = true
+collision_layer = 1
+material = SubResource("PropMat")
+
+[node name="RegisterTableLegBackLeft" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.08, 0.42, 0.08)
+position = Vector3(-1.36, 0.21, 1.32)
+use_collision = true
+collision_layer = 1
+material = SubResource("PropMat")
+
+[node name="RegisterTableLegBackRight" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.08, 0.42, 0.08)
+position = Vector3(-0.64, 0.21, 1.32)
+use_collision = true
+collision_layer = 1
+material = SubResource("PropMat")
+
+[node name="Register1847" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.48, 0.02, 0.32)
+position = Vector3(-1.0, 0.52, 1.1)
+use_collision = true
+collision_layer = 1
+material = SubResource("CeilingMat")
+metadata/document_id = &"cellar_register_1847"
+
+[node name="Zone" type="Area3D" parent="."]
+position = Vector3(0, 1.05, 0)
+collision_layer = 4
+collision_mask = 0
+monitoring = true
+monitorable = true
+metadata/room_id = &"cellar"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Zone"]
+shape = SubResource("ZoneShape")
+
+[node name="Anchors" type="Node3D" parent="."]
+
+[node name="Items" type="Node3D" parent="."]
+
+[node name="cellar_anchor_shelves" type="Marker3D" parent="Anchors"]
+position = Vector3(2.20, 0.90, 1.18)
+
+[node name="cellar_anchor_bottles" type="Marker3D" parent="Anchors"]
+position = Vector3(2.20, 1.55, 1.18)
+
+[node name="cellar_anchor_stove" type="Marker3D" parent="Anchors"]
+position = Vector3(-1.8, 0.425, 1.12)
+
+[node name="cellar_anchor_coat_emile" type="Marker3D" parent="Anchors"]
+position = Vector3(2.65, 0.90, -0.12)
+
+[node name="cellar_anchor_presence_spawn" type="Marker3D" parent="Anchors"]
+position = Vector3(-2.65, 0, 1.58)
+
+[node name="Presence" parent="." instance=ExtResource("2_presence")]
+position = Vector3(-2.65, 0, 1.58)
+
+[node name="StandaloneLights" type="Node3D" parent="."]
+
+[node name="PreviewOmni" type="OmniLight3D" parent="StandaloneLights"]
+position = Vector3(0, 1.8, 0)
+light_color = Color(0.74, 0.72, 0.67, 1)
+light_energy = 0.85
+omni_range = 9.0
+shadow_enabled = false
+
+[node name="StandaloneCamera" type="Camera3D" parent="."]
+position = Vector3(0, 1.25, -5)
+rotation_degrees = Vector3(0, 180, 0)
+current = false
+fov = 72.0
+near = 0.05
+far = 80.0

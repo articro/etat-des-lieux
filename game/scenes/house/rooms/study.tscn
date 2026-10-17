@@ -1,0 +1,148 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scenes/house/room.gd" id="1_room"]
+
+[sub_resource type="StandardMaterial3D" id="FloorMat"]
+albedo_color = Color(0.31, 0.31, 0.30, 1)
+roughness = 0.94
+
+[sub_resource type="StandardMaterial3D" id="WallMat"]
+albedo_color = Color(0.43, 0.43, 0.41, 1)
+roughness = 0.92
+
+[sub_resource type="StandardMaterial3D" id="CeilingMat"]
+albedo_color = Color(0.52, 0.52, 0.50, 1)
+roughness = 0.95
+
+[sub_resource type="StandardMaterial3D" id="PropMat"]
+albedo_color = Color(0.50, 0.48, 0.44, 1)
+roughness = 0.9
+
+[sub_resource type="BoxShape3D" id="ZoneShape"]
+size = Vector3(4.5, 2.6, 4)
+
+[node name="Study" type="Node3D"]
+script = ExtResource("1_room")
+metadata/room_id = &"study"
+
+[node name="Blockout" type="Node3D" parent="."]
+
+[node name="Floor" type="CSGBox3D" parent="Blockout"]
+size = Vector3(4.5, 0.2, 4)
+position = Vector3(0, -0.1, 0)
+use_collision = true
+collision_layer = 1
+material = SubResource("FloorMat")
+
+[node name="Ceiling" type="CSGBox3D" parent="Blockout"]
+size = Vector3(4.5, 0.12, 4)
+position = Vector3(0, 2.66, 0)
+use_collision = false
+collision_layer = 0
+material = SubResource("CeilingMat")
+
+[node name="WallWestLower" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.18, 2.6, 1.55)
+position = Vector3(-2.25, 1.3, -1.225)
+use_collision = true
+collision_layer = 1
+material = SubResource("WallMat")
+
+[node name="WallWestUpper" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.18, 2.6, 1.55)
+position = Vector3(-2.25, 1.3, 1.225)
+use_collision = true
+collision_layer = 1
+material = SubResource("WallMat")
+
+[node name="WallNorth" type="CSGBox3D" parent="Blockout"]
+size = Vector3(4.5, 2.6, 0.18)
+position = Vector3(0, 1.3, 2.09)
+use_collision = true
+collision_layer = 1
+material = SubResource("WallMat")
+
+[node name="WallSouth" type="CSGBox3D" parent="Blockout"]
+size = Vector3(4.5, 2.6, 0.18)
+position = Vector3(0, 1.3, -2.09)
+use_collision = true
+collision_layer = 1
+material = SubResource("WallMat")
+
+[node name="WallEast" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.18, 2.6, 4)
+position = Vector3(2.34, 1.3, 0)
+use_collision = true
+collision_layer = 1
+material = SubResource("WallMat")
+
+[node name="Zone" type="Area3D" parent="."]
+collision_layer = 4
+collision_mask = 0
+monitoring = true
+monitorable = true
+metadata/room_id = &"study"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Zone"]
+position = Vector3(0, 1.3, 0)
+shape = SubResource("ZoneShape")
+
+[node name="Anchors" type="Node3D" parent="."]
+
+[node name="Items" type="Node3D" parent="."]
+
+[node name="study_anchor_desk" type="Marker3D" parent="Anchors"]
+position = Vector3(0.15, 0.38, 1.18)
+
+[node name="study_anchor_chair" type="Marker3D" parent="Anchors"]
+position = Vector3(0.15, 0.5, 0.22)
+
+[node name="study_anchor_shelves" type="Marker3D" parent="Anchors"]
+position = Vector3(1.62, 1.98, 1.12)
+
+[node name="study_anchor_shelves_item" type="Marker3D" parent="Anchors"]
+position = Vector3(1.62, 0.95, 1.38)
+
+[node name="study_anchor_typewriter" type="Marker3D" parent="Anchors"]
+position = Vector3(0.65, 0.88, 1.18)
+
+[node name="study_anchor_lamp" type="Marker3D" parent="Anchors"]
+position = Vector3(-0.48, 1.14, 1.18)
+
+[node name="study_anchor_inkwell" type="Marker3D" parent="Anchors"]
+position = Vector3(0.95, 0.98, 1)
+
+[node name="study_anchor_stamp" type="Marker3D" parent="Anchors"]
+position = Vector3(-0.05, 0.9, 1.05)
+
+[node name="study_anchor_registers" type="Marker3D" parent="Anchors"]
+position = Vector3(-1.32, 0.24, 0.55)
+
+[node name="study_anchor_cadastre" type="Marker3D" parent="Anchors"]
+position = Vector3(-1.98, 1.18, 0.85)
+
+[node name="study_anchor_safe" type="Marker3D" parent="Anchors"]
+position = Vector3(-1.6, 0.55, -1.2)
+
+[node name="study_anchor_blotter" type="Marker3D" parent="Anchors"]
+position = Vector3(0.6, 0.92, 1.12)
+
+[node name="study_anchor_briefcase_jpd" type="Marker3D" parent="Anchors"]
+position = Vector3(-0.6, 0.24, -0.7)
+
+[node name="StandaloneLights" type="Node3D" parent="."]
+
+[node name="StandaloneCamera" type="Camera3D" parent="."]
+position = Vector3(0, 1.55, -1.55)
+rotation_degrees = Vector3(0, 180, 0)
+current = false
+fov = 72.0
+near = 0.05
+far = 80.0
+
+[node name="PreviewOmni" type="OmniLight3D" parent="StandaloneLights"]
+position = Vector3(0, 2.25, 0)
+light_color = Color(0.83, 0.81, 0.75, 1)
+light_energy = 1.0
+omni_range = 10.0
+shadow_enabled = false
