@@ -28,7 +28,18 @@ func mark_found(doc_id: StringName) -> void:
 	if _found.has(doc_id):
 		return
 	_found[doc_id] = true
+	var doc := get_document(doc_id)
+	if doc != null:
+		_apply_document_data(doc)
 	EventBus.document_found.emit(doc_id)
+
+
+## Applique les données du document : flags et objets révélés (demande Narration, 2026-10-17).
+func _apply_document_data(doc: DocumentData) -> void:
+	for flag: StringName in doc.sets_flags:
+		GameState.set_flag(flag)
+	for item_id: StringName in doc.reveals_items:
+		InventoryManager.reveal_item(item_id)
 
 
 func mark_read(doc_id: StringName) -> void:

@@ -7,6 +7,14 @@ const SAVE_DIR := "user://saves/"
 
 func _ready() -> void:
 	EventBus.save_requested.connect(func() -> void: save_game())
+	EventBus.player_entered_room.connect(_on_player_entered_room)
+
+
+## Auto-sauvegarde à chaque changement de pièce (design, ARCHITECTURE §9).
+func _on_player_entered_room(_room_id: StringName) -> void:
+	var err := save_game()
+	if err != OK:
+		push_warning("SaveManager : auto-sauvegarde échouée (%s)." % error_string(err))
 
 
 func _path(slot: int) -> String:
@@ -44,7 +52,7 @@ func load_game(slot: int = 0) -> Error:
 		return ERR_PARSE_ERROR
 	var data := parsed as Dictionary
 	if int(data.get("version", 0)) != SAVE_VERSION:
-		push_warning("SaveManager : version de sauvegarde %s, migration nécessaire." % data.get("version"))
+		push_warning("SaveManager : version de sauvegarde %s, chargement en dégradé." % data.get("version"))
 	GameState.from_save_dict(data.get("game_state", {}))
 	InventoryManager.from_save_dict(data.get("inventory", {}))
 	HouseDirector.from_save_dict(data.get("house", {}))
