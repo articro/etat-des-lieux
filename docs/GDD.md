@@ -1,6 +1,8 @@
 # ÉTAT DES LIEUX — Game Design Document
 
 > Version 0.1 — Document fondateur. Toute modification de ce document passe par l'agent Architecte.
+>
+> ⚠️ **Pour la sortie Halloween 2026, le périmètre est réduit : voir `docs/PLAN_HALLOWEEN.md` (prioritaire).** Ce GDD décrit la vision complète (V2).
 
 ## 1. Fiche d'identité
 

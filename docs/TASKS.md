@@ -1,5 +1,7 @@
 # ÉTAT DES LIEUX — Tâches & Jalons
 
+> ⚠️ **MODE HALLOWEEN 2026 ACTIF** : lis d'abord `docs/PLAN_HALLOWEEN.md`. Il définit le périmètre réduit, les priorités par agent et le calendrier J1→J14. Les tâches ci-dessous restent la référence des IDs, mais **seules celles citées dans PLAN_HALLOWEEN.md §3 sont à faire**, dans l'ordre indiqué. Le reste = V2.
+
 > Statuts : `TODO` · `EN COURS (agent)` · `REVIEW` · `DONE` · `BLOQUÉ (raison)`
 > Chaque agent met à jour **uniquement ses lignes** + la section *Demandes inter-modules*.
 
@@ -24,8 +26,10 @@
 |---|---|---|
 | A0-1 | GDD, Story Bible, Architecture, Briefs | DONE |
 | A0-2 | Squelette projet Godot + autoloads stubs + classes de données | DONE |
-| A0-3 | Dépôt Git / GitHub, branches par agent | TODO (utilisateur) |
-| A0-4 | Vérifier version exacte de Godot de l'utilisateur et ajuster `config/features` | TODO |
+| A0-3 | Dépôt GitHub `articro/etat-des-lieux`, push initial | EN COURS (attente token) |
+| A0-4 | Version Godot = **4.7.2**, `config/features` ajusté, check headless OK | DONE |
+| A0-5 | Outils : `tools/check.sh`, `tools/install_godot_sandbox.sh`, `tools/run_tests.sh` | DONE |
+| A0-6 | Plan Halloween 2026 (périmètre réduit, calendrier) | DONE |
 
 ## Module Gameplay `[Gameplay]` — `scenes/player/`, `scenes/fx/`
 
@@ -136,3 +140,5 @@ _(vide)_
 
 - 2026-10-17 — Moteur : **Godot 4.x**, GDScript, Forward+. (Architecte, validé utilisateur)
 - 2026-10-17 — Concept : **État des lieux** validé.
+- 2026-10-17 — **Sortie visée : 30-31 octobre 2026.** Périmètre réduit « Rez-de-chaussée » (docs/PLAN_HALLOWEEN.md). Version complète = V2 2027.
+- 2026-10-17 — Godot **4.7.2**. L'Architecte assure l'intégration (merge main + check headless) ; pas d'agent QA séparé en V1.

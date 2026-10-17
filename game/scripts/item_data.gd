@@ -8,7 +8,7 @@ extends Resource
 @export var label_key: StringName
 @export var lore_key: StringName
 @export var is_phantom: bool = false
-@export_enum("", "person", "moved", "message", "photo_only") var phantom_kind: String = ""
+@export_enum("none", "person", "moved", "message", "photo_only") var phantom_kind: String = "none"
 @export_multiline var reveal_condition: String = ""
 @export var movable: bool = true
 @export var anchors: Array[StringName] = []

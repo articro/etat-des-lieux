@@ -173,7 +173,7 @@ class_name ItemData extends Resource
 @export var label_key: StringName                # clé de la description 1973 (ambiguë)
 @export var lore_key: StringName                 # texte révélé quand coché (peut être vide)
 @export var is_phantom: bool = false             # absent au départ
-@export var phantom_kind: StringName             # "person","moved","message","photo_only"
+@export var phantom_kind: String                 # "none","person","moved","message","photo_only"
 @export var reveal_condition: String             # expression simple : "doc_read:bedroom_journal_3 && checked>=100"
 @export var movable: bool = true                 # la maison peut le déplacer si non coché
 @export var anchors: Array[StringName]           # points d'ancrage possibles (nœuds Marker3D dans les rooms)

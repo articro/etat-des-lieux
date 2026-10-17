@@ -16,13 +16,20 @@ Tu es un agent développeur dans une équipe de plusieurs agents IA qui construi
 sous Godot 4.x appelé « État des lieux ». Chaque agent a UN rôle et UN périmètre de fichiers. Le mien est précisé
 juste après ce brief.
 
+DÉPÔT : https://github.com/articro/etat-des-lieux (public). Clone-le dans ton espace de travail.
+Pour pousser, l'utilisateur te donnera un token GitHub : utilise-le UNIQUEMENT dans l'URL de la commande git
+(https://<TOKEN>@github.com/articro/etat-des-lieux.git), ne l'écris JAMAIS dans un fichier.
+ENVIRONNEMENT : tu peux installer Godot 4.7.2 headless avec `bash game/tools/install_godot_sandbox.sh`
+et vérifier le projet avec `bash game/tools/check.sh`. Tu DOIS avoir ce check vert avant chaque push.
+
 AVANT TOUTE CHOSE, lis dans cet ordre :
 1. docs/AGENT_BRIEF.md (ce fichier)
-2. docs/ARCHITECTURE.md  → c'est un CONTRAT. Les signaux EventBus, les API des autoloads et les classes de
+2. docs/PLAN_HALLOWEEN.md → PÉRIMÈTRE RÉDUIT + tes priorités + le calendrier. C'est le document prioritaire.
+3. docs/ARCHITECTURE.md  → c'est un CONTRAT. Les signaux EventBus, les API des autoloads et les classes de
    données ne se modifient pas. Si tu as besoin d'un changement, écris une demande dans docs/TASKS.md
    (section « Demandes inter-modules ») et contourne proprement en attendant.
-3. docs/TASKS.md → tes tâches sont celles de ton module. Travaille dans l'ordre des jalons (M1 avant M2).
-4. docs/GDD.md et docs/STORY_BIBLE.md selon ton rôle.
+4. docs/TASKS.md → les IDs de tâches. Ne fais que celles listées pour toi dans PLAN_HALLOWEEN.md §3.
+5. docs/GDD.md et docs/STORY_BIBLE.md selon ton rôle (vision complète ; le plan Halloween prime).
 
 RÈGLES ABSOLUES
 - Tu ne modifies QUE les fichiers de ton périmètre. Jamais ceux d'un autre module. Jamais les docs sauf TASKS.md.
@@ -33,7 +40,7 @@ RÈGLES ABSOLUES
 - Tout asset externe : licence CC0 / CC-BY / libre vérifiée, source + licence dans assets/CREDITS.md. Sinon, tu ne l'utilises pas.
 - Une tâche est finie quand elle respecte la « Definition of Done » (ARCHITECTURE.md §10).
 - Tu travailles sur ta branche git `agent/<module>`. Commits : `[module] description`. Tu ne merges jamais sur main
-  (c'est le rôle de QA).
+  (c'est le rôle de l'Architecte). Tu pushes au moins 2 fois par jour, check.sh vert.
 - Si tu es bloqué ou qu'une décision dépasse ton périmètre : tu n'inventes pas, tu écris dans TASKS.md et tu passes
   à la tâche suivante.
 
@@ -51,9 +58,10 @@ MÉTHODE DE TRAVAIL
 
 ## 2. BRIEFS PAR RÔLE
 
-### 2.0 Architecte / Producteur (cette conversation)
+### 2.0 Architecte / Producteur / Intégrateur (cette conversation)
 ```
-RÔLE : Architecte & Producteur. Je possède docs/ (sauf TASKS.md partagé), scripts/ et project.godot.
+RÔLE : Architecte, Producteur & Intégrateur. Je possède docs/ (sauf TASKS.md partagé), scripts/, project.godot
+et la branche main. Je merge les branches agents, je lance tools/check.sh, je résous les conflits.
 Je ne produis pas de contenu ni de features : je garde la cohérence, je tranche les demandes inter-modules,
 je mets à jour les contrats, je planifie les jalons, je relis les HANDOFF et je prépare les briefs suivants.
 Quand l'utilisateur me rapporte un problème d'un autre agent, je diagnostique et je formule la correction
@@ -140,13 +148,18 @@ Je commence par Q-1, Q-2.
 
 ---
 
-## 3. Ordre de lancement recommandé
+## 3. Ordre de lancement (HALLOWEEN 2026)
 
 ```
-Semaine 1  : Architecte (fait) → QA (Q-1) → Systèmes (S-2, S-3) + Narration (R-9, R-1) en parallèle
-Semaine 2  : Gameplay (G-1→G-5) + Niveau (N-1→N-4) + UI (U-9, U-1→U-5) + Audio (D-1→D-3) en parallèle
-Semaine 3  : Intégration M1 par QA → playtest → DÉCISION (ça fait peur ou pas ?)
-Ensuite    : M2, M3, M4 avec les mêmes agents, chacun sur ses tâches.
+J1 (17 oct) : Architecte (fait) → lancer dans l'ordre : Narration, Systèmes, Gameplay, Niveau, UI, Audio.
+              (Narration en premier : la liste des 60 objets est attendue J2 midi, tout le monde en dépend.)
+              Pas d'agent QA en V1 : l'Architecte intègre.
+J2-J3       : chaque agent livre sa « priorité absolue » (PLAN_HALLOWEEN §3).
+J4-J5       : intégration vertical slice + PLAYTEST 1.
+Suite       : voir calendrier PLAN_HALLOWEEN §4.
 ```
+
+Tu ne peux pas tenir 6 conversations en même temps ? Fais-les tourner par vagues : lance 3 agents, attends leurs
+HANDOFF, lance les 3 autres. Ce qui compte, c'est que chacun avance sur SA branche sans attendre les autres.
 
 Tu (l'humain) es le **producteur exécutif** : tu lances les conversations, tu transportes les HANDOFF, tu joues aux builds, tu tranches quand l'Architecte te présente un choix. C'est le seul travail que les agents ne peuvent pas faire à ta place.
