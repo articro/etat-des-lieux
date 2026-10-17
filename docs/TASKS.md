@@ -29,6 +29,7 @@
 | A0-3 | Dépôt GitHub `articro/etat-des-lieux`, push initial, 6 branches agents | DONE |
 | A0-7 | Intégration Narration session 1 (60 objets, 10 docs, 18 règles) sur main, traduction enregistrée | DONE |
 | A0-8 | Intégration Narration session 2 (relecture, itch_textes.md) | DONE |
+| A0-13 | Intégration Niveau S1 (hall/bureau/cave, 47 tests) + Systèmes S3 + Gameplay S3 + UI S2 — 372 assertions vertes | DONE |
 | A0-12 | Intégration UI S1 (92 tests) + Systèmes S2 + Gameplay S2 ; signal interact_target_changed ; API all_items | DONE |
 | A0-11 | Validation N-1 (plan maison) + consignes dimensions/ancres | DONE |
 | A0-10 | Intégration Systèmes session 1 (S-2→S-8, 79 assertions) ; playtest utilisateur J1 : feeling validé | DONE |
@@ -457,6 +458,8 @@
 - `[Gameplay → Systèmes/UI]` (2026-10-17, session 4) **Ordre de l'arbre pour Échap.** Le joueur ET `pause_menu.gd` traitent l'action `pause` et appellent `set_input_as_handled()`. Godot livre `_unhandled_input` en ordre inverse de l'arbre : avec l'ordre actuel de `main.tscn` (maison, **joueur**, HUD) l'UI capte Échap en premier, met l'arbre en pause et émet `pause_toggled` — le joueur s'aligne (comportement voulu, testé, 0 double bascule). **Ne pas instancier le joueur APRÈS l'UI**, sinon le joueur consommerait Échap et le menu pause ne s'ouvrirait jamais. En scène solo (F6, sans UI), le joueur gère Échap lui-même.
 - `[UI → Systèmes]` (2026-10-17, realign `c1b4afd`) **Warning au démarrage : `/root/Settings` inexistant.** Décision Architecte (b) du 17/10 : « supprimer l'appel/warning `/root/Settings.apply_all()` — c'est `UiSettings.apply_all()` côté UI, main n'a rien à faire ». Non fait à ce commit. Repro : lancer le projet (F5) ou `bash game/tools/check.sh`. Obtenu : `WARNING: Main : /root/Settings.apply_all() introuvable (UI non livrée) — réglages non appliqués.` à chaque démarrage. Attendu : aucun warning (les réglages sont appliqués par `main_menu._ready()` puis `hud._ready()`). Suspect : `game/scenes/main/main.gd:17` (`const SETTINGS_NODE := "/root/Settings"`), `:32` et `:145-151` (`_apply_settings()`). — TODO
 - `[UI → Architecte]` (2026-10-17, realign) **`main.gd::_on_options()` toujours bavard.** `game/scenes/main/main.gd:108-109` journalise encore « Main : options à venir (UI, U-6) » à chaque clic sur Options, alors que le menu ouvre lui-même le panneau (décision (b) : à vider). Cosmétique, non bloquant. — TODO
+
+- `[Architecte → Audio]` (17/10) **Rien n'est arrivé sur `agent/audio`** (branche = main, 0 commit). Pousser avec le token. Décisions anticipées sur tes demandes : bus UI → SFX : OK ; soundscape démarré sur `player_entered_room` : OK (règle « un autoload ne laisse rien en lecture à la fermeture » ajoutée aux pièges communs) ; D-7 hors V1 : OK ; syntaxe `sfx:<id>@<ancre>` dans les actions de règles : **ACCEPTÉE** — HouseDirector résout `<ancre>` via `house.gd` (Systèmes émet `house_event_triggered`… non : Systèmes appelle `AudioManager.play_sfx(id, House.anchor_position(anchor))` ; **Niveau** expose `func anchor_position(anchor: StringName) -> Vector3` sur le nœud `house` (groupe `house`), Vector3.INF si inconnue). — TODO (Audio : push ; Systèmes + Niveau : `@ancre`)
 
 ## Journal des décisions
 
