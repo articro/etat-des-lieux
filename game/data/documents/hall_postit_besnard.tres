@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="DocumentData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/document_data.gd" id="1_docdata"]
+
+[resource]
+script = ExtResource("1_docdata")
+id = &"hall_postit_besnard"
+kind = "postit"
+year = 1998
+author = "Maître A. Besnard"
+title_key = &"DOC_HALL_POSTIT_BESNARD_TITLE"
+body_key = &"DOC_HALL_POSTIT_BESNARD_BODY"
+pages = 1
+reveals_items = Array[StringName]([])
+sets_flags = Array[StringName]([&"besnard_note_read"])

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="HouseRule" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/house_rule.gd" id="1_houserule"]
+
+[resource]
+script = ExtResource("1_houserule")
+id = &"r01_study_drawer_opens"
+trigger = "progress"
+trigger_param = "20"
+condition = ""
+actions = Array[String](["event:act1_drawer_opens", "sfx:drawer_open", "attention:+6"])
+once = true
+cooldown = 0.0

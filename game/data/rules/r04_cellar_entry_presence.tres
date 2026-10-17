@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="HouseRule" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/house_rule.gd" id="1_houserule"]
+
+[resource]
+script = ExtResource("1_houserule")
+id = &"r04_cellar_entry_presence"
+trigger = "room_entered"
+trigger_param = "cellar"
+condition = "checked>=44"
+actions = Array[String](["presence:physical", "sfx:breath_low", "attention:+10"])
+once = true
+cooldown = 0.0

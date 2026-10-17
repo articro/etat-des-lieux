@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="HouseRule" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/house_rule.gd" id="1_houserule"]
+
+[resource]
+script = ExtResource("1_houserule")
+id = &"r13_photo_family_read"
+trigger = "doc_read"
+trigger_param = "living_photo_family"
+condition = ""
+actions = Array[String](["attention:+10", "sfx:chair_drag_upstairs", "presence:offscreen"])
+once = true
+cooldown = 0.0

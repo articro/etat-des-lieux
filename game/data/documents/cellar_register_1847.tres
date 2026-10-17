@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="DocumentData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/document_data.gd" id="1_docdata"]
+
+[resource]
+script = ExtResource("1_docdata")
+id = &"cellar_register_1847"
+kind = "journal"
+year = 1847
+author = "Anselme Varenne"
+title_key = &"DOC_CELLAR_REGISTER_1847_TITLE"
+body_key = &"DOC_CELLAR_REGISTER_1847_BODY"
+pages = 3
+reveals_items = Array[StringName]([&"cellar_coat_emile"])
+sets_flags = Array[StringName]([&"register_read"])

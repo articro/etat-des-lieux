@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="DocumentData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/document_data.gd" id="1_docdata"]
+
+[resource]
+script = ExtResource("1_docdata")
+id = &"living_letter_lucienne_3"
+kind = "letter"
+year = 1953
+author = "Lucienne Marchal"
+title_key = &"DOC_LIVING_LETTER_LUCIENNE_3_TITLE"
+body_key = &"DOC_LIVING_LETTER_LUCIENNE_3_BODY"
+pages = 1
+reveals_items = Array[StringName]([])
+sets_flags = Array[StringName]([&"lucienne_letter_3_read"])

@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="DocumentData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/document_data.gd" id="1_docdata"]
+
+[resource]
+script = ExtResource("1_docdata")
+id = &"study_inventory_1973"
+kind = "inventory"
+year = 1973
+author = "A. Besnard / J.-P. Doucet"
+title_key = &"DOC_STUDY_INVENTORY_1973_TITLE"
+body_key = &"DOC_STUDY_INVENTORY_1973_BODY"
+pages = 4
+reveals_items = Array[StringName]([&"study_briefcase_jpd"])
+sets_flags = Array[StringName]([&"inventory_1973_read"])

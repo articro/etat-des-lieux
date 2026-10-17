@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="DocumentData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/document_data.gd" id="1_docdata"]
+
+[resource]
+script = ExtResource("1_docdata")
+id = &"study_deed_1912"
+kind = "inventory"
+year = 1912
+author = "Émile Ferrand, clerc"
+title_key = &"DOC_STUDY_DEED_1912_TITLE"
+body_key = &"DOC_STUDY_DEED_1912_BODY"
+pages = 1
+reveals_items = Array[StringName]([])
+sets_flags = Array[StringName]([&"emile_known"])

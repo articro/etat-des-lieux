@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="DocumentData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/document_data.gd" id="1_docdata"]
+
+[resource]
+script = ExtResource("1_docdata")
+id = &"living_photo_family"
+kind = "note"
+year = 1951
+author = ""
+title_key = &"DOC_LIVING_PHOTO_FAMILY_TITLE"
+body_key = &"DOC_LIVING_PHOTO_FAMILY_BODY"
+pages = 1
+reveals_items = Array[StringName]([&"living_portrait_louis", &"hall_ring_1951"])
+sets_flags = Array[StringName]([&"photo_family_read"])
