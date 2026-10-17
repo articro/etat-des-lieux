@@ -1,0 +1,221 @@
+[gd_scene load_steps=24 format=3 uid="uid://btestroom0player"]
+
+[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="2_playertsn"]
+[ext_resource type="Script" path="res://scripts/item_data.gd" id="3_itemdata"]
+[ext_resource type="Script" path="res://tests/player/test_item.gd" id="4_testitem"]
+
+[sub_resource type="Environment" id="Environment_room"]
+background_mode = 1
+background_color = Color(0.015, 0.015, 0.02, 1)
+ambient_light_source = 3
+ambient_light_color = Color(0.22, 0.24, 0.31, 1)
+ambient_light_energy = 0.25
+tonemap_mode = 2
+
+[sub_resource type="StandardMaterial3D" id="Material_floor"]
+albedo_color = Color(0.19, 0.17, 0.15, 1)
+roughness = 0.95
+
+[sub_resource type="StandardMaterial3D" id="Material_wall"]
+albedo_color = Color(0.22, 0.24, 0.21, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="Material_item_a"]
+albedo_color = Color(0.46, 0.24, 0.16, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="Material_item_b"]
+albedo_color = Color(0.2, 0.28, 0.4, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="Material_item_c"]
+albedo_color = Color(0.24, 0.36, 0.23, 1)
+roughness = 0.8
+
+[sub_resource type="BoxMesh" id="Mesh_floor"]
+size = Vector3(16, 0.2, 16)
+
+[sub_resource type="BoxShape3D" id="Shape_floor"]
+size = Vector3(16, 0.2, 16)
+
+[sub_resource type="BoxMesh" id="Mesh_item_a"]
+size = Vector3(0.9, 0.9, 0.9)
+
+[sub_resource type="BoxShape3D" id="Shape_item_a"]
+size = Vector3(0.9, 0.9, 0.9)
+
+[sub_resource type="BoxMesh" id="Mesh_item_b"]
+size = Vector3(0.9, 0.9, 0.9)
+
+[sub_resource type="BoxShape3D" id="Shape_item_b"]
+size = Vector3(0.9, 0.9, 0.9)
+
+[sub_resource type="BoxMesh" id="Mesh_item_c"]
+size = Vector3(0.25, 0.25, 0.25)
+
+[sub_resource type="BoxShape3D" id="Shape_item_c"]
+size = Vector3(0.25, 0.25, 0.25)
+
+[sub_resource type="BoxMesh" id="Mesh_panel"]
+size = Vector3(1.2, 1.8, 0.12)
+
+[sub_resource type="BoxShape3D" id="Shape_panel"]
+size = Vector3(1.2, 1.8, 0.12)
+
+[sub_resource type="BoxShape3D" id="Shape_room_zone"]
+size = Vector3(15.4, 2.8, 15.4)
+
+[sub_resource type="Resource" id="Data_test_item_a"]
+script = ExtResource("3_itemdata")
+id = &"test_item_a"
+list_index = 1
+room_id = &"test_room"
+label_key = &""
+lore_key = &""
+is_phantom = false
+phantom_kind = "none"
+reveal_condition = ""
+movable = false
+min_photo_coverage = 0.02
+
+[sub_resource type="Resource" id="Data_test_item_b"]
+script = ExtResource("3_itemdata")
+id = &"test_item_b"
+list_index = 2
+room_id = &"test_room"
+label_key = &""
+lore_key = &""
+is_phantom = false
+phantom_kind = "none"
+reveal_condition = ""
+movable = false
+min_photo_coverage = 0.02
+
+[sub_resource type="Resource" id="Data_test_item_c"]
+script = ExtResource("3_itemdata")
+id = &"test_item_c"
+list_index = 3
+room_id = &"test_room"
+label_key = &""
+lore_key = &""
+is_phantom = false
+phantom_kind = "none"
+reveal_condition = ""
+movable = false
+min_photo_coverage = 0.02
+
+[node name="TestRoom" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_room")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+rotation_degrees = Vector3(-52, -38, 0)
+light_energy = 0.35
+light_color = Color(1, 0.94, 0.86, 1)
+
+[node name="Lamp" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, 2.5)
+light_color = Color(1, 0.87, 0.7, 1)
+light_energy = 1.6
+omni_range = 9.0
+
+[node name="Floor" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Floor"]
+mesh = SubResource("Mesh_floor")
+surface_material_override/0 = SubResource("Material_floor")
+
+[node name="Collision" type="CollisionShape3D" parent="Floor"]
+shape = SubResource("Shape_floor")
+
+[node name="WallNorth" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -8)
+use_collision = true
+size = Vector3(16, 3, 0.3)
+material = SubResource("Material_wall")
+
+[node name="WallSouth" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 8)
+use_collision = true
+size = Vector3(16, 3, 0.3)
+material = SubResource("Material_wall")
+
+[node name="WallEast" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 1.5, 0)
+use_collision = true
+size = Vector3(0.3, 3, 16)
+material = SubResource("Material_wall")
+
+[node name="WallWest" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 1.5, 0)
+use_collision = true
+size = Vector3(0.3, 3, 16)
+material = SubResource("Material_wall")
+
+[node name="Occluder" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.26, 0.9, 4.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="Occluder"]
+mesh = SubResource("Mesh_panel")
+surface_material_override/0 = SubResource("Material_wall")
+
+[node name="Collision" type="CollisionShape3D" parent="Occluder"]
+shape = SubResource("Shape_panel")
+
+[node name="Items" type="Node3D" parent="."]
+
+[node name="TestItemA" type="Node3D" parent="Items"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 3.8)
+script = ExtResource("4_testitem")
+data = SubResource("Data_test_item_a")
+
+[node name="Mesh" type="MeshInstance3D" parent="Items/TestItemA"]
+mesh = SubResource("Mesh_item_a")
+surface_material_override/0 = SubResource("Material_item_a")
+
+[node name="Body" type="StaticBody3D" parent="Items/TestItemA"]
+
+[node name="Collision" type="CollisionShape3D" parent="Items/TestItemA/Body"]
+shape = SubResource("Shape_item_a")
+
+[node name="TestItemB" type="Node3D" parent="Items"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.8, 0.45, 4.0)
+script = ExtResource("4_testitem")
+data = SubResource("Data_test_item_b")
+
+[node name="Mesh" type="MeshInstance3D" parent="Items/TestItemB"]
+mesh = SubResource("Mesh_item_b")
+surface_material_override/0 = SubResource("Material_item_b")
+
+[node name="Body" type="StaticBody3D" parent="Items/TestItemB"]
+
+[node name="Collision" type="CollisionShape3D" parent="Items/TestItemB/Body"]
+shape = SubResource("Shape_item_b")
+
+[node name="TestItemC" type="Node3D" parent="Items"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4, 0.125, 3.8)
+script = ExtResource("4_testitem")
+data = SubResource("Data_test_item_c")
+
+[node name="Mesh" type="MeshInstance3D" parent="Items/TestItemC"]
+mesh = SubResource("Mesh_item_c")
+surface_material_override/0 = SubResource("Material_item_c")
+
+[node name="Body" type="StaticBody3D" parent="Items/TestItemC"]
+
+[node name="Collision" type="CollisionShape3D" parent="Items/TestItemC/Body"]
+shape = SubResource("Shape_item_c")
+
+[node name="RoomZone" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 0)
+collision_layer = 4
+collision_mask = 0
+metadata/room_id = &"test_room"
+
+[node name="Shape" type="CollisionShape3D" parent="RoomZone"]
+shape = SubResource("Shape_room_zone")
+
+[node name="Player" parent="." instance=ExtResource("2_playertsn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 6)

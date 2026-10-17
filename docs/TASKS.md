@@ -36,7 +36,7 @@
 
 | ID | Tâche | Jalon | Statut |
 |---|---|---|---|
-| G-1 | Contrôleur FPS (marche/course/accroupi, essoufflement, head-bob subtil, ZQSD + QWERTY via physical keys) | M1 | TODO |
+| G-1 | Contrôleur FPS (marche/course/accroupi, essoufflement, head-bob subtil, ZQSD + QWERTY via physical keys) | M1 | DONE |
 | G-2 | Système d'interaction (raycast, surbrillance discrète, prendre/inspecter/reposer un objet, portes & tiroirs physiques à la souris) | M1 | TODO |
 | G-3 | Appareil photo : visée (lever l'appareil, viseur), déclenchement, consommation film, SubViewport capture, flash lumière + aveuglement, son via AudioManager | M1 | TODO |
 | G-4 | Détection des objets cadrés (frustum + occlusion raycast + couverture écran ≥ `min_photo_coverage`), construction PhotoData | M1 | TODO |
@@ -45,7 +45,13 @@
 | G-7 | Post-process : grain, vignette, aberration légère, aveuglement flash (scenes/fx) | M2 | TODO |
 | G-8 | Présence : nœud `Presence` (déplacement lent par NavigationAgent3D, états via `presence_state_changed`, figée 4 s si photographiée, contact → `player_caught`) | M3 | TODO |
 | G-9 | Interactions longues (brûler carnet 8 s, signer registre) avec annulation | M3 | TODO |
-| G-10 | Zones de pièce (Area3D → `player_entered_room/left_room`) — en coordination avec Niveau | M1 | TODO |
+| G-10 | Zones de pièce (Area3D → `player_entered_room/left_room`) — en coordination avec Niveau | M1 | DONE (côté Gameplay) |
+
+### Notes Gameplay (V1 Halloween)
+
+- **2026-10-17 — Socle.** `[input]` ajouté à `project.godot` (13 actions, physical_keycode : ZQSD+WASD, Maj, Ctrl/C, E, F, clic droit/gauche, P, Tab, Échap). Filet de sécurité `scenes/player/input_actions.gd` : recrée les actions manquantes à l'exécution (si fusion/porte). `player.tscn` (CharacterBody3D + caméra) et `scenes/player/test_room.tscn` (sol, 3 Item placeholders, zone de pièce, occluder) se lancent seuls. Test item : `tests/player/test_item.gd` (contrat `Item` respecté).
+- **2026-10-17 — G-1 DONE.** `player.gd` : marche 2,5 / course 4,0 m/s (accél. 14), accroupi maintenu (capsule 1,75 → 1,10 m), essoufflement (18/s, récup. 30), head-bob + pas → `player_noise` (0,25 marche / 0,85 course), pas de saut, souris capturée, `pause_toggled` respecté, retour auto si chute. Vérifié : 38 assertions headless (`tests/player/player_tests.tscn`, 0 échec).
+- **2026-10-17 — G-10 DONE (côté Gameplay).** `RoomSensor` (Area3D enfant du joueur) détecte les zones `Area3D` monitorables portant `metadata/room_id` et émet `player_entered_room/left_room` (bascule entre zones chevauchées gérée). Convention déposée en Demandes inter-modules ; en attendant les zones du Niveau, `test_room` en fournit une.
 
 ## Module Systèmes `[Systèmes]` — `autoloads/`, `scenes/main/`
 
@@ -203,6 +209,12 @@
 - `[Architecte → UI]` (17/10) Les corps de documents (`body_key`) contiennent `\n` et du BBCode `[i]`/`[b]` : visionneuse = RichTextLabel avec bbcode_enabled. `pages` indicatif. — TODO
 - `[Architecte → Niveau]` (17/10) Les 60 `item_id` de `docs/items_master.csv` sont **définitifs** : ne jamais renommer. Remplir `scene` et `anchors` de chaque ItemData (seuls champs autorisés pour Niveau dans data/items/), créer les ancres dans les rooms. Objet interactif `cellar_stove` dans la cave (fin Cendres). — TODO
 - `[Architecte → Gameplay]` (17/10) L'interaction longue « brûler » cible `cellar_stove` et émet `player_interacted(&"cellar_stove", &"burn")`. — TODO
+
+- `[Gameplay → Niveau]` (2026-10-17) **Zones de pièce.** Chaque pièce doit contenir une `Area3D` **monitorable** avec `metadata/room_id` (StringName, ex. `&"kitchen"`) couvrant la pièce — `collision_layer` 4 de préférence (le capteur du joueur teste les layers 1 et 3/bits 1 et 4). C'est le Gameplay qui émet `player_entered_room/left_room` ; le Niveau n'émet rien. Zone sans `room_id` = ignorée en silence.
+- `[Gameplay → Niveau]` (2026-10-17) **Contrat Item / occlusion.** La détection photo s'appuie uniquement sur : groupe `items`, `data: ItemData`, `is_in_frustum(cam) -> float` (0..1). Pour l'occlusion, le Gameplay cherche les `CollisionObject3D` **enfants de l'Item** : sans collider, pas de test d'occlusion (l'objet reste photographiable à travers un mur). Merci de donner à chaque Item un collider enfant. `ItemData.scene` étant vide, mes scènes de test utilisent des boîtes grises.
+- `[Gameplay → Narration]` (2026-10-17) **`min_photo_coverage = 0.15` est très exigeant** : en 1080p / FOV 75, un objet de 1 m de côté doit être cadré à ≈ 1,3 m pour occuper 15 % de l'écran (un objet de 0,5 m à 3 m ≈ 0,7 %). Sauf si le Niveau fournit des boîtes de cadrage généreuses, je recommande 0,03–0,06 pour les petits objets (horloge, alliance, cachet). Je respecte la donnée en attendant.
+- `[Gameplay → Audio]` (2026-10-17) **Ids SFX utilisés par l'appareil photo** (à faire exister, sinon AudioManager dégrade) : `camera_raise`, `camera_shutter`, `camera_flash`, `photo_slide`, `camera_dry`. Les pas sont signalés par `EventBus.player_noise(level, pos)` (0,25 marche / 0,85 course) toutes les 0,72 m (marche) / 1,05 m (course) — utilisable pour D-3.
+- `[Gameplay → UI]` (2026-10-17) **Actions InputMap réservées** (définies dans `project.godot`) : `move_*`, `sprint`, `crouch`, `interact`, `flashlight`, `camera_raise`, `camera_shoot`, `photo_review`, `notebook` (Tab), `pause` (Échap). L'UI doit écouter ces **actions**, jamais les touches brutes. Le joueur capture la souris ; sur pause, émettre `pause_toggled(true)` pour qu'il la relâche.
 
 ## Journal des décisions
 
