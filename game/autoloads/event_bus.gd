@@ -11,6 +11,7 @@ signal player_left_room(room_id: StringName)
 signal player_interacted(target_id: StringName, kind: StringName)
 signal player_caught()
 signal player_noise(level: float, world_position: Vector3)
+signal interact_target_changed(target_id: StringName, kind: StringName)   # cible sous le réticule (vide = aucune)
 
 # --- Inventaire (émis par InventoryManager) ---
 signal item_checked(item_id: StringName, photo: PhotoData)

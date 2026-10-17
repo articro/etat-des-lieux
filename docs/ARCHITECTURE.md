@@ -72,6 +72,7 @@ signal player_left_room(room_id: StringName)
 signal player_interacted(target_id: StringName, kind: StringName)   # kind: "open","pickup","read","use"
 signal player_caught()                               # la Présence a touché le joueur
 signal player_noise(level: float, world_position: Vector3)          # course, porte claquée… 0..1
+signal interact_target_changed(target_id: StringName, kind: StringName)  # cible interactive sous le réticule ; (&"", &"") quand plus rien
 
 # --- Inventaire (émis par Systèmes/InventoryManager) ---
 signal item_checked(item_id: StringName, photo: PhotoData)
@@ -120,6 +121,7 @@ func current_room() -> StringName
 ```gdscript
 func get_item(item_id: StringName) -> ItemData
 func get_items_in_room(room_id: StringName) -> Array[ItemData]
+func all_items() -> Array[ItemData]                              # triés par list_index
 func is_checked(item_id: StringName) -> bool
 func check_item(item_id: StringName, photo: PhotoData) -> bool   # false si déjà coché / non visible
 func is_present(item_id: StringName) -> bool                     # fantôme révélé ou objet réel
@@ -252,7 +254,7 @@ Mini-langage de condition (implémenté dans `house_director.gd`, fonction `eval
 - Nœud `Item` (`scenes/items/item.gd`) : `class_name Item extends Node3D`, `@export var data: ItemData`, groupe `"items"`, expose `func is_in_frustum(cam: Camera3D) -> float` (couverture écran estimée).
 
 ### Options / réglages
-- L'UI (menu Options) persiste les réglages dans `user://settings.cfg` (ConfigFile) et émet `EventBus.settings_changed(key, value)` à chaque changement **et une fois pour chaque clé au démarrage** (`main.tscn` appelle `Settings.apply_all()` côté UI).
+- L'UI (menu Options) persiste les réglages dans `user://settings.cfg` (ConfigFile) et émet `EventBus.settings_changed(key, value)` à chaque changement **et une fois pour chaque clé au démarrage** (`UiSettings.apply_all()`, idempotent, appelé par le menu principal et par le HUD — `main.tscn` n'a rien à appeler).
 - Les consommateurs (Player : sensibilité, FOV, lampe forte ; AudioManager : volumes ; etc.) écoutent ce signal. Pas d'API directe UI → Player.
 
 ### Post-process

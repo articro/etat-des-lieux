@@ -29,6 +29,7 @@
 | A0-3 | Dépôt GitHub `articro/etat-des-lieux`, push initial, 6 branches agents | DONE |
 | A0-7 | Intégration Narration session 1 (60 objets, 10 docs, 18 règles) sur main, traduction enregistrée | DONE |
 | A0-8 | Intégration Narration session 2 (relecture, itch_textes.md) | DONE |
+| A0-12 | Intégration UI S1 (92 tests) + Systèmes S2 + Gameplay S2 ; signal interact_target_changed ; API all_items | DONE |
 | A0-11 | Validation N-1 (plan maison) + consignes dimensions/ancres | DONE |
 | A0-10 | Intégration Systèmes session 1 (S-2→S-8, 79 assertions) ; playtest utilisateur J1 : feeling validé | DONE |
 | A0-9 | Intégration Gameplay session 1 (G-1→G-10, 73 tests) + décisions (coverage 0.04, settings_changed, post-process unique) | DONE |
@@ -432,6 +433,9 @@
 - `[UI → Niveau]` (2026-10-17) **Ids de pièce affichés.** Les en-têtes du carnet utilisent `ROOM_<ID EN MAJUSCULES>` : `exterior, hall, kitchen, living, study, cellar` sont couverts ; tout autre `room_id` tombe sur `ROOM_UNKNOWN` (warning, pas de crash). Si la V2 ajoute des pièces, demander les clés à l'UI. — POUR INFO
 - `[Gameplay → UI]` (2026-10-17, session 3) **Échap et pause.** L'action `pause` est traitée **par le joueur** (il possède la capture souris) : il bascule le mode et émet `pause_toggled(paused)`. L'UI **ne doit pas** gérer l'action `pause` elle-même ; elle écoute `pause_toggled` pour afficher/masquer son menu. Pour reprendre depuis le menu, appeler `EventBus.pause_toggled.emit(false)` **ou** simuler Échap — dans les deux cas le joueur se réaligne sans réémettre. `get_viewport().set_input_as_handled()` protège d'un double traitement.
 - `[Gameplay → UI]` (2026-10-17, session 3) **Fichier `user://settings.cfg`.** Le joueur relit trois clés au démarrage, dans n'importe quelle section : `mouse_sensitivity` (normalisé 0..1), `fov` (degrés), `flashlight_strong` (bool). Merci de garder ces noms et de les écrire au format ConfigFile standard ; toute autre clé est ignorée. Si l'UI émet `settings_changed` après l'instanciation du joueur, c'est le signal qui gagne (comportement voulu).
+
+- `[Architecte → tous]` (17/10) **Intégration UI S1 + Systèmes S2 + Gameplay S2 sur main** : 92/103/104 tests verts. Décisions sur les demandes UI : (a) nouveau signal `EventBus.interact_target_changed(target_id, kind)` — **Gameplay** l'émet depuis l'Interactor à chaque changement de cible (et `(&"", &"")` quand plus rien), UI branche `Reticle.set_context()`. (b) **Systèmes** : ajouter `InventoryManager.all_items() -> Array[ItemData]` (triés par list_index) au contrat (fait dans ARCHITECTURE §5) ; vider `main.gd::_on_options()` ; **supprimer l'appel/warning `/root/Settings.apply_all()`** — c'est `UiSettings.apply_all()` côté UI, appelé par le menu et le HUD, main n'a rien à faire. (c) `ui_strings.csv` séparé : accepté. (d) Carnet 2D en surcouche, mark_read à l'ouverture, pause = paused + signal, reload_current_scene pour « Revenir au menu » : validés. — DONE
+- `[Architecte → Audio]` (17/10) Ids UI à faire exister : `notebook_open`, `notebook_close`, `notebook_page`, `pencil_check`, `photo_thumb`, `menu_move`, `menu_select`, `typewriter_line`. — TODO
 
 ## Journal des décisions
 
