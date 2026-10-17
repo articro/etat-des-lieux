@@ -61,6 +61,45 @@
 - **2026-10-17 — G-5 DONE.** `photo_in_hand.gd` + `scenes/fx/photo_develop.gdshader` : la photo sort de l'appareil (tween 0,25 s), se développe en 10 s (`@export develop_time`), bordure instantané + grain + latence laiteuse ; `photo_developed` émis par l'appareil à 10 s ; touche P pour ramener la photo au centre (`PhotoHold`). Texture absente en headless → shader en gris neutre (dégradation).
 - **2026-10-17 — G-10 DONE (côté Gameplay).** `RoomSensor` (Area3D enfant du joueur) détecte les zones `Area3D` monitorables portant `metadata/room_id` et émet `player_entered_room/left_room` (bascule entre zones chevauchées gérée). Convention déposée en Demandes inter-modules ; en attendant les zones du Niveau, `test_room` en fournit une.
 
+
+### HANDOFF — Gameplay (17 oct. 2026, fin de session 1)
+
+**Ce qui marche (branche `agent/gameplay`, 3 commits poussés : `5c98125`, `99fd46d`, `f0a4098`)**
+- **G-1** Contrôleur FPS : marche 2,5 / course 4,0 m/s, accélération 14, accroupi maintenu (capsule 1,75→1,10 m), essoufflement (18/s, récupération à 30), head-bob et bruit de pas (`player_noise` 0,25 / 0,85), pas de saut, souris capturée, pause via `pause_toggled`, téléréapparition si chute. ZQSD/QWERTY par `physical_keycode` (13 actions dans `project.godot`, filet de sécurité `input_actions.gd`).
+- **G-3 / G-4 / G-5** Appareil photo complet : clic droit maintenu (FOV 75→55), viseur dessiné sans texte, clic gauche → `consume_film()`, flash Omni 0,3 s + aveuglement blanc 1,5 s, capture `SubViewport` 1280×720 en `UPDATE_ONCE`, `PhotoData` (ids cadrés, room, transform, texture), `flash_fired` puis `photo_taken`, `photo_developed` après 10 s (`@export develop_time`), photo en main avec shader de développement et bordure instantané, touche P pour la ramener au centre.
+- **Détection** : groupe `items`, `data: ItemData`, `is_in_frustum()`, couverture écran ≥ `min_photo_coverage`, occlusion par raycast sur les colliders enfants de l'Item, exclusion des RID du joueur. Math de couverture en espace caméra (`screen_math.gd`), indépendante de la résolution et du headless.
+- **G-2** Interaction V1 : raycast 2,5 m + E → `player_interacted(id, kind)` ; résolution méthode → metadata → `document_id` (« read ») → groupe `items` (« pickup ») ; `DocumentLibrary.mark_read()` sur une lecture ; `set_highlight()` si l'objet l'implémente.
+- **G-6** Lampe : F, SpotLight 24°, 9 m, piles infinies, ombres.
+- **G-7** Post-process : grain animé, vignette, aberration légère — instancié **une seule fois dans `player.tscn`**.
+- **G-8** Présence simplifiée : scène autonome, apparaît sur `presence_state_changed(&"physical")`, avance à 0,45 m/s en ligne droite (groupe `player`), figée 4 s si photographiée (cône 32°, 25 m), contact ≤ 1,1 m → `player_caught` (une fois).
+- **G-9** Interaction longue : `interact_duration` sur la cible → maintenir E, jauge `HUD/LongAction`, annulation au relâchement, `player_interacted(&"cellar_stove", &"burn")`.
+- **G-10** `RoomSensor` : zones `Area3D` monitorables + `metadata/room_id` → `player_entered_room/left_room`, bascule entre zones chevauchées.
+- **Tests** : `game/tests/player/player_tests.tscn` = **73 assertions headless, 0 échec** (lancement : `godot --headless --path game res://tests/player/player_tests.tscn`). Scènes validées seules : `player.tscn`, `test_room.tscn`, `presence.tscn`, `post_process.tscn`. `check.sh` vert avant chaque push.
+
+**Ce qui reste**
+1. **Validation visuelle** de la capture `SubViewport`, du shader de développement, du flash et du post-process : impossible sans rendu dans le sandbox. À vérifier en F5/F6 par l'Architecte (headless : capture désactivée, `texture = null`).
+2. **Intégration Niveau** : `item.gd` réel (contrat + collider enfant obligatoire pour l'occlusion), zones de pièce avec `metadata/room_id`, poêle avec `interact_duration = 8.0`, instance de `presence.tscn` dans la cave.
+3. **Options UI** : sensibilité souris et FOV sont des `@export` du joueur ; l'UI devra les piloter (via une demande à l'Architecte, pas d'API dédiée pour l'instant).
+4. **V2 uniquement** : portes/tiroirs physiques à la souris, signature du registre, Présence à NavMesh, objets « photo_only ».
+5. `min_photo_coverage = 0.15` (Narration) reste très exigeant pour les petits objets — demande déposée, non bloquante.
+
+**Pièges connus**
+1. Après ajout d'un `class_name`, lancer `godot --headless --path game --import` sinon `Could not find type "X"` (cache des classes globales).
+2. Godot 4.7 du projet traite en **erreur** l'inférence depuis un `Variant` (`var x := f()` où `f() -> Variant`) : typer explicitement.
+3. Ne pas revenir à `unproject_position` + `get_visible_rect()` pour la couverture : tailles incohérentes en headless (écart ×2,8 constaté) → `screen_math.gd` (espace caméra, fov + aspect).
+4. `player.tscn` contient un sol de secours (`StandaloneFloor`) activé **seulement** si la scène est lancée seule ; le désactiver ne casse rien.
+5. `Player`, `RoomSensor`, `PhotoDevice`, `PhotoInHand`, `Viewfinder`, `Interactor`, `Flashlight`, `Presence`, `PostProcess`, `ScreenMath`, `PhotoDetector`, `TestItem`, `InputActions` sont des noms de classes globaux : ne pas les redéfinir ailleurs.
+6. La salle de test a un objet en (0, 0.45, 3.8) : toute Présence de test doit éviter l'axe x=0 (elle se bloque contre l'objet).
+7. `game/data/strings/fr.fr.translation` est régénéré par `--import` : le restaurer (`git checkout --`), il n'est pas dans le périmètre Gameplay.
+8. `AudioManager` est un stub : chaque son produit un `push_warning`, sans impact sur `check.sh`.
+9. Ne pas doubler le post-process (un seul, dans `player.tscn`).
+
+**Décisions prises seul (à valider)**
+- La Présence vit dans `scenes/player/` (seul emplacement de mon périmètre) et lit le joueur via le groupe `player`.
+- Le figeage 4 s est géré localement ; `presence_state_changed` reste la propriété de HouseDirector.
+- Les conventions d'interaction passent par des **metadata** (`interact_id`, `interact_kind`, `interact_duration`, `document_id`) : zéro dépendance de script entre modules.
+- Le son de la lampe utilise un id nouveau `flashlight_click` (demande Audio).
+
 ## Module Systèmes `[Systèmes]` — `autoloads/`, `scenes/main/`
 
 | ID | Tâche | Jalon | Statut |
