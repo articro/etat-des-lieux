@@ -3,3 +3,6 @@
 *.import
 export_presets.cfg
 .gdunit4_*
+
+# Généré par Godot à l import (régénéré depuis fr.csv) — ne pas versionner
+*.translation
