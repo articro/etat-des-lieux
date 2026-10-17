@@ -90,6 +90,14 @@ func _ready() -> void:
 	_standalone_body.collision_layer = 1 if _standalone else 0
 
 
+## Le joueur possède la capture souris : il la rend en quittant l'arbre (fin de
+## partie, changement de scène), sinon l'écran suivant hérite d'un curseur
+## invisible et ne peut plus être cliqué.
+func _exit_tree() -> void:
+	if _intended_mouse_mode == Input.MOUSE_MODE_CAPTURED:
+		_set_mouse_captured(false)
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	# Échap est traité en premier : sinon un joueur en pause ne pourrait plus la quitter.
 	if event.is_action_pressed(&"pause"):

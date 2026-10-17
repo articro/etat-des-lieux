@@ -44,6 +44,7 @@ func _ready() -> void:
 	await _test_settings()
 	await _test_pause()
 	await _test_persisted_settings()
+	await _test_exit_releases_mouse()
 
 	_report()
 
@@ -396,6 +397,23 @@ func _test_persisted_settings() -> void:
 			f.close()
 	EventBus.settings_changed.emit(&"fov", 75.0)
 	await get_tree().process_frame
+
+
+## Smoke test : un joueur libéré rend la souris sans erreur (fin de partie).
+## Le serveur headless ignore la capture réelle, on vérifie donc surtout
+## l'absence de régression et l'état du joueur principal.
+func _test_exit_releases_mouse() -> void:
+	print("[Sortie de scène]")
+	var second := (load("res://scenes/player/player.tscn") as PackedScene).instantiate() as PlayerController
+	_room.add_child(second)
+	await get_tree().process_frame
+	_check(second.get_intended_mouse_mode() == Input.MOUSE_MODE_CAPTURED, "le joueur instancié capture la souris")
+	second.queue_free()
+	await get_tree().process_frame
+	await get_tree().process_frame
+	_check(_player.get_intended_mouse_mode() == Input.MOUSE_MODE_CAPTURED,
+		"la libération d'une instance ne casse pas le joueur principal")
+	_check(not _player.is_paused(), "toujours hors pause")
 
 
 func _on_photo_taken(photo: PhotoData) -> void:
