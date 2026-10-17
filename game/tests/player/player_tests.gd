@@ -20,15 +20,21 @@ var _entered_room: StringName = &""
 var _left_room: StringName = &""
 var _room: Node3D
 var _player: PlayerController
+var _taken: Array[PhotoData] = []
+var _developed: Array[PhotoData] = []
 
 
 func _ready() -> void:
 	EventBus.player_entered_room.connect(_on_entered_room)
 	EventBus.player_left_room.connect(_on_left_room)
+	EventBus.photo_taken.connect(_on_photo_taken)
+	EventBus.photo_developed.connect(_on_photo_developed)
 	await get_tree().process_frame
 
 	_test_input_map()
 	await _spawn_room()
+	await _test_detection()
+	await _test_photo_shot()
 	await _test_room_sensor()
 	await _test_walk()
 	await _test_crouch()
@@ -75,6 +81,49 @@ func _spawn_room() -> void:
 	_check(_player.get_eye_camera() != null, "la caméra du joueur existe")
 
 
+func _test_detection() -> void:
+	print("[Détection des objets cadrés]")
+	var camera := _player.get_eye_camera()
+	var ids := PhotoDetector.collect_visible_items(camera)
+	_check(ids.size() == 1, "un seul objet détecté (obtenu %d)" % ids.size())
+	if ids.size() == 1:
+		_check(ids[0] == &"test_item_a", "l'objet détecté est test_item_a (cadré et net)")
+	_check(not ids.has(&"test_item_b"), "test_item_b occulté par le panneau : non détecté")
+	_check(not ids.has(&"test_item_c"), "test_item_c trop petit à l'écran : non détecté")
+
+
+func _test_photo_shot() -> void:
+	print("[Appareil photo]")
+	var device := _player.get_node_or_null("Head/Camera/PhotoDevice") as PhotoDevice
+	_check(device != null, "PhotoDevice présent dans le joueur")
+	if device == null:
+		return
+	device.develop_time = 0.1
+	var films_before := InventoryManager.film_count()
+	device.aim(true)
+	await _wait_physics(2)
+	_check(device.is_raised(), "l'appareil se lève (clic droit)")
+	device.fire()
+	await get_tree().process_frame
+	await get_tree().process_frame
+	await get_tree().process_frame
+	_check(_taken.size() == 1, "photo_taken émis")
+	_check(InventoryManager.film_count() == films_before - 1, "un film consommé")
+	if _taken.size() == 1:
+		var photo := _taken[0]
+		_check(photo.visible_item_ids.size() == 1 and photo.visible_item_ids[0] == &"test_item_a",
+			"PhotoData.visible_item_ids = [test_item_a] (obtenu %s)" % str(photo.visible_item_ids))
+		_check(photo.room_id == &"test_room", "PhotoData.room_id = test_room")
+		_check(not photo.developed, "photo non développée au déclenchement")
+		_check(device.last_photo() == photo, "la photo est tenue en main")
+	await get_tree().create_timer(0.35).timeout
+	_check(_developed.size() == 1, "photo_developed émis après le délai de développement")
+	if _developed.size() == 1:
+		_check(_developed[0].developed, "PhotoData.developed = true")
+	device.aim(false)
+	await _wait_physics(2)
+
+
 func _test_room_sensor() -> void:
 	print("[Capteur de pièce]")
 	await _wait_physics(3)
@@ -113,6 +162,14 @@ func _test_crouch() -> void:
 	Input.action_release(&"crouch")
 	await _wait_physics(20)
 	_check(not _player.is_crouching(), "l'accroupissement se relâche")
+
+
+func _on_photo_taken(photo: PhotoData) -> void:
+	_taken.append(photo)
+
+
+func _on_photo_developed(photo: PhotoData) -> void:
+	_developed.append(photo)
 
 
 func _on_entered_room(room_id: StringName) -> void:

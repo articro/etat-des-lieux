@@ -1,7 +1,11 @@
-[gd_scene load_steps=7 format=3 uid="uid://bplayer0scene01"]
+[gd_scene load_steps=16 format=3 uid="uid://bplayer0scene01"]
 
 [ext_resource type="Script" path="res://scenes/player/player.gd" id="1_player"]
 [ext_resource type="Script" path="res://scenes/player/room_sensor.gd" id="2_sensor"]
+[ext_resource type="Script" path="res://scenes/player/photo_device.gd" id="3_device"]
+[ext_resource type="Script" path="res://scenes/player/photo_in_hand.gd" id="4_inhand"]
+[ext_resource type="Script" path="res://scenes/player/viewfinder.gd" id="5_viewfinder"]
+[ext_resource type="Shader" path="res://scenes/fx/photo_develop.gdshader" id="6_develop"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.32
@@ -20,6 +24,22 @@ size = Vector3(40, 0.2, 40)
 albedo_color = Color(0.16, 0.15, 0.14, 1)
 roughness = 0.9
 
+[sub_resource type="QuadMesh" id="QuadMesh_photo"]
+size = Vector2(0.17, 0.14)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_photo"]
+shader = ExtResource("6_develop")
+shader_parameter/development = 1.0
+shader_parameter/has_texture = false
+
+[sub_resource type="BoxMesh" id="BoxMesh_camera"]
+size = Vector3(0.24, 0.13, 0.2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_camera"]
+albedo_color = Color(0.08, 0.08, 0.09, 1)
+roughness = 0.55
+metallic = 0.35
+
 [node name="Player" type="CharacterBody3D"]
 script = ExtResource("1_player")
 
@@ -36,6 +56,42 @@ fov = 75.0
 near = 0.05
 far = 250.0
 
+[node name="FlashBulb" type="OmniLight3D" parent="Head/Camera"]
+visible = false
+light_color = Color(1, 0.97, 0.9, 1)
+light_energy = 6.0
+omni_range = 14.0
+shadow_enabled = true
+
+[node name="CameraBody" type="MeshInstance3D" parent="Head/Camera"]
+position = Vector3(0.13, -0.26, -0.3)
+rotation_degrees = Vector3(-14, 8, 0)
+visible = false
+mesh = SubResource("BoxMesh_camera")
+material_override = SubResource("StandardMaterial3D_camera")
+
+[node name="PhotoDevice" type="Node3D" parent="Head/Camera"]
+script = ExtResource("3_device")
+
+[node name="PhotoHold" type="Node3D" parent="Head/Camera"]
+position = Vector3(0.145, -0.185, -0.38)
+rotation_degrees = Vector3(-6, -12, 0)
+
+[node name="PhotoInHand" type="MeshInstance3D" parent="Head/Camera/PhotoHold"]
+mesh = SubResource("QuadMesh_photo")
+material_override = SubResource("ShaderMaterial_photo")
+script = ExtResource("4_inhand")
+
+[node name="PhotoViewport" type="SubViewport" parent="."]
+size = Vector2i(1280, 720)
+render_target_update_mode = 0
+
+[node name="PhotoCamera3D" type="Camera3D" parent="PhotoViewport"]
+current = true
+fov = 75.0
+near = 0.05
+far = 250.0
+
 [node name="RoomSensor" type="Area3D" parent="."]
 collision_layer = 0
 collision_mask = 5
@@ -44,6 +100,28 @@ script = ExtResource("2_sensor")
 
 [node name="Shape" type="CollisionShape3D" parent="RoomSensor"]
 shape = SubResource("SphereShape3D_sensor")
+
+[node name="HUD" type="CanvasLayer" parent="."]
+layer = 5
+
+[node name="Blind" type="ColorRect" parent="HUD"]
+visible = false
+modulate = Color(1, 1, 1, 0)
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 1, 1, 1)
+
+[node name="Viewfinder" type="Control" parent="HUD"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("5_viewfinder")
 
 [node name="StandaloneFloor" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)

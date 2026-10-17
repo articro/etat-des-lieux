@@ -38,9 +38,9 @@
 |---|---|---|---|
 | G-1 | Contrôleur FPS (marche/course/accroupi, essoufflement, head-bob subtil, ZQSD + QWERTY via physical keys) | M1 | DONE |
 | G-2 | Système d'interaction (raycast, surbrillance discrète, prendre/inspecter/reposer un objet, portes & tiroirs physiques à la souris) | M1 | TODO |
-| G-3 | Appareil photo : visée (lever l'appareil, viseur), déclenchement, consommation film, SubViewport capture, flash lumière + aveuglement, son via AudioManager | M1 | TODO |
-| G-4 | Détection des objets cadrés (frustum + occlusion raycast + couverture écran ≥ `min_photo_coverage`), construction PhotoData | M1 | TODO |
-| G-5 | Photo en main : sortie de l'appareil, développement 10 s (shader), consultation | M1 | TODO |
+| G-3 | Appareil photo : visée (lever l'appareil, viseur), déclenchement, consommation film, SubViewport capture, flash lumière + aveuglement, son via AudioManager | M1 | DONE |
+| G-4 | Détection des objets cadrés (frustum + occlusion raycast + couverture écran ≥ `min_photo_coverage`), construction PhotoData | M1 | DONE |
+| G-5 | Photo en main : sortie de l'appareil, développement 10 s (shader), consultation | M1 | DONE |
 | G-6 | Lampe de poche faible, batterie infinie, option « plus forte » | M1 | TODO |
 | G-7 | Post-process : grain, vignette, aberration légère, aveuglement flash (scenes/fx) | M2 | TODO |
 | G-8 | Présence : nœud `Presence` (déplacement lent par NavigationAgent3D, états via `presence_state_changed`, figée 4 s si photographiée, contact → `player_caught`) | M3 | TODO |
@@ -51,6 +51,9 @@
 
 - **2026-10-17 — Socle.** `[input]` ajouté à `project.godot` (13 actions, physical_keycode : ZQSD+WASD, Maj, Ctrl/C, E, F, clic droit/gauche, P, Tab, Échap). Filet de sécurité `scenes/player/input_actions.gd` : recrée les actions manquantes à l'exécution (si fusion/porte). `player.tscn` (CharacterBody3D + caméra) et `scenes/player/test_room.tscn` (sol, 3 Item placeholders, zone de pièce, occluder) se lancent seuls. Test item : `tests/player/test_item.gd` (contrat `Item` respecté).
 - **2026-10-17 — G-1 DONE.** `player.gd` : marche 2,5 / course 4,0 m/s (accél. 14), accroupi maintenu (capsule 1,75 → 1,10 m), essoufflement (18/s, récup. 30), head-bob + pas → `player_noise` (0,25 marche / 0,85 course), pas de saut, souris capturée, `pause_toggled` respecté, retour auto si chute. Vérifié : 38 assertions headless (`tests/player/player_tests.tscn`, 0 échec).
+- **2026-10-17 — G-3 DONE.** `scenes/player/photo_device.gd` : lever maintenu (clic droit, FOV 75→55), viseur dessiné (`viewfinder.gd`, zéro texte), déclencheur (clic gauche) → `InventoryManager.consume_film()`, flash `OmniLight3D` 0,3 s (ombre), aveuglement blanc 1,5 s (0,06 s de montée + 1,44 s de descente), capture `SubViewport` 1280×720 en `UPDATE_ONCE` au déclenchement seulement, sons `camera_raise/shutter/flash/photo_slide/dry` via `AudioManager`. En headless la capture est désactivée (`texture = null`) : le reste du flux est testé.
+- **2026-10-17 — G-4 DONE.** `photo_detector.gd` : groupe `items`, `data: ItemData`, `is_in_frustum()` (repli `ScreenMath` si absent), couverture ≥ `data.min_photo_coverage`, occlusion par raycast caméra→centre de l'AABB sur les `CollisionObject3D` enfants de l'Item (exclusion des RID du joueur). `screen_math.gd` calcule la couverture en espace caméra (fov + aspect) — **piège** : `unproject_position` et `get_visible_rect()` ne sont pas homogènes sous headless (écart ×2,8 constaté) ; ne pas revenir à cette méthode.
+- **2026-10-17 — G-5 DONE.** `photo_in_hand.gd` + `scenes/fx/photo_develop.gdshader` : la photo sort de l'appareil (tween 0,25 s), se développe en 10 s (`@export develop_time`), bordure instantané + grain + latence laiteuse ; `photo_developed` émis par l'appareil à 10 s ; touche P pour ramener la photo au centre (`PhotoHold`). Texture absente en headless → shader en gris neutre (dégradation).
 - **2026-10-17 — G-10 DONE (côté Gameplay).** `RoomSensor` (Area3D enfant du joueur) détecte les zones `Area3D` monitorables portant `metadata/room_id` et émet `player_entered_room/left_room` (bascule entre zones chevauchées gérée). Convention déposée en Demandes inter-modules ; en attendant les zones du Niveau, `test_room` en fournit une.
 
 ## Module Systèmes `[Systèmes]` — `autoloads/`, `scenes/main/`
