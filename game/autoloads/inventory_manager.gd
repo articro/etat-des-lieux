@@ -131,6 +131,20 @@ func _maybe_add_final_line() -> void:
 	EventBus.inventory_line_added.emit(_items.size() + 1, FINAL_LINE_KEY)
 
 
+## Coche un objet présent non coché tiré au hasard (coche « Présence », player_caught, GDD §4.4).
+## Usage interne Systèmes (main.gd). Retourne false s'il n'y a plus rien à cocher.
+func _check_random_unchecked() -> bool:
+	var candidates: Array[StringName] = []
+	for id: StringName in _items.keys():
+		if not _checked.has(id) and is_present(id):
+			candidates.append(id)
+	if candidates.is_empty():
+		push_warning("InventoryManager : plus aucun objet à cocher (player_caught).")
+		return false
+	var picked: StringName = candidates.pick_random()
+	return check_item(picked, null)
+
+
 ## Après une fin (ex. « Cendres » : le carnet brûle), le carnet ne s'écrit plus.
 func _on_ending_reached(_ending_id: StringName) -> void:
 	_final_line_added = true

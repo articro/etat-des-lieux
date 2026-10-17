@@ -44,6 +44,7 @@ var _rules: Array[HouseRule] = []
 var _rule_states: Dictionary = {}      # HouseRule -> _RuleState
 var _presence_state: StringName = &"dormant"
 var _emitted_events: Dictionary = {}   # StringName -> true (déjà émis cette partie)
+var _moved_items: Dictionary = {}      # StringName -> {to_room, anchor} — état « la maison se souvient »
 var _idle_time: float = 0.0
 var _idle_poll: float = 0.0
 var _ending_reached: bool = false
@@ -141,10 +142,19 @@ func to_save_dict() -> Dictionary:
 	var events: Array[String] = []
 	for id: StringName in _emitted_events.keys():
 		events.append(String(id))
+	var moves: Array[Dictionary] = []
+	for id: StringName in _moved_items.keys():
+		var move: Dictionary = _moved_items[id]
+		moves.append({
+			"item": String(id),
+			"to": String(move.get("to_room", &"")),
+			"anchor": String(move.get("anchor", &"")),
+		})
 	return {
 		"presence": String(_presence_state),
 		"rules_fired": fired,
 		"events": events,
+		"moves": moves,
 		"ending": String(_ending_id),
 	}
 
@@ -159,6 +169,12 @@ func from_save_dict(d: Dictionary) -> void:
 	_emitted_events.clear()
 	for k: String in d.get("events", []):
 		_emitted_events[StringName(k)] = true
+	_moved_items.clear()
+	for m: Dictionary in d.get("moves", []):
+		_moved_items[StringName(m.get("item", ""))] = {
+			"to_room": StringName(m.get("to", "")),
+			"anchor": StringName(m.get("anchor", "")),
+		}
 	_ending_id = StringName(d.get("ending", ""))
 	_ending_reached = _ending_id != StringName()
 
@@ -168,6 +184,7 @@ func _reset_for_tests() -> void:
 	_rules.clear()
 	_rule_states.clear()
 	_emitted_events.clear()
+	_moved_items.clear()
 	_invalid_reveal.clear()
 	_presence_state = &"dormant"
 	_idle_time = 0.0
@@ -270,6 +287,7 @@ func _execute_action(rule: HouseRule, action: String) -> void:
 			if item == null:
 				push_warning("HouseDirector : move_item, objet inconnu %s (règle %s)." % [item_id, rule.id])
 			var from_room: StringName = item.room_id if item != null else &""
+			_moved_items[item_id] = {"to_room": to_room, "anchor": anchor}
 			EventBus.item_moved.emit(item_id, from_room, to_room, anchor)
 		"event":
 			if parts.size() != 2:
@@ -418,10 +436,28 @@ func _trigger_ending(ending_id: StringName) -> void:
 func _on_game_loaded() -> void:
 	_idle_time = 0.0
 	_invalid_reveal.clear()
+	# 1) Rejouer les déplacements déjà consommés par la maison (elle se souvient).
+	_replay_item_moves()
+	# 2) Rattrapage des seuils de progression manqués depuis la sauvegarde.
 	var checked := InventoryManager.progress().x
 	_update_progression(checked)
 	_update_phantom_reveals()
 	_evaluate_trigger_rules("progress", str(checked))
+
+
+## Réémet `item_moved` pour chaque objet déjà déplacé (l'état maison n'est pas sauvegardé
+## par Niveau : c'est HouseDirector qui porte la mémoire des déplacements).
+func _replay_item_moves() -> void:
+	for id: StringName in _moved_items.keys():
+		var move: Dictionary = _moved_items[id]
+		var item := InventoryManager.get_item(id)
+		var from_room: StringName = item.room_id if item != null else &""
+		EventBus.item_moved.emit(
+			id,
+			from_room,
+			StringName(move.get("to_room", &"")),
+			StringName(move.get("anchor", &"")),
+		)
 
 
 func _on_flash_fired(_world_position: Vector3, _room_id: StringName) -> void:

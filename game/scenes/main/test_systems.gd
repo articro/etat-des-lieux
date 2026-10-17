@@ -32,6 +32,9 @@ func _ready() -> void:
 	_test_rules_and_reveals()
 	_test_sequencer_closed()
 	_test_sequencer_ashes()
+	_test_save_roundtrip()
+	_test_move_replay()
+	_test_player_caught()
 	_report()
 
 
@@ -300,6 +303,99 @@ func _reset_scenario() -> void:
 	_revealed.clear()
 	_attention_log.clear()
 	_presence_log.clear()
+
+
+# --- Sauvegarde / chargement (S-5) ---
+
+func _test_save_roundtrip() -> void:
+	_reset_scenario()
+	_register_items(60)
+	InventoryManager.check_item(&"t01", PhotoData.new())
+	InventoryManager.check_item(&"t02", PhotoData.new())
+	GameState.set_flag(&"save_flag")
+	HouseDirector.set_presence_state(&"photo_only")
+	DocumentLibrary.mark_read(&"test_doc")
+
+	var err := SaveManager.save_game(0)
+	_expect(err == OK, "save_game retourne OK")
+
+	GameState.from_save_dict({})
+	InventoryManager.from_save_dict({})
+	HouseDirector.from_save_dict({})
+	DocumentLibrary.from_save_dict({})
+	_expect(InventoryManager.progress().x == 0, "état effacé avant rechargement")
+
+	err = SaveManager.load_game(0)
+	_expect(err == OK, "load_game retourne OK")
+	_expect(InventoryManager.progress().x == 2, "objets cochés restaurés")
+	_expect(InventoryManager.film_count() == InventoryManager.STARTING_FILM, "films restaurés")
+	_expect(GameState.get_flag(&"save_flag"), "flag restauré")
+	_expect(String(HouseDirector.to_save_dict().get("presence", "")) == "photo_only", "présence restaurée")
+	_expect(DocumentLibrary.is_read(&"test_doc"), "document lu restauré")
+
+	# Auto-sauvegarde à l'entrée en pièce.
+	InventoryManager.check_item(&"t03", PhotoData.new())
+	EventBus.player_entered_room.emit(&"hall")
+	InventoryManager.from_save_dict({})
+	var err2 := SaveManager.load_game(0)
+	_expect(err2 == OK and InventoryManager.progress().x == 3, "auto-sauvegarde à player_entered_room")
+	_expect(SaveManager.load_game(9) == ERR_FILE_NOT_FOUND, "slot absent = ERR_FILE_NOT_FOUND")
+
+
+# --- Rejeu des déplacements d'objets au chargement (V1, ex-V2) ---
+
+func _test_move_replay() -> void:
+	_reset_scenario()
+	_register_items(6)
+	var rule := HouseRule.new()
+	rule.id = &"test_rule_move"
+	rule.trigger = "room_left"
+	rule.trigger_param = "hall"
+	rule.actions = ["move_item:t02:living:anchor_replay"]
+	rule.once = true
+	HouseDirector.register_rule(rule)
+
+	EventBus.player_left_room.emit(&"hall")
+	_expect(_moves.size() == 1, "déplacement initial émis")
+	_expect(HouseDirector.to_save_dict().get("moves", []).size() == 1, "déplacement mémorisé dans la sauvegarde")
+	_expect(SaveManager.save_game(0) == OK, "sauvegarde avec déplacement")
+
+	_reset_scenario()
+	_register_items(6)
+	_moves.clear()
+	_expect(SaveManager.load_game(0) == OK, "rechargement OK")
+	_expect(_moves.size() == 1, "déplacement rejoué au chargement")
+	if _moves.size() == 1:
+		_expect(_moves[0]["id"] == &"t02", "rejeu : bon objet")
+		_expect(_moves[0]["to"] == &"living", "rejeu : bonne pièce")
+		_expect(_moves[0]["anchor"] == &"anchor_replay", "rejeu : bonne ancre")
+
+
+# --- Player caught (GDD §4.4) : téléportation à l'entrée + une coche au hasard ---
+
+func _test_player_caught() -> void:
+	_reset_scenario()
+	_register_items(60)
+	var main_scene := load("res://scenes/main/main.tscn") as PackedScene
+	_expect(main_scene != null, "main.tscn chargeable")
+	if main_scene == null:
+		return
+	var main_node := main_scene.instantiate()
+	add_child(main_node)
+	main_node._on_new_game()
+	_expect(InventoryManager.progress().x == 0, "nouvelle partie : liste vierge")
+
+	var player: Node3D = main_node._player
+	_expect(player != null, "joueur instancié par main")
+	if player != null:
+		var start: Transform3D = main_node._player_start
+		player.global_position = Vector3(7.0, 0.0, 7.0)
+		EventBus.player_caught.emit()
+		_expect(player.global_position.distance_to(start.origin) < 0.01, "player_caught : téléportation à l'entrée")
+		_expect(InventoryManager.progress().x == 1, "player_caught : une coche aléatoire")
+		EventBus.player_caught.emit()
+		_expect(InventoryManager.progress().x == 2, "player_caught : une coche par capture")
+	main_node.queue_free()
 
 
 # --- Divers ---
