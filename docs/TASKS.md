@@ -29,6 +29,7 @@
 | A0-3 | Dépôt GitHub `articro/etat-des-lieux`, push initial, 6 branches agents | DONE |
 | A0-7 | Intégration Narration session 1 (60 objets, 10 docs, 18 règles) sur main, traduction enregistrée | DONE |
 | A0-8 | Intégration Narration session 2 (relecture, itch_textes.md) | DONE |
+| A0-16 | Intégration Niveau S2/S3 : éclairage de jeu, 6 zones, 60 objets instanciés, hotfix retiré proprement (104 tests) — **M2 « maison complète » atteint J4** | DONE |
 | A0-15 | HOTFIX playtest J1 : PlayerSpawn, TempBlockers, lumières en jeu ; contrat §7 complété | DONE |
 | A0-14 | Intégration Audio S1 (67 OGG, 52 ids, AudioManager complet) — les 6 modules ont livré leur priorité V1 en J1 | DONE |
 | A0-13 | Intégration Niveau S1 (hall/bureau/cave, 47 tests) + Systèmes S3 + Gameplay S3 + UI S2 — 372 assertions vertes | DONE |
@@ -588,4 +589,5 @@
 - 2026-10-17 — Moteur : **Godot 4.x**, GDScript, Forward+. (Architecte, validé utilisateur)
 - 2026-10-17 — Concept : **État des lieux** validé.
 - 2026-10-17 — **Sortie visée : 30-31 octobre 2026.** Périmètre réduit « Rez-de-chaussée » (docs/PLAN_HALLOWEEN.md). Version complète = V2 2027.
+- 2026-10-20 — **M2 atteint** (maison complète en blockout éclairé, tous systèmes, UI, audio). Playtest complet J4/J5 par l'utilisateur = porte d'entrée de M3/M4.
 - 2026-10-17 — Godot **4.7.2**. L'Architecte assure l'intégration (merge main + check headless) ; pas d'agent QA séparé en V1.
