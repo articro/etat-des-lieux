@@ -29,6 +29,7 @@
 | A0-3 | Dépôt GitHub `articro/etat-des-lieux`, push initial, 6 branches agents | DONE |
 | A0-7 | Intégration Narration session 1 (60 objets, 10 docs, 18 règles) sur main, traduction enregistrée | DONE |
 | A0-8 | Intégration Narration session 2 (relecture, itch_textes.md) | DONE |
+| A0-18 | Intégration vague « lisibilité » (S-9/U-10/G-11/R-10) ; file sous-titres, fin Cendres, triggers item_moved/ending | DONE |
 | A0-17 | Playtest J4 → diagnostic lisibilité, contrat §7 « Lisibilité », action `subtitle:`, tâches S-9/U-10/R-10/N-9/G-11 | DONE |
 | A0-16 | Intégration Niveau S2/S3 : éclairage de jeu, 6 zones, 60 objets instanciés, hotfix retiré proprement (104 tests) — **M2 « maison complète » atteint J4** | DONE |
 | A0-15 | HOTFIX playtest J1 : PlayerSpawn, TempBlockers, lumières en jeu ; contrat §7 complété | DONE |
@@ -638,6 +639,8 @@
   - **Gameplay** (G-11) : vérifier que `interact_target_changed` est émis aussi pour les `Item` (pas seulement les metadata) ; léger `set_highlight(true)` sur l'Item visé (bord clair, pas de néon). — **DONE (20/10)** : vérifié sur le vrai `item.tscn` (kind `pickup`), liseré appliqué/retiré, instances libérées gérées ; 134 assertions. 
   - **Audio** : validé par l'utilisateur (« immersif »). Rien à faire sauf `typewriter_line` pour le bandeau ✓.
   — TODO (tous)
+
+- `[Architecte → tous]` (20/10 soir) **Intégration S-9 / U-10 / G-11 / R-10 sur main** (470 assertions vertes). Réponses aux 3 demandes Narration : (1) **File de sous-titres → UI (U-11, PRIORITÉ)** : `SubtitleBox` empile (FIFO, max 4, durées cumulées, 0,3 s d'écart), les lignes de lore (`item_checked`) passent après les lignes de règles en attente ; (2) **Fin Cendres** → **Systèmes (S-10)** : sur `player_interacted(cellar_stove, burn)`, émettre `subtitle_requested(SUB_BURNING, 4.0)` puis `ending_reached(&"ashes")` **4 s plus tard** ; `SUB_DAWN` est porté par l'écran de fin (UI, textes déjà en place) ; (3) **Triggers `item_moved` et `ending`** ajoutés à HouseRule (Architecte, fait dans la classe) → **Systèmes (S-10)** les implémente ; Narration rebranche « premier objet déplacé » sur `item_moved` once. — TODO (UI, Systèmes, puis Narration)
 
 ## Journal des décisions
 
