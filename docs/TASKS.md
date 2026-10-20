@@ -324,6 +324,7 @@
 | U-8 | Écrans de fin, générique | M3 | DONE (2 fins ; générique = V2) |
 | U-9 | Polices libres (machine à écrire, manuscrite, UI) + CREDITS | M1 | DONE |
 | U-10 | Lisibilité J4 : libellé 1973 sous le réticule + état coché, bandeau ✓ 2,5 s puis lore, aide « photographier », rappel « Tab : carnet » | M1 | DONE |
+| U-11 | File de sous-titres : FIFO, max 4 en attente, durées cumulées, écart 0,3 s, lore après les lignes de règle | M1 | DONE |
 
 ### Notes UI (V1 Halloween)
 
@@ -338,6 +339,7 @@
 - **2026-10-17 — U-8 DONE.** `scenes/ui/ending_screen.tscn` (Control, `set_ending_id()` appelé par main.gd) : `ENDING_<ID>_TITLE`, puis P1..P5 écrits un par un, puis la dernière ligne composée via `INV_LINE_FORMAT` (index **sérialisé** : `progress().y + 1` = 61 pour `closed`, 1 pour `ashes`), puis `ENDING_GENERIC_EPILOGUE`, puis boutons « Revenir au menu » / « Quitter ». Entrée accélère, Échap révèle tout.
 - **2026-10-17 — Tests.** `game/tests/ui/ui_tests.tscn` = **92 vérifications headless, 0 échec** (`godot --headless --path game res://tests/ui/ui_tests.tscn`, exit 0/1) : chaînes, thème, réglages, carnet (lignes, coche, ligne ajoutée, photos), documents (pagination, mark_read, dégradation), HUD, sous-titres, pause, options, contrat menu, 2 fins, **priorité des entrées** (Tab/Échap), **rattrapage `game_loaded`** (coches retrouvées, photos vidées). Banc d'essai manuel : `scenes/ui/test_ui.tscn` (touches 1-7 → signaux factices). Les 9 scènes du module se lancent seules (F6) sans erreur ni warning.
 
+- **2026-10-20 (soir) — U-11 DONE (file de sous-titres, contrat §7).** `subtitle_box.gd` n'écrase plus la ligne en cours : `show_line()` **empile** (FIFO), `MAX_QUEUED = 4` lignes en attente (au-delà : `push_warning` + demande ignorée), chaque ligne garde sa durée (**durées cumulées**, `remaining_time()` = total restant fondu/écart compris), **0,3 s d'écart** (`GAP`) entre deux lignes. La lore d'un objet coché passe par la même porte (`hud_hints` → `show_line`) et tombe donc **après toute ligne déjà en file**. `hide_line()` vide la file (réglage « sous-titres » coupé, retour au menu). API de test : `current_key`, `is_showing`, `queued_count`, `queue_keys`, `remaining_time`. Conséquence directe : `r19_onboarding_hall` (3 lignes) et `r03_phone_and_cellar` (téléphone puis trappe) se jouent en entier. **Tests : 136 vérifications, 0 échec** (+15) ; Gameplay 134/0, Niveau 104/0 ; les 9 scènes F6 sans erreur.
 - **2026-10-20 — U-10 DONE (lisibilité, contrat §7).** `scenes/ui/hud_hints.gd` (`Hints`, plein cadre, `mouse_filter=IGNORE`, dans `hud.tscn`) porte les 4 retours du playtest J4 : (1) libellé 1973 (`INV_LINE_FORMAT`) sous le réticule sur `interact_target_changed`, + « déjà inventorié » si l'objet est coché ; (2) bandeau « ✓ n° X — libellé » 2,5 s sur `item_checked`, puis la ligne de lore en sous-titre 4 s après le coche (`SubtitleBox.show_line`) ; (3) `UI_HINT_PHOTOGRAPH` sur `player_interacted(*, &"pickup")`, 3 s ; (4) rappel « Tab : carnet » après 2 photos si le carnet n'a jamais été ouvert (une fois par partie, durable après un chargement). Le « ✓ » est **dessiné** (`check_mark.gd`) : U+2713 est absent du cmap de Courier Prime. Aucun son joué ici : `AudioManager` joue déjà `pencil_check`/`notebook_open`/`notebook_close`. Une photo qui coche plusieurs objets enfile les bandeaux (jamais deux à la fois), la lore du dernier ferme le lot. **Tests : 121 vérifications, 0 échec** (+24 pour U-10) ; Gameplay 123/0, Niveau 104/0 inchangés ; les 9 scènes F6 sans erreur.
 - **2026-10-17 — Réalignement post-merge (`c1b4afd`).** (1) Réticule branché sur `EventBus.interact_target_changed` (contrat du 17/10) : la cible survolée pilote la forme, `(&"", &"")` = réticule nu ; tant que Gameplay n'émet rien, repli automatique sur `player_interacted` (1,4 s). (2) `notebook._collect_items()` utilise `InventoryManager.all_items()` dès qu'elle existe (`has_method` + `call`, l'API n'est pas encore implémentée) avec repli `data/items/` ; invariant testé : le carnet liste exactement les objets d'InventoryManager. (3) Le repli s'annonce par un `print` unique et non un warning (console propre). **Tests : 97 vérifications, 0 échec** ; Gameplay 104/0 et Systèmes 103/0 inchangés ; les 9 scènes F6 sans erreur ni warning.
 
@@ -411,6 +413,23 @@
 - « Carnet déjà ouvert » survit à `game_loaded` (rappel jamais rejoué pour un joueur qui a trouvé le carnet).
 - Le rappel « Tab : carnet » se déclenche à **2** photographies (`PHOTOS_BEFORE_REMINDER`), pas à la première.
 - `typewriter_line` abandonné côté UI (réponse à la demande Audio du 17/10).
+
+### HANDOFF — UI (20 oct. 2026, soirée — U-11 file de sous-titres)
+
+**Ce qui marche**
+- **U-11** `subtitle_box.gd` : file FIFO dans `SubtitleBox` (plus de `Timer`, tout passe par un `Tween` par ligne : fondu 0,16 s → durée → fondu 0,5 s → **écart 0,3 s** → ligne suivante). `MAX_QUEUED = 4` lignes en attente ; au-delà, `push_warning` + demande ignorée. `remaining_time()` = temps restant de toute la file (durées cumulées). `hide_line()` vide la file.
+- La lore d'un objet coché n'a pas de chemin privilégié : `hud_hints._show_lore()` appelle `show_line()`, donc elle prend sa place **derrière** les lignes déjà en file (contrat §7). Rien à changer dans `hud_hints.gd`.
+- **Tests** : `res://tests/ui/ui_tests.tscn` = **136 vérifications, 0 échec**, dont 15 pour U-11 (ordre FIFO, non-écrasement, écart de 0,3 s mesuré entre deux lignes, plafond à 4, lore derrière les règles, `hide_line` vide la file). Gameplay 134/0, Niveau 104/0, Audio OK, `check.sh` vert.
+
+**Pièges (nouveaux)**
+1. **Plus de nœud `Hold`** dans `subtitles.tscn` : le minutage est porté par le tween. Ne pas recréer de `Timer` à côté.
+2. `current_text()` renvoie `""` pendant les fondus **et** pendant l'écart de 0,3 s : un test qui attend une ligne doit se placer dans la fenêtre de maintien (fondu 0,16 s + durée), pas au tout début.
+3. `show_line()` est désormais une **demande**, pas un affichage immédiat : tout appelant qui voulait interrompre doit passer par `hide_line()` d'abord.
+4. Le plafond compte les lignes **en attente** (hors ligne affichée) : 5 lignes émises dans la même frame = 1 affichée + 4 en attente, la 6e ignorée.
+
+**Décisions prises seul (à valider)**
+- File unique, sans priorité explicite : la lore « passe après les règles déjà en file » par simple FIFO (une règle arrivée *après* une lore attend derrière elle — non spécifié au contrat, jugé acceptable).
+- Dépasser le plafond **ignore** la nouvelle ligne (warning) plutôt que d'évincer la plus ancienne : mieux vaut perdre une ligne de fin de paquet que désordonner l'onboarding.
 
 ## Module Audio `[Audio]` — `autoloads/audio_manager.gd`, `assets/audio`
 
@@ -502,7 +521,7 @@
 
 ## Demandes inter-modules
 
-- `[Narration → Systèmes]` (2026-10-20, **bloquant pour R-10**) **File d'émission des `subtitle:`.** `SubtitleBox.show_line()` écrase la ligne en cours : si S-9 émet les actions `subtitle:` d'une même règle dans la même frame, seule la dernière s'affiche. Il faut une file (durées cumulées) dans HouseDirector ou dans `SubtitleBox`. Concerne `r19_onboarding_hall` (3 lignes d'onboarding) et `r03_phone_and_cellar` (téléphone puis trappe). — À FAIRE (S-9)
+- `[Narration → Systèmes]` (2026-10-20, **bloquant pour R-10**) **File d'émission des `subtitle:`.** `SubtitleBox.show_line()` écrase la ligne en cours : si S-9 émet les actions `subtitle:` d'une même règle dans la même frame, seule la dernière s'affiche. Il faut une file (durées cumulées) dans HouseDirector ou dans `SubtitleBox`. Concerne `r19_onboarding_hall` (3 lignes d'onboarding) et `r03_phone_and_cellar` (téléphone puis trappe). — **FAIT côté UI (U-11, 20/10 soir)** : la file est dans `SubtitleBox` (FIFO, 4 en attente max, durées cumulées, 0,3 s d'écart). HouseDirector n'a rien à faire de plus : émettre les 3 `subtitle:` dans la même frame suffit, elles se jouent dans l'ordre. Seule limite à connaître côté Narration : au-delà de 4 lignes en attente la demande est ignorée (warning) — ne pas enchaîner plus de 5 lignes d'un coup.
 - `[Narration → Systèmes]` (2026-10-20) **Fin Cendres : aucun déclencheur HouseRule** pour l'interaction `player_interacted(cellar_stove, burn)`. Les clés existent (`SUB_BURNING` pendant l'interaction longue, `SUB_DAWN` à l'épilogue) : les émettre depuis le séquenceur de fin (S-8) ou l'écran de fin. La fin *Inventaire clos* est câblée (`r23`, `progress` = 60). — TODO
 - `[Narration → Systèmes]` (2026-10-20) **« Premier objet déplacé constaté »** : câblé au plus simple sur `r07` (déplacement le plus précoce). Un déclencheur `item_moved` ou un prédicat `moved:<id>` permettrait de le jouer quel que soit l'objet déplacé en premier. Non bloquant. — TODO
 

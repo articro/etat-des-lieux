@@ -39,6 +39,7 @@ func _ready() -> void:
 	await _test_documents()
 	await _test_hud()
 	await _test_subtitles()
+	await _test_subtitle_queue()
 	await _test_pause()
 	await _test_options()
 	await _test_menu()
@@ -227,6 +228,84 @@ func _test_subtitles() -> void:
 	EventBus.subtitle_requested.emit(&"SUB_CLE_INCONNUE", 2.0)
 	await _wait(0.35)
 	_check(box.current_text() != "SUB_CLE_INCONNUE", "clé de sous-titre inconnue ignorée")
+	box.queue_free()
+	await get_tree().process_frame
+
+
+# --- U-11 : file de sous-titres (FIFO, max 4, durées cumulées, écart 0,3 s) ---
+
+func _test_subtitle_queue() -> void:
+	print("[File de sous-titres U-11]")
+	var box := await _instance(SUB_SCENE) as SubtitleBox
+	if box == null:
+		return
+	UiSettings.set_value(&"subtitles", true)
+	box.hide_line()
+	await get_tree().process_frame
+
+	# Une règle qui déclenche 3 lignes dans la même frame : rien n'est écrasé
+	EventBus.subtitle_requested.emit(&"SUB_TUTO_CONSOLE", 1.0)
+	EventBus.subtitle_requested.emit(&"SUB_TUTO_CARNET", 1.0)
+	EventBus.subtitle_requested.emit(&"SUB_TUTO_PHOTO", 1.0)
+	await _wait(0.35)
+	_check(box.current_key() == &"SUB_TUTO_CONSOLE", "la première ligne part tout de suite (%s)" % box.current_key())
+	_check(
+		box.current_text() == String(tr(&"SUB_TUTO_CONSOLE")),
+		"première ligne affichée (%s)" % box.current_text()
+	)
+	_check(box.queued_count() == 2, "les deux suivantes attendent leur tour (%d)" % box.queued_count())
+	var keys := box.queue_keys()
+	_check(
+		keys.size() == 2 and keys[0] == &"SUB_TUTO_CARNET" and keys[1] == &"SUB_TUTO_PHOTO",
+		"ordre FIFO conservé (%s)" % str(keys)
+	)
+	# 3 × (fondu 0,16 + 1,0 + fondu 0,5 + écart 0,3) = 5,88 s, moins le temps écoulé
+	var total := box.remaining_time()
+	_check(total > 5.0 and total < 6.0, "durées cumulées de la file (%.2f s)" % total)
+
+	# Écart de 0,3 s : la 2e ligne n'a pas encore pris la place de la 1re
+	await _wait(1.5)
+	_check(box.is_showing(), "la ligne en cours va jusqu'au bout de sa durée")
+	_check(box.current_text().is_empty(), "écart de 0,3 s entre deux lignes (écran vide)")
+
+	# Puis la 2e ligne arrive, intacte
+	await _wait(0.5)
+	_check(box.current_key() == &"SUB_TUTO_CARNET", "2e ligne à l'écran (%s)" % box.current_key())
+	_check(
+		box.current_text() == String(tr(&"SUB_TUTO_CARNET")),
+		"2e ligne affichée en entier (%s)" % box.current_text()
+	)
+	_check(box.queued_count() == 1, "une ligne encore en attente (%d)" % box.queued_count())
+
+	# Plafond : 4 lignes en attente, le reste est ignoré
+	EventBus.subtitle_requested.emit(&"SUB_TAPE", 1.0)
+	EventBus.subtitle_requested.emit(&"SUB_HALL_KEYS", 1.0)
+	EventBus.subtitle_requested.emit(&"SUB_DRAWER_OPENS", 1.0)
+	EventBus.subtitle_requested.emit(&"SUB_PRESENCE_SEEN", 1.0)
+	EventBus.subtitle_requested.emit(&"SUB_DAWN", 1.0)
+	await get_tree().process_frame
+	var full := box.queue_keys()
+	_check(box.queued_count() == 4, "file plafonnée à 4 lignes en attente (%d)" % box.queued_count())
+	_check(
+		full.size() == 4 and full[3] == &"SUB_DRAWER_OPENS",
+		"les demandes au-delà du plafond sont ignorées (%s)" % str(full)
+	)
+
+	# Lore d'un objet coché : après toute ligne de règle déjà en file
+	box.hide_line()
+	await get_tree().process_frame
+	_check(box.queued_count() == 0 and not box.is_showing(), "hide_line() vide la file")
+	EventBus.subtitle_requested.emit(&"SUB_TUTO_CONSOLE", 1.0)
+	EventBus.subtitle_requested.emit(&"SUB_TUTO_CARNET", 1.0)
+	var lore := InventoryManager.get_item(&"hall_barometer").lore_key
+	box.show_line(lore, 4.0)
+	await get_tree().process_frame
+	var mixed := box.queue_keys()
+	_check(
+		mixed.size() == 2 and mixed[0] == &"SUB_TUTO_CARNET" and mixed[1] == lore,
+		"la lore passe après les lignes de règle déjà en file (%s)" % str(mixed)
+	)
+	_check(box.current_key() == &"SUB_TUTO_CONSOLE", "la ligne de règle en cours n'est pas écrasée")
 	box.queue_free()
 	await get_tree().process_frame
 
