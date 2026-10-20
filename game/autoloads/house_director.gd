@@ -17,10 +17,19 @@ const IDLE_POLL_INTERVAL := 0.5      # s entre deux évaluations des règles idl
 const KNOWN_TRIGGERS: Array[String] = [
 	"room_left", "room_entered", "progress", "attention_above",
 	"doc_read", "flash_count", "idle", "item_checked", "noise",
+	"item_moved", "ending",
 ]
 const KNOWN_ACTIONS: Array[String] = ["move_item", "event", "attention", "presence", "sfx", "subtitle", "reveal"]
 ## Durée par défaut d'un sous-titre si `subtitle:<clé>` n'en précise pas (S-9).
 const SUBTITLE_DEFAULT_DURATION := 3.0
+
+## Fin « Cendres » (S-10) : le carnet brûle mal, l'écran de fin prend la main 4 s plus tard.
+const BURN_SUBTITLE_KEY := &"SUB_BURNING"
+const BURN_ENDING_ID := &"ashes"
+const BURN_ENDING_DELAY := 4.0
+## Profondeur maximale de chaîne de déclencheurs `item_moved` (une règle item_moved
+## peut déplacer un objet, ce qui relance le déclencheur) — garde anti-récursion.
+const MAX_MOVE_CHAIN := 8
 
 ## Séquenceur V1 (PLAN_HALLOWEEN §1) : calme 0-20, inquiétude 20-45, cave 45-60.
 const THRESHOLD_ACT2 := 20
@@ -51,6 +60,9 @@ var _idle_time: float = 0.0
 var _idle_poll: float = 0.0
 var _ending_reached: bool = false
 var _ending_id: StringName = &""
+var _burn_pending: bool = false
+var _burn_generation: int = 0      # invalide une fin Cendres en attente (reset/chargement)
+var _move_chain_depth: int = 0
 
 # --- État du parser (non réentrant, usage interne) ---
 var _cond_src: String = ""
@@ -70,6 +82,7 @@ func _ready() -> void:
 	EventBus.flash_fired.connect(_on_flash_fired)
 	EventBus.player_noise.connect(_on_player_noise)
 	EventBus.player_interacted.connect(_on_player_interacted)
+	EventBus.item_moved.connect(_on_item_moved)
 	EventBus.game_loaded.connect(_on_game_loaded)
 
 
@@ -179,6 +192,10 @@ func from_save_dict(d: Dictionary) -> void:
 		}
 	_ending_id = StringName(d.get("ending", ""))
 	_ending_reached = _ending_id != StringName()
+	# Un chargement annule la fin Cendres en attente : l'état vient de la sauvegarde.
+	_burn_generation += 1
+	_burn_pending = false
+	_move_chain_depth = 0
 
 
 ## Remise à zéro complète pour la scène de test Systèmes (usage interne uniquement).
@@ -192,6 +209,9 @@ func _reset_for_tests() -> void:
 	_idle_time = 0.0
 	_ending_reached = false
 	_ending_id = &""
+	_burn_generation += 1
+	_burn_pending = false
+	_move_chain_depth = 0
 	GameState.attention = 0.0
 
 
@@ -242,7 +262,7 @@ func _rule_wants(rule: HouseRule, param: String) -> bool:
 			return float(GameState.get_counter(&"flash_count")) >= rule.trigger_param.to_float()
 		"noise":
 			return param.to_float() >= rule.trigger_param.to_float()
-		"room_left", "room_entered", "doc_read", "item_checked":
+		"room_left", "room_entered", "doc_read", "item_checked", "item_moved", "ending":
 			return rule.trigger_param.is_empty() or rule.trigger_param == param
 	return false
 
@@ -447,12 +467,14 @@ func _update_progression(checked: int) -> void:
 
 
 ## Première fin atteinte gagne : `closed` au 60e objet coché, `ashes` sur le poêle.
+## Les règles `ending` (param = ending_id, vide = n'importe quelle fin) partent après l'émission.
 func _trigger_ending(ending_id: StringName) -> void:
 	if _ending_reached:
 		return
 	_ending_reached = true
 	_ending_id = ending_id
 	EventBus.ending_reached.emit(ending_id)
+	_evaluate_trigger_rules("ending", String(ending_id))
 
 
 func _on_game_loaded() -> void:
@@ -497,9 +519,37 @@ func _on_player_noise(level: float, _world_position: Vector3) -> void:
 
 func _on_player_interacted(target_id: StringName, kind: StringName) -> void:
 	_idle_time = 0.0
-	# Fin « Cendres » : brûler le carnet dans le poêle de la cave (S-8).
+	# Fin « Cendres » : brûler le carnet dans le poêle de la cave (S-8/S-10).
 	if target_id == &"cellar_stove" and kind == &"burn":
-		_trigger_ending(&"ashes")
+		_begin_ashes_ending()
+
+
+## Émet `SUB_BURNING` tout de suite, puis `ending_reached(ashes)` BURN_ENDING_DELAY s plus tard
+## (le joueur voit le carnet brûler avant l'écran de fin). Un seul brûlage à la fois ; un
+## chargement ou une remise à zéro annule l'attente. Une fin déjà atteinte reste prioritaire.
+func _begin_ashes_ending() -> void:
+	if _ending_reached or _burn_pending:
+		return
+	_burn_pending = true
+	var generation := _burn_generation
+	EventBus.subtitle_requested.emit(BURN_SUBTITLE_KEY, BURN_ENDING_DELAY)
+	await get_tree().create_timer(BURN_ENDING_DELAY).timeout
+	if generation != _burn_generation:
+		return
+	_burn_pending = false
+	_trigger_ending(BURN_ENDING_ID)
+
+
+## Déclencheur `item_moved` (S-10) : tout déplacement émis sur EventBus (action move_item,
+## rejeu au chargement) réveille les règles qui l'attendent. Garde anti-récursion : une règle
+## `item_moved` qui déplace un objet relance le déclencheur.
+func _on_item_moved(item_id: StringName, _from_room: StringName, _to_room: StringName, _new_anchor: StringName) -> void:
+	if _move_chain_depth >= MAX_MOVE_CHAIN:
+		push_warning("HouseDirector : chaîne item_moved > %d, déclencheur ignoré (%s)." % [MAX_MOVE_CHAIN, item_id])
+		return
+	_move_chain_depth += 1
+	_evaluate_trigger_rules("item_moved", String(item_id))
+	_move_chain_depth -= 1
 
 
 # --- Parser du mini-langage (ARCHITECTURE §6) ---

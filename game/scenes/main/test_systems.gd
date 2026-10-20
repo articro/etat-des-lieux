@@ -33,7 +33,9 @@ func _ready() -> void:
 	_test_parser()
 	_test_rules_and_reveals()
 	_test_sequencer_closed()
-	_test_sequencer_ashes()
+	await _test_sequencer_ashes()
+	_test_move_and_ending_triggers()
+	await _test_burning_delay()
 	_test_save_roundtrip()
 	_test_move_replay()
 	_test_subtitle_and_reveal()
@@ -290,7 +292,14 @@ func _test_sequencer_ashes() -> void:
 	EventBus.player_interacted.emit(&"other", &"burn")
 	_expect(_endings.is_empty(), "pas de fin sur interaction inattendue")
 
+	# Fin différée (S-10) : le sous-titre part tout de suite, la fin 4 s plus tard.
 	EventBus.player_interacted.emit(&"cellar_stove", &"burn")
+	_expect(_subtitles.size() == 1, "SUB_BURNING émis immédiatement")
+	if _subtitles.size() == 1:
+		_expect(_subtitles[0][0] == &"SUB_BURNING", "sous-titre SUB_BURNING")
+		_expect(is_equal_approx(float(_subtitles[0][1]), 4.0), "SUB_BURNING sur 4,0 s")
+	_expect(_endings.is_empty(), "fin ashes différée (pas dans la même frame)")
+	await _wait_for_endings(1)
 	_expect(_endings == [&"ashes"], "fin ashes sur player_interacted(cellar_stove, burn)")
 
 	for i: int in range(46, 61):
@@ -422,6 +431,107 @@ func _test_subtitle_and_reveal() -> void:
 	_expect(_subtitles.is_empty(), "actions subtitle invalides ignorées sans crash")
 
 
+# --- Nouveaux déclencheurs item_moved / ending (S-10) ---
+
+func _test_move_and_ending_triggers() -> void:
+	_reset_scenario()
+	_register_items(6)
+
+	var any_move := HouseRule.new()
+	any_move.id = &"test_rule_any_move"
+	any_move.trigger = "item_moved"
+	any_move.trigger_param = ""
+	any_move.actions = ["event:any_item_moved"]
+	any_move.once = true
+	HouseDirector.register_rule(any_move)
+
+	var knife_move := HouseRule.new()
+	knife_move.id = &"test_rule_knife_move"
+	knife_move.trigger = "item_moved"
+	knife_move.trigger_param = "t03"
+	knife_move.actions = ["event:knife_moved"]
+	knife_move.once = true
+	HouseDirector.register_rule(knife_move)
+
+	EventBus.item_moved.emit(&"t02", &"hall", &"kitchen", &"anchor_a")
+	_expect(&"any_item_moved" in _events, "trigger item_moved sans paramètre : n'importe quel objet")
+	_expect(not (&"knife_moved" in _events), "trigger item_moved paramétré : autre objet ignoré")
+	EventBus.item_moved.emit(&"t03", &"hall", &"living", &"anchor_b")
+	_expect(&"knife_moved" in _events, "trigger item_moved paramétré : bon objet")
+
+	# Une action move_item de règle émet item_moved → déclenche les règles item_moved.
+	_events.clear()
+	_moves.clear()
+	var mover := HouseRule.new()
+	mover.id = &"test_rule_move_t04"
+	mover.trigger = "room_left"
+	mover.trigger_param = "study"
+	mover.actions = ["move_item:t04:dining:anchor_c"]
+	mover.once = true
+	HouseDirector.register_rule(mover)
+	EventBus.player_left_room.emit(&"study")
+	_expect(_moves.size() == 1 and _moves[0]["id"] == &"t04", "action move_item émet item_moved")
+	_expect(_events.is_empty(), "règles item_moved once déjà parties : pas de réémission")
+
+	# Trigger `ending` : param = ending_id, vide = n'importe quelle fin.
+	_events.clear()
+	var ashes_rule := HouseRule.new()
+	ashes_rule.id = &"test_rule_ending_ashes"
+	ashes_rule.trigger = "ending"
+	ashes_rule.trigger_param = "ashes"
+	ashes_rule.actions = ["event:ashes_epilogue"]
+	ashes_rule.once = true
+	HouseDirector.register_rule(ashes_rule)
+
+	var closed_rule := HouseRule.new()
+	closed_rule.id = &"test_rule_ending_closed"
+	closed_rule.trigger = "ending"
+	closed_rule.trigger_param = "closed"
+	closed_rule.actions = ["event:closed_epilogue"]
+	closed_rule.once = true
+	HouseDirector.register_rule(closed_rule)
+
+	var any_ending := HouseRule.new()
+	any_ending.id = &"test_rule_ending_any"
+	any_ending.trigger = "ending"
+	any_ending.trigger_param = ""
+	any_ending.actions = ["event:any_epilogue"]
+	any_ending.once = true
+	HouseDirector.register_rule(any_ending)
+
+	HouseDirector._trigger_ending(&"ashes")   # appel interne : pas d'attente de 4 s ici
+	_expect(&"ashes_epilogue" in _events, "trigger ending:ashes déclenche sa règle")
+	_expect(&"any_epilogue" in _events, "trigger ending sans paramètre : n'importe quelle fin")
+	_expect(not (&"closed_epilogue" in _events), "trigger ending paramétré : autre fin ignorée")
+	_expect(String(HouseDirector.to_save_dict().get("ending", "")) == "ashes", "fin ashes enregistrée en sauvegarde")
+
+
+# --- Fin « Cendres » différée de 4 s (S-10) ---
+
+func _test_burning_delay() -> void:
+	_reset_scenario()
+	_register_items(60)
+
+	var started := Time.get_ticks_msec()
+	EventBus.player_interacted.emit(&"cellar_stove", &"burn")
+	_expect(_subtitles.size() == 1, "brûlage : un sous-titre immédiat")
+	_expect(_endings.is_empty(), "brûlage : pas de fin immédiate")
+	# Un second brûlage pendant l'attente ne programme rien de plus.
+	EventBus.player_interacted.emit(&"cellar_stove", &"burn")
+	_expect(_subtitles.size() == 1, "brûlage double : un seul sous-titre")
+
+	await _wait_for_endings(1)
+	var elapsed := (Time.get_ticks_msec() - started) / 1000.0
+	_expect(_endings == [&"ashes"], "fin ashes reçue")
+	_expect(elapsed >= HouseDirector.BURN_ENDING_DELAY - 0.2, "fin ashes après ~4 s (%.2f s mesurées)" % elapsed)
+
+	# Après la fin, un brûlage ne redéclenche rien.
+	var subs_before := _subtitles.size()
+	EventBus.player_interacted.emit(&"cellar_stove", &"burn")
+	_expect(_subtitles.size() == subs_before, "brûlage après la fin : ignoré")
+	_expect(_endings == [&"ashes"], "une seule fin ashes")
+
+
 # --- Player caught (GDD §4.4) : téléportation à l'entrée + une coche au hasard ---
 
 func _test_player_caught() -> void:
@@ -450,6 +560,13 @@ func _test_player_caught() -> void:
 
 
 # --- Divers ---
+
+## Attend l'arrivée de `count` fins (les fins différées dépendent du temps réel), au plus 8 s.
+func _wait_for_endings(count: int) -> void:
+	var deadline := Time.get_ticks_msec() + 8000
+	while _endings.size() < count and Time.get_ticks_msec() < deadline:
+		await get_tree().create_timer(0.05).timeout
+
 
 func _register_items(count: int) -> void:
 	for i: int in range(1, count + 1):
