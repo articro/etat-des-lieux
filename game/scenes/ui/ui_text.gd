@@ -52,6 +52,15 @@ static func format(key: StringName, values: Dictionary) -> String:
 	return text
 
 
+## « 23. Pendule arrêtée, 3 h 10 » — une ligne de l'inventaire 1973.
+## Le format vient de Narration (`INV_LINE_FORMAT` dans fr.csv) ; repli si absent.
+static func inventory_line(index: int, item_name: String) -> String:
+	var text := format(&"INV_LINE_FORMAT", {"index": index, "name": item_name})
+	if text == String(&"INV_LINE_FORMAT"):
+		return "%d. %s" % [index, item_name]
+	return text
+
+
 ## Vrai si la clé possède une traduction connue (utile aux tests et aux replis).
 static func has_key(key: StringName) -> bool:
 	ensure()

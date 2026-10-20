@@ -42,6 +42,10 @@ ROOM_CELLAR,Cave
 ROOM_UNKNOWN,Pièce non classée
 UI_PHOTOS_COUNT,Photographies : {count}
 UI_PHOTO_INDEX,Photo {index}
+UI_ALREADY_CHECKED,déjà inventorié
+UI_CHECK_BANNER,n° {index} — {label}
+UI_HINT_PHOTOGRAPH,Photographier pour inventorier.
+UI_HINT_NOTEBOOK,Tab : carnet
 UI_PHOTO_ROOM,Pièce : {room}
 UI_DOC_PAGE,Page {page} sur {pages}
 UI_DOC_CLOSE_HINT,Échap : fermer · ↑ ↓ : défiler
@@ -51,4 +55,4 @@ UI_ENDING_HINT,Entrée : continuer
 UI_ENDING_BACK,Revenir au menu
 UI_ENDING_QUIT,Quitter
 UI_TEST_TITLE,Banc d'essai UI
-UI_TEST_HELP,"1 objet coché · 2 ligne ajoutée · 3 photographie · 4 document · 5 sous-titre · 6 fin Inventaire clos · 7 fin Cendres · Tab carnet · Échap pause"
+UI_TEST_HELP,"1 objet coché · 2 ligne ajoutée · 3 photographie · 4 document · 5 sous-titre · 6 fin Inventaire clos · 7 fin Cendres · 8 cible sous le réticule · Tab carnet · Échap pause"
