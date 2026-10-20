@@ -29,6 +29,7 @@
 | A0-3 | Dépôt GitHub `articro/etat-des-lieux`, push initial, 6 branches agents | DONE |
 | A0-7 | Intégration Narration session 1 (60 objets, 10 docs, 18 règles) sur main, traduction enregistrée | DONE |
 | A0-8 | Intégration Narration session 2 (relecture, itch_textes.md) | DONE |
+| A0-17 | Playtest J4 → diagnostic lisibilité, contrat §7 « Lisibilité », action `subtitle:`, tâches S-9/U-10/R-10/N-9/G-11 | DONE |
 | A0-16 | Intégration Niveau S2/S3 : éclairage de jeu, 6 zones, 60 objets instanciés, hotfix retiré proprement (104 tests) — **M2 « maison complète » atteint J4** | DONE |
 | A0-15 | HOTFIX playtest J1 : PlayerSpawn, TempBlockers, lumières en jeu ; contrat §7 complété | DONE |
 | A0-14 | Intégration Audio S1 (67 OGG, 52 ids, AudioManager complet) — les 6 modules ont livré leur priorité V1 en J1 | DONE |
@@ -583,6 +584,15 @@
 
 - `[Architecte → Niveau]` (17/10, **playtest utilisateur, BLOQUANT**) En F5 : **noir total** (les lumières étaient dans `StandaloneLights`, masqué en jeu) et **chute dans le vide** par les portes cuisine / entrée (pièces non construites). Hotfix Architecte : `PlayerSpawn` + `player_spawn_transform()` dans house, `TempBlockers` sur ces portes. **DONE Niveau (20/10)** : N-6 (WorldEnvironment sombre, ACES, fog de distance/volumétrique; pratiques hall/bureau/cave, 2 Omni avec ombres; preview rétablie en standalone) + N-5/N-10 (cuisine, salon, cour; `TempBlockers` retirés; clôture/portail et escalier colmatés avec collision). `PlayerSpawn` préservé. — DONE
 - `[Architecte → Systèmes]` (17/10) `main.gd` modifié par l'Architecte (hotfix) : le joueur est placé via `house_node.call("player_spawn_transform")`. À conserver. — INFO
+
+- `[Architecte → tous]` (20/10) **PLAYTEST J4 (utilisateur, F5, maison complète).** Verdict : *« je ne vois pas le même jeu que tu me décris, il n'y a rien à faire, les décors sont à revoir, les bruitages sont immersifs »*. Diagnostic : tout fonctionne mais **rien n'est lisible** (60 cubes identiques, aucun retour hors carnet, E muet, monologues jamais déclenchés, zéro onboarding). Décisions dans ARCHITECTURE §7 « Lisibilité et retour joueur ». Tâches :
+  - **Systèmes** (S-9, PRIORITÉ) : action `subtitle:<key>[:<durée>]` dans HouseDirector (+ `reveal:<item_id>`) ; tests.
+  - **UI** (U-10, PRIORITÉ) : libellé 1973 sous le réticule sur `interact_target_changed` (+ état coché) ; bandeau « ✓ n° X — libellé » 2,5 s sur `item_checked` puis sous-titre lore 4 s ; message `UI_HINT_PHOTOGRAPH` sur `player_interacted(*, &"pickup")` ; rappel « Tab : carnet » si le carnet n'a jamais été ouvert après 2 photos.
+  - **Narration** (R-10, PRIORITÉ) : clés `SUB_*` de `subtitles.md` dans fr.csv ; règles `subtitle:` pour l'onboarding (3 lignes, `room_entered:hall`, once) et ~12 moments clés (première photo, 10, 20 tiroir, 30, premier déplacement d'objet constaté, 45 téléphone, trappe, cave, Présence, 58, fins) ; clé `UI_HINT_PHOTOGRAPH` ; vérifier que le post-it de Besnard dit explicitement la tâche en 3 lignes.
+  - **Niveau** (N-9 + N-7, PRIORITÉ ABSOLUE, J5→J9) : les 60 objets doivent être reconnaissables. Télécharger des modèles **CC0** (Poly Haven `/models`, Kenney, Quaternius ; glTF) pour ≥ 40 objets, compositions CSG distinctives pour le reste (tailles réelles !) ; textures CC0 ambientCG pour murs/sols/plafonds par pièce (papier peint 70s, carrelage cuisine, parquet salon, pierre cave, béton). CREDITS.md pour chaque fichier. Budget ARCHITECTURE §8. Livrer **pièce par pièce**, hall + bureau d'abord, push à chaque pièce.
+  - **Gameplay** (G-11) : vérifier que `interact_target_changed` est émis aussi pour les `Item` (pas seulement les metadata) ; léger `set_highlight(true)` sur l'Item visé (bord clair, pas de néon). 
+  - **Audio** : validé par l'utilisateur (« immersif »). Rien à faire sauf `typewriter_line` pour le bandeau ✓.
+  — TODO (tous)
 
 ## Journal des décisions
 

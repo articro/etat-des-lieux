@@ -221,7 +221,7 @@ class_name HouseRule extends Resource
 @export var trigger: StringName       # "room_left","progress","attention_above","doc_read","flash_count","idle","item_checked"
 @export var trigger_param: String
 @export var condition: String         # même mini-langage que reveal_condition
-@export var actions: Array[String]    # "move_item:kitchen_knife:living:anchor_table_2", "event:act1_drawer_opens", "attention:+5", "presence:offscreen", "sfx:upstairs_chair"
+@export var actions: Array[String]    # "move_item:kitchen_knife:living:anchor_table_2", "event:act1_drawer_opens", "attention:+5", "presence:offscreen", "sfx:upstairs_chair", "sfx:phone_ring@hall_anchor_console", "subtitle:SUB_CAMILLE_03:4.0", "reveal:hall_ring_1951"
 @export var once: bool = true
 @export var cooldown: float = 0.0
 ```
@@ -257,6 +257,14 @@ Mini-langage de condition (implémenté dans `house_director.gd`, fonction `eval
 - `house.tscn` contient un `Marker3D` nommé **`PlayerSpawn`** (dans le hall, près de la porte d'entrée, regardant vers l'intérieur) et `house.gd` expose `func player_spawn_transform() -> Transform3D`. `main.gd` y place le joueur après instanciation.
 - **Toute ouverture vers une pièce non encore construite doit être bouchée** (porte fermée en CSG avec collision) : le joueur ne doit jamais pouvoir sortir du monde. Le nœud `TempBlockers` de `house.tscn` sert à ça ; Niveau retire chaque bloqueur quand la pièce correspondante arrive.
 - **L'éclairage de jeu** (WorldEnvironment + lumières pratiques) est obligatoire dans `house.tscn` / les rooms, distinct des lumières de prévisualisation F6.
+
+### Lisibilité et retour joueur (décisions playtest J4, 20/10)
+- **Action de règle `subtitle:<key>[:<durée>]`** (HouseDirector → `EventBus.subtitle_requested`). C'est ainsi que les monologues de Camille (`data/strings/subtitles.md` → clés `SUB_*` dans fr.csv) sont déclenchés : par les règles, aux moments choisis par Narration.
+- **Cible sous le réticule** : sur `interact_target_changed` visant un `Item`, le HUD affiche discrètement le libellé 1973 (`tr(label_key)`) et un indicateur « déjà coché » si c'est le cas. C'est le principal outil pour comprendre que « ceci est sur la liste ».
+- **Objet coché** : sur `item_checked`, le HUD affiche 2,5 s « ✓ n° <index> — <libellé> » (zone sous-titre, style machine à écrire) **et** la ligne de lore (`lore_key`) en sous-titre voix de Camille 4 s après. Le son `pencil_check` joue. Le carnet reste la source complète.
+- **E sur un Item** (`player_interacted(id, &"pickup")`) : le HUD affiche le libellé + « photographier pour inventorier » (clé `UI_HINT_PHOTOGRAPH`). Pas d'inspection 3D en V1.
+- **Onboarding** (Narration, via règles `room_entered:hall` once) : 3 sous-titres au premier pas dans l'entrée (le mot de Besnard sur la console ; « Tab : carnet » ; « clic droit : viser, clic gauche : photographier »). Les deux aides de contrôle sont non-diégétiques, sobres, et ne se répètent jamais.
+- **Lisibilité visuelle (Niveau)** : aucun objet de la liste ne doit ressembler à un autre. Priorité absolue N-9 : modèles CC0 (Poly Haven, Kenney, Quaternius, Sketchfab CC0) téléchargés et vérifiés, ou à défaut compositions CSG distinctives (forme, taille réelle, couleur de matériau). Les murs/sols/plafonds reçoivent des textures CC0 (ambientCG) : papier peint, carrelage, parquet, pierre de cave.
 
 ### Options / réglages
 - L'UI (menu Options) persiste les réglages dans `user://settings.cfg` (ConfigFile) et émet `EventBus.settings_changed(key, value)` à chaque changement **et une fois pour chaque clé au démarrage** (`UiSettings.apply_all()`, idempotent, appelé par le menu principal et par le HUD — `main.tscn` n'a rien à appeler).
