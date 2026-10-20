@@ -3,13 +3,18 @@ class_name Item
 extends Node3D
 
 const DEFAULT_SIZE: Vector3 = Vector3(0.45, 0.45, 0.45)
+const ItemVisualFactory = preload("res://scenes/items/item_visuals.gd")
 const PLACEHOLDER_SIZES: Dictionary[StringName, Vector3] = {
 	&"hall_console_table": Vector3(0.90, 0.76, 0.42),
+	&"hall_barometer": Vector3(0.36, 0.50, 0.10),
 	&"hall_answering_machine": Vector3(0.42, 0.18, 0.30),
 	&"hall_coat_rack": Vector3(0.55, 1.55, 0.35),
 	&"hall_key_board": Vector3(0.52, 0.68, 0.12),
 	&"hall_mirror": Vector3(0.82, 1.45, 0.10),
 	&"hall_umbrella_stand": Vector3(0.35, 0.65, 0.35),
+	&"hall_doorbell": Vector3(0.16, 0.24, 0.08),
+	&"hall_hand_railing": Vector3(0.42, 0.22, 0.10),
+	&"hall_ring_1951": Vector3(0.05, 0.05, 0.05),
 	&"study_desk": Vector3(1.55, 0.75, 0.82),
 	&"study_chair": Vector3(0.62, 1.00, 0.62),
 	&"study_shelves": Vector3(0.85, 1.90, 0.36),
@@ -30,6 +35,7 @@ const PLACEHOLDER_SIZES: Dictionary[StringName, Vector3] = {
 
 var _highlighted: bool = false
 var _present: bool = true
+var _visual_kind: StringName = &"placeholder"
 
 
 func _ready() -> void:
@@ -39,6 +45,7 @@ func _ready() -> void:
 	else:
 		name = String(data.id)
 		_apply_placeholder_size()
+		_visual_kind = ItemVisualFactory.create_visual(self, data.id)
 	set_present(_present)
 	if get_tree().current_scene == self:
 		_setup_standalone_preview()
@@ -103,6 +110,11 @@ func set_present(present: bool) -> void:
 
 func is_present() -> bool:
 	return _present
+
+
+## Type de rendu construit par ItemVisualFactory, consommé par les tests Niveau.
+func visual_kind() -> StringName:
+	return _visual_kind
 
 
 func _apply_placeholder_size() -> void:

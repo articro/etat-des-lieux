@@ -183,9 +183,9 @@
 | N-4 | `item.tscn` générique + `item.gd` (`is_in_frustum`, surbrillance, inspection) | M1 | DONE |
 | N-5 | Blockout cuisine/salon et intégration des 6 zones V1 | M2 | DONE |
 | N-6 | Éclairage de base (lumière basse, fog volumétrique, budget ARCHITECTURE §8) | M2 | DONE |
-| N-7 | Assets finaux : sourcing CC0/CC-BY (Poly Haven, Sketchfab, Kenney, ambientCG), import, matériaux, CREDITS.md | M4 | TODO |
+| N-7 | Assets finaux V1 : modèles/CSG pour les 60 objets, textures CC0 ambientCG pour les six pièces, matériaux, CREDITS.md et tests | M4 | EN COURS (Niveau) |
 | N-8 | Set-dressing final des 13 zones (1998 rural, voir GDD §8) | M4 | TODO |
-| N-9 | Modèles des ~212 objets (assets libres, variantes par matériau, placeholders acceptés jusqu'à M4) | M3→M4 | TODO |
+| N-9 | Objets V1 (60) reconnaissables : ≥ 40 modèles glTF CC0, CSG distinctif pour le reste, dimensions réelles (priorité après J4) | M3→M4 | EN COURS (Niveau) |
 | N-10 | Extérieur V1 minimal : cour 14 × 9 m, portail fermé, 205 décor (appentis hors périmètre Halloween) | M2 | DONE |
 
 ### Notes Niveau (V1 Halloween)
@@ -202,6 +202,7 @@
 - Éclairage pratique de jeu séparé de la preview F6; 2 Omni avec ombres (hall/bureau), cave sans ombres. `house.gd` restaure `visible = standalone`; `PlayerSpawn` conservé. `check.sh` vert, tests Niveau : 59 assertions, 0 échec.
 - **2026-10-20 — N-5/N-10 DONE (V1 minimal).** Cuisine, salon et cour 14 × 9 m ajoutés; 205 en décor, 34 ancres matérialisées, 60 objets instanciés. Trappe cuisine/cave alignée et ouverte par `cellar_door_opens`.
 - Portes alignées vers les six zones; `TempBlockers` retirés. Clôtures/portail extérieur et fond d’escalier sont collidables; appentis exclu par `PLAN_HALLOWEEN`. Vérifié : `check.sh` vert, tests Niveau 104 assertions, 0 échec.
+- **2026-10-20 — N-9/N-7 en cours, livraison hall (J5).** Les 10 objets du hall ont quitté le cube gris : 5 utilisent des modèles CC0 (console, porte-manteau, miroir, porte-parapluies composite, répondeur) et 5 sont des compositions CSG uniques (baromètre, tableau à clés, sonnette, main fantôme, bague). Mur décoré d’un motif 70s original dérivé de Wallpaper002A CC0; sol WoodFloor017, plafond Plaster001 (ambientCG, 1K). Sources et chaque fichier listés dans `game/assets/CREDITS.md`; dimensions hall conservées/renseignées dans `item.gd`. Tests Niveau : 137 assertions, 0 échec; `bash game/tools/check.sh` vert. Le bureau et les 50 objets restants restent à faire; aucun commit/push à ce stade.
 
 ### HANDOFF — Niveau (17 oct. 2026, session 2)
 

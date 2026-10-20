@@ -22,6 +22,7 @@ func _ready() -> void:
 
 	_test_room_zones()
 	_test_hall_blockout()
+	_test_hall_visuals()
 	_test_game_lighting()
 	_test_added_room_blockouts()
 	_test_cellar_integration()
@@ -108,6 +109,63 @@ func _test_hall_blockout() -> void:
 	_expect(phone != null and hall.get_node_or_null("Items/hall_answering_machine") != null, "téléphone + répondeur dans le hall")
 	_expect(stairs != null and stairs.global_position.z > 4.5, "ancre d'apparition au sommet des marches condamnées")
 	_expect(camera != null and camera.global_transform.basis.z.z < -0.99, "longue vue du hall orientée depuis l'entrée")
+
+
+func _test_hall_visuals() -> void:
+	var model_ids: Array[StringName] = [
+		&"hall_console_table",
+		&"hall_coat_rack",
+		&"hall_mirror",
+		&"hall_umbrella_stand",
+		&"hall_answering_machine",
+	]
+	var csg_ids: Array[StringName] = [
+		&"hall_barometer",
+		&"hall_key_board",
+		&"hall_doorbell",
+		&"hall_hand_railing",
+		&"hall_ring_1951",
+	]
+	for item_id: StringName in model_ids:
+		var item := _find_item(item_id)
+		_expect(item != null, "objet du hall présent pour le modèle CC0 : " + String(item_id))
+		if item == null:
+			continue
+		_expect(item.visual_kind() == &"model", "modèle CC0 intégré : " + String(item_id))
+		var visual := item.get_node_or_null("Visual") as MeshInstance3D
+		_expect(visual != null and visual.get_node_or_null("AssetVisual") is Node3D, "scène de modèle chargée : " + String(item_id))
+	for item_id: StringName in csg_ids:
+		var item := _find_item(item_id)
+		_expect(item != null, "objet du hall présent pour la composition CSG : " + String(item_id))
+		if item == null:
+			continue
+		_expect(item.visual_kind() == &"csg", "composition CSG distincte : " + String(item_id))
+		var visual := item.get_node_or_null("Visual") as MeshInstance3D
+		var composition: Node3D = null
+		if visual != null:
+			composition = visual.get_node_or_null("CSGVisual") as Node3D
+		_expect(composition != null and composition.get_child_count() >= 3, "pièces CSG visibles : " + String(item_id))
+
+	var hall := _house.get_node_or_null("Rooms/Hall") as Node3D
+	var wall: CSGBox3D = null
+	var floor: CSGBox3D = null
+	var ceiling: CSGBox3D = null
+	if hall != null:
+		wall = hall.get_node_or_null("Blockout/WallEastFront") as CSGBox3D
+		floor = hall.get_node_or_null("Blockout/Floor") as CSGBox3D
+		ceiling = hall.get_node_or_null("Blockout/Ceiling") as CSGBox3D
+	var wall_material: StandardMaterial3D = null
+	var floor_material: StandardMaterial3D = null
+	var ceiling_material: StandardMaterial3D = null
+	if wall != null:
+		wall_material = wall.material as StandardMaterial3D
+	if floor != null:
+		floor_material = floor.material as StandardMaterial3D
+	if ceiling != null:
+		ceiling_material = ceiling.material as StandardMaterial3D
+	_expect(wall_material != null and wall_material.albedo_texture != null and wall_material.normal_enabled, "papier peint CC0 texturé du hall")
+	_expect(floor_material != null and floor_material.albedo_texture != null and floor_material.normal_enabled, "parquet CC0 texturé du hall")
+	_expect(ceiling_material != null and ceiling_material.albedo_texture != null and ceiling_material.normal_enabled, "plâtre CC0 texturé du plafond du hall")
 
 
 func _test_game_lighting() -> void:

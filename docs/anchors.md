@@ -120,7 +120,7 @@ Chaque ligne correspond à un `ItemData` de `docs/items_master.csv`; les 60 `.tr
 
 ## Scènes et zones
 
-- `rooms/hall.tscn` : zone `Area3D` `metadata/room_id = &"hall"`, collision layer `4`, `monitorable = true`; `Anchors` contient les 10 ancres d’objets du hall, `hall_anchor_console` et `hall_anchor_stairs_top`; `Items` reste vide dans la scène source.
+- `rooms/hall.tscn` : zone `Area3D` `metadata/room_id = &"hall"`, collision layer `4`, `monitorable = true`; `Anchors` contient les 10 ancres d’objets du hall, `hall_anchor_console` et `hall_anchor_stairs_top`; `Items` reste vide dans la scène source. La livraison visuelle J5 applique papier peint 70s, parquet et plâtre ambientCG CC0; les 10 Items se construisent à l’exécution en 5 modèles CC0 et 5 objets CSG distinctifs via `item_visuals.gd`. Les ancres des éléments muraux sont alignées sur les faces intérieures; la bague repose sur le plateau de la console.
 - `rooms/study.tscn` : zone `Area3D` `metadata/room_id = &"study"`, collision layer `4`, `monitorable = true`; `Anchors` contient les 12 ancres d’objets plus `study_anchor_shelves` au sommet du rayonnage; `Items` reste vide dans la scène source.
 - `rooms/cellar.tscn` : blockout `6 × 4 × 2,1 m`, zone `Area3D` monitorable/couche `4`, ouverture de plafond alignée sur la trappe cuisine, échelle, table du registre, 4 ancres d’objets et `cellar_anchor_presence_spawn`; instancie `presence.tscn` à ce repère.
 - `rooms/kitchen.tscn` : cuisine `4,5 × 4,5 m`, 16 ancres d’objets, évier/cuisinière en blockout, cible de règle séparée près de l’évier et cible des confitures; trappe à charnière collidable, ouverte par l’événement `cellar_door_opens`.
