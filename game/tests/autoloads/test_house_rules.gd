@@ -6,6 +6,7 @@ var _events: Array[StringName] = []
 var _moves: Array[Dictionary] = []
 var _acts: Array[int] = []
 var _endings: Array[StringName] = []
+var _subs: Array[Array] = []
 
 
 func before() -> void:
@@ -14,6 +15,7 @@ func before() -> void:
 	EventBus.item_moved.connect(_on_moved)
 	EventBus.act_changed.connect(_on_act)
 	EventBus.ending_reached.connect(_on_ending)
+	EventBus.subtitle_requested.connect(_on_subtitle)
 
 
 func after() -> void:
@@ -21,6 +23,7 @@ func after() -> void:
 	EventBus.item_moved.disconnect(_on_moved)
 	EventBus.act_changed.disconnect(_on_act)
 	EventBus.ending_reached.disconnect(_on_ending)
+	EventBus.subtitle_requested.disconnect(_on_subtitle)
 
 
 func _on_event(id: StringName) -> void:
@@ -39,6 +42,10 @@ func _on_ending(id: StringName) -> void:
 	_endings.append(id)
 
 
+func _on_subtitle(key: StringName, duration: float) -> void:
+	_subs.append([key, duration])
+
+
 func _reset_all() -> void:
 	InventoryManager._reset_for_tests()
 	HouseDirector._reset_for_tests()
@@ -48,6 +55,7 @@ func _reset_all() -> void:
 	_moves.clear()
 	_acts.clear()
 	_endings.clear()
+	_subs.clear()
 	for i: int in range(1, 61):
 		var item := ItemData.new()
 		item.id = StringName("t%02d" % i)
@@ -127,6 +135,26 @@ func test_sequencer_event_dedup_with_rules() -> void:
 	for i: int in range(1, 21):
 		InventoryManager.check_item(StringName("t%02d" % i), PhotoData.new())
 	assert_int(_events.count(&"act1_drawer_opens")).is_equal(1)
+
+
+func test_subtitle_and_reveal_actions() -> void:
+	_subs.clear()
+	var phantom := ItemData.new()
+	phantom.id = &"t_sub_phantom"
+	phantom.room_id = &"hall"
+	phantom.list_index = 70
+	phantom.is_phantom = true
+	InventoryManager._register_item(phantom)
+	HouseDirector.register_rule(_make_rule(&"r", "doc_read", "sub_doc", "",
+		["subtitle:SUB_A:2.5", "subtitle:SUB_B", "reveal:t_sub_phantom"]))
+	DocumentLibrary.mark_read(&"sub_doc")
+	assert_int(_subs.size()).is_equal(2)
+	if _subs.size() == 2:
+		assert_that(_subs[0][0]).is_equal(&"SUB_A")
+		assert_float(float(_subs[0][1])).is_equal(2.5)
+		assert_that(_subs[1][0]).is_equal(&"SUB_B")
+		assert_float(float(_subs[1][1])).is_equal(HouseDirector.SUBTITLE_DEFAULT_DURATION)
+	assert_bool(InventoryManager.is_present(&"t_sub_phantom")).is_true()
 
 
 func test_move_replayed_on_load() -> void:
