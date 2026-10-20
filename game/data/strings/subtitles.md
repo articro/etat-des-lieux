@@ -1,6 +1,6 @@
 # Sous-titres de Camille — V1
 
-Émission : `EventBus.subtitle_requested.emit(&"<clé>", <durée>)`. Les textes sont dans `data/strings/fr.csv`.
+Émission : depuis le 20/10 (R-10), les lignes sont déclenchées par les **règles** (`HouseDirector`, action `subtitle:<clé>:<durée>` → `EventBus.subtitle_requested`). Les textes sont dans `data/strings/fr.csv`.
 Voix en V2 : la V1 est sous-titrée seulement. Aucun point d'exclamation, aucune ligne > 12 mots.
 
 | clé | durée (s) | texte | contexte |
@@ -36,4 +36,31 @@ Voix en V2 : la V1 est sous-titrée seulement. Aucun point d'exclamation, aucune
 | `SUB_BURNING` | 3.5 | Le carnet brûle mal. Le papier ancien est épais. | fin Cendres, interaction longue |
 | `SUB_DAWN` | 3.0 | Le jour se lève sur du brouillard. Je repars. | extérieur, fin Cendres |
 
-Total : 30 lignes.
+| `SUB_TUTO_CONSOLE` | 3.0 | Le mot de Maître Besnard est sur la console. | onboarding, entrée dans le hall (r19) |
+| `SUB_TUTO_CARNET` | 2.0 | Tab : carnet | onboarding, entrée dans le hall (r19) |
+| `SUB_TUTO_PHOTO` | 3.5 | Clic droit : viser. Clic gauche : photographier. | onboarding, entrée dans le hall (r19) |
+| `SUB_PROGRESS_10` | 3.5 | Dix lignes. La maison ne proteste pas. Pas encore. | 10 objets cochés (r21) |
+| `SUB_CLOCK_30` | 3.5 | J'entends un carillon. C'est l'horloge de l'entrée. | 30 objets, horloge (r02) |
+| `SUB_PHONE_45` | 3.5 | Le téléphone sonne. Il n'y a plus d'abonné, ici. | 45 objets, téléphone (r03) |
+| `SUB_FIRST_MOVED` | 3.5 | Cet objet a bougé. Je l'avais laissé ailleurs. | premier déplacement d'objet (r07) |
+| `SUB_PROGRESS_58` | 3.5 | Cinquante-huit. Plus que deux lignes à compter. | 58 objets cochés (r22) |
+
+Total : 38 lignes (30 de R-6 + 8 de R-10).
+
+## Déclenchement par les règles (R-10, playtest J4)
+
+| règle | déclencheur | clé(s) jouée(s) |
+|---|---|---|
+| `r19_onboarding_hall` | `room_entered:hall`, une seule fois | `SUB_TUTO_CONSOLE` → `SUB_TUTO_CARNET` → `SUB_TUTO_PHOTO` |
+| `r20_first_photo` | `flash_count` = 1 | `SUB_FIRST_PHOTO` |
+| `r21_progress_10` | `progress` = 10 | `SUB_PROGRESS_10` |
+| `r01_study_drawer_opens` | `progress` = 20 (tiroir) | `SUB_DRAWER_OPENS` |
+| `r02_hall_clock_moves` | `progress` = 30 (horloge) | `SUB_CLOCK_30` |
+| `r07_hall_umbrella_moves` | `room_left:hall` (premier déplacement possible) | `SUB_FIRST_MOVED` |
+| `r03_phone_and_cellar` | `progress` = 45 (téléphone, trappe) | `SUB_PHONE_45` puis `SUB_CELLAR_DOOR` |
+| `r04_cellar_entry_presence` | `room_entered:cellar` | `SUB_CELLAR_STAIRS` |
+| `r05_last_eight_in_cellar` | `progress` = 52, dans la cave (Présence) | `SUB_PRESENCE_SEEN` |
+| `r22_progress_58` | `progress` = 58 | `SUB_PROGRESS_58` |
+| `r23_ending_closed_line` | `progress` = 60 (fin Inventaire clos) | `SUB_ENDING_CLOSED` |
+
+Dépendances : les règles supposent que les actions `subtitle:` d'une même règle sont émises **en file** (durées cumulées) — sinon seule la dernière s'affiche (`r19`, `r03`). La fin *Cendres* n'a pas de déclencheur HouseRule : `SUB_BURNING` (interaction longue) et `SUB_DAWN` (épilogue) sont à émettre par le séquenceur de fin (demande à Systèmes dans TASKS.md).

@@ -8,6 +8,6 @@ id = &"r03_phone_and_cellar"
 trigger = "progress"
 trigger_param = "45"
 condition = ""
-actions = Array[String](["event:phone_rings", "event:cellar_door_opens", "sfx:phone_ring", "attention:+12", "presence:offscreen"])
+actions = Array[String](["event:phone_rings", "event:cellar_door_opens", "sfx:phone_ring", "attention:+12", "presence:offscreen", "subtitle:SUB_PHONE_45:3.5", "subtitle:SUB_CELLAR_DOOR:3.5"])
 once = true
 cooldown = 0.0

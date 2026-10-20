@@ -238,6 +238,7 @@
 | R-7 | Règles de maison (`data/rules/*.tres`) en coordination avec Systèmes : ~40 règles | M2→M3 | DONE |
 | R-8 | Textes des 4 fins + génériques | M3 | DONE |
 | R-9 | Recherche documentaire : formulaires notariaux 1912 / 1951 / 1973, vocabulaire, Morvan | M1 | DONE |
+| R-10 | Onboarding + moments clés (playtest J4) : règles `subtitle:`, clé `UI_HINT_PHOTOGRAPH`, post-it explicite en 3 lignes | M2 | DONE |
 
 
 ### Notes Narration (V1 Halloween)
@@ -256,6 +257,8 @@
 - **2026-10-17 — Relecture des 10 documents (session 2).** Relus à voix haute et corrigés dans `fr.csv` (4 lignes touchées, aucun libellé d'inventaire modifié) : transcription de 1973 « reconstituée après la destruction de la minute », cycle de Lucienne « à chaque génération » (1912/1951/1973/1998 n'est pas trentenaire), Louis « treize ans » sur la photo de 1951 (né en 1938, STORY_BIBLE §2), lettre de Besnard « plus loin que la liste ». `docs/itch_textes.md` : les 5 captures de texte pour itch.io, mot pour mot, avec accroche, ordre et légendes.
   Point de canon signalé (non bloquant V1) : la photo datée « été 1951 » nomme Madeleine à la maison alors que STORY_BIBLE §2 la dit internée depuis 1946. Laissé tel quel — l'annotation peut être un mensonge de Lucienne, et le jeu ne donne pas la date d'internement. À trancher par l'Architecte avant la V2.
 - **2026-10-17 — Narration en mode disponible.** Priorité V1 terminée et intégrée (branche réalignée sur `22037e8`). En attente : retours de playtest J5 sur les textes, demandes ponctuelles des autres modules (libellés, sous-titres, légendes). Aucune tâche R bloquante en cours.
+- **2026-10-20 — R-10 DONE (playtest J4 : zéro onboarding, sous-titres jamais joués).** 8 nouvelles clés `SUB_*` (`SUB_TUTO_CONSOLE`, `SUB_TUTO_CARNET`, `SUB_TUTO_PHOTO`, `SUB_PROGRESS_10`, `SUB_CLOCK_30`, `SUB_PHONE_45`, `SUB_FIRST_MOVED`, `SUB_PROGRESS_58` ; 38 `SUB_*` au total, toutes ≤ 12 mots) + `UI_HINT_PHOTOGRAPH` (« Photographier pour inventorier. ») dans `fr.csv` (201 clés). Post-it de Besnard réécrit : la tâche est dite en 3 lignes (« Photographiez chaque objet de la liste, un par un. / La ligne se coche quand la photo est développée. / Il y a soixante lignes. Rien de plus. ») ; capture itch.io n° 1 mise à jour en conséquence.
+  Câblage : 5 nouvelles règles (`r19_onboarding_hall`, `room_entered:hall`, once, 3 lignes dans l'ordre ; `r20_first_photo` sur `flash_count` = 1 ; `r21_progress_10` ; `r22_progress_58` ; `r23_ending_closed_line` à 60) et actions `subtitle:` ajoutées à `r01` (20, tiroir), `r02` (30, horloge), `r03` (45, téléphone puis trappe), `r04` (descente cave), `r05` (Présence, 52), `r07` (premier objet déplacé). `check.sh` vert ; tant que S-9 n'est pas intégré, HouseDirector émet un `push_warning` par action `subtitle:` et les lignes ne s'affichent pas (dégradation propre, aucun crash).
 
 **Sources R-9 (consultées le 17 oct. 2026, usage : vocabulaire et ordre des opérations uniquement, aucun formulaire reproduit)**
 - Notaires de Paris — « Succession : en pratique, comment se déroule un inventaire ? » (description pièce par pièce, « prisée ») : https://paris.notaires.fr/fr/actualites/succession-en-pratique-comment-se-deroule-un-inventaire
@@ -460,6 +463,10 @@
 ---
 
 ## Demandes inter-modules
+
+- `[Narration → Systèmes]` (2026-10-20, **bloquant pour R-10**) **File d'émission des `subtitle:`.** `SubtitleBox.show_line()` écrase la ligne en cours : si S-9 émet les actions `subtitle:` d'une même règle dans la même frame, seule la dernière s'affiche. Il faut une file (durées cumulées) dans HouseDirector ou dans `SubtitleBox`. Concerne `r19_onboarding_hall` (3 lignes d'onboarding) et `r03_phone_and_cellar` (téléphone puis trappe). — À FAIRE (S-9)
+- `[Narration → Systèmes]` (2026-10-20) **Fin Cendres : aucun déclencheur HouseRule** pour l'interaction `player_interacted(cellar_stove, burn)`. Les clés existent (`SUB_BURNING` pendant l'interaction longue, `SUB_DAWN` à l'épilogue) : les émettre depuis le séquenceur de fin (S-8) ou l'écran de fin. La fin *Inventaire clos* est câblée (`r23`, `progress` = 60). — TODO
+- `[Narration → Systèmes]` (2026-10-20) **« Premier objet déplacé constaté »** : câblé au plus simple sur `r07` (déplacement le plus précoce). Un déclencheur `item_moved` ou un prédicat `moved:<id>` permettrait de le jouer quel que soit l'objet déplacé en premier. Non bloquant. — TODO
 
 > Format : `[De → Vers] (date) Description. — Statut`
 

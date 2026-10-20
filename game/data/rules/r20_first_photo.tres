@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="HouseRule" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/house_rule.gd" id="1_houserule"]
+
+[resource]
+script = ExtResource("1_houserule")
+id = &"r20_first_photo"
+trigger = "flash_count"
+trigger_param = "1"
+condition = ""
+actions = Array[String](["subtitle:SUB_FIRST_PHOTO:3.0"])
+once = true
+cooldown = 0.0

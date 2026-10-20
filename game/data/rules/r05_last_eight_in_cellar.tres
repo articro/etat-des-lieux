@@ -8,6 +8,6 @@ id = &"r05_last_eight_in_cellar"
 trigger = "progress"
 trigger_param = "52"
 condition = "room:cellar"
-actions = Array[String](["event:cellar_presence_awakens", "presence:physical", "attention:+15"])
+actions = Array[String](["event:cellar_presence_awakens", "presence:physical", "attention:+15", "subtitle:SUB_PRESENCE_SEEN:2.5"])
 once = true
 cooldown = 0.0

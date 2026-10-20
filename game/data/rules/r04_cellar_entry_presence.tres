@@ -8,6 +8,6 @@ id = &"r04_cellar_entry_presence"
 trigger = "room_entered"
 trigger_param = "cellar"
 condition = "checked>=44"
-actions = Array[String](["presence:physical", "sfx:breath_low", "attention:+10"])
+actions = Array[String](["presence:physical", "sfx:breath_low", "attention:+10", "subtitle:SUB_CELLAR_STAIRS:3.0"])
 once = true
 cooldown = 0.0

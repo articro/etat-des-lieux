@@ -22,7 +22,10 @@ Les cinq textes ci-dessous sont **mot pour mot** ceux des documents du jeu (BBCo
 >
 > Rez-de-chaussée ce soir. L'étage est condamné : ne l'ouvrez pas. Nous y monterons demain, ensemble.
 >
-> L'état des lieux porte sur les soixante lignes de la liste. Rien de plus.
+> Votre tâche, en trois lignes :
+> Photographiez chaque objet de la liste, un par un.
+> La ligne se coche quand la photo est développée.
+> Il y a soixante lignes. Rien de plus.
 >
 > Les clés sont au tableau de l'entrée. La cave vient après le reste.
 >
@@ -118,3 +121,4 @@ Les cinq textes ci-dessous sont **mot pour mot** ceux des documents du jeu (BBCo
 - Typographie : conserver la distinction machine à écrire / encre / crayon prévue par l'UI. Les passages entre crochets de la capture 5 sont des mentions de mise en page du document, pas du BBCode.
 - Ne pas ajouter de point d'exclamation aux légendes : le ton de la page suit celui des documents.
 - Textes relus et corrigés le 17 octobre 2026 (âge de Louis sur la photo, transcription de 1973 « reconstituée », lettre de Besnard). Toute capture faite avant cette correction est périmée.
+- Post-it réécrit le 20 octobre 2026 (R-10, onboarding) : la capture 1 ci-dessus est la version à jour ; toute capture du mot de Besnard antérieure est périmée.

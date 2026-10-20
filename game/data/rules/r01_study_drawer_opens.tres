@@ -8,6 +8,6 @@ id = &"r01_study_drawer_opens"
 trigger = "progress"
 trigger_param = "20"
 condition = ""
-actions = Array[String](["event:act1_drawer_opens", "sfx:drawer_open", "attention:+6"])
+actions = Array[String](["event:act1_drawer_opens", "sfx:drawer_open", "attention:+6", "subtitle:SUB_DRAWER_OPENS:3.0"])
 once = true
 cooldown = 0.0

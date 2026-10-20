@@ -8,6 +8,6 @@ id = &"r07_hall_umbrella_moves"
 trigger = "room_left"
 trigger_param = "hall"
 condition = "!item_checked:hall_umbrella_stand && checked>=8"
-actions = Array[String](["move_item:hall_umbrella_stand:hall:hall_anchor_console", "attention:+4"])
+actions = Array[String](["move_item:hall_umbrella_stand:hall:hall_anchor_console", "attention:+4", "subtitle:SUB_FIRST_MOVED:3.5"])
 once = true
 cooldown = 0.0

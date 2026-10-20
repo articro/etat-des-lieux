@@ -1,4 +1,4 @@
-# Règles de maison — V1 (18 HouseRule)
+# Règles de maison — V1 (23 HouseRule)
 
 Chargement attendu (Systèmes, S-3) : `data/rules/*.tres` → `HouseDirector.register_rule()`.
 Format : `docs/ARCHITECTURE.md` §6. Seuils V1 : **20 / 45 / 60** (PLAN_HALLOWEEN §2 et §4).
@@ -52,3 +52,13 @@ Format : `docs/ARCHITECTURE.md` §6. Seuils V1 : **20 / 45 / 60** (PLAN_HALLOWEE
 - `r16_dark_idle_forgets` — Immobile dans le noir : la maison oublie un peu le joueur. Récompense la patience.
 - `r17_attention_30` — Attention > 30 : un meuble se déplace à l'étage, hors champ.
 - `r18_attention_65` — Attention > 65 : pas lents au-dessus du joueur, puis retombée partielle.
+
+## R-10 — Sous-titres déclenchés par les règles (playtest J4, 20/10)
+
+Action `subtitle:<clé>:<durée>` (ARCHITECTURE §7). Câblage complet : voir `game/data/strings/subtitles.md` (table « Déclenchement par les règles »).
+
+- `r19_onboarding_hall` (`room_entered:hall`, once) : les 3 lignes d'onboarding, dans l'ordre mot de Besnard → « Tab : carnet » → contrôles photo. **Exige une file d'émission côté Systèmes** : `SubtitleBox` affiche une ligne à la fois et écrase la précédente ; sans file, seule la 3e ligne serait visible.
+- `r20_first_photo` (`flash_count` = 1), `r21_progress_10`, `r22_progress_58`, `r23_ending_closed_line` (`progress` = 60) : jalons du monologue.
+- Actions `subtitle:` ajoutées aux règles d'événement existantes : `r01` (tiroir, 20), `r02` (horloge, 30), `r03` (téléphone puis trappe, 45 — même exigence de file), `r04` (première descente), `r05` (Présence, 52), `r07` (premier objet déplacé).
+- « Premier objet déplacé » : câblé sur `r07`, le déplacement le plus précoce possible (sortie de l'entrée, 8 objets). Si le joueur a coché le râtelier avant, aucun déplacement n'a lieu à ce moment et la ligne ne joue pas ; un déclencheur `item_moved` global reste demandé à Systèmes (non bloquant).
+- Fin *Cendres* : aucun déclencheur de règle pour l'interaction « brûler » ; les clés `SUB_BURNING` / `SUB_DAWN` existent et attendent le séquenceur de fin.

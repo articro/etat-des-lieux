@@ -8,6 +8,6 @@ id = &"r02_hall_clock_moves"
 trigger = "progress"
 trigger_param = "30"
 condition = ""
-actions = Array[String](["event:hall_clock_moves", "sfx:clock_chime_distant", "attention:+5"])
+actions = Array[String](["event:hall_clock_moves", "sfx:clock_chime_distant", "attention:+5", "subtitle:SUB_CLOCK_30:3.5"])
 once = true
 cooldown = 0.0

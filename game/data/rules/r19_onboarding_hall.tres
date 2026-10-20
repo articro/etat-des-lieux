@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="HouseRule" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/house_rule.gd" id="1_houserule"]
+
+[resource]
+script = ExtResource("1_houserule")
+id = &"r19_onboarding_hall"
+trigger = "room_entered"
+trigger_param = "hall"
+condition = ""
+actions = Array[String](["subtitle:SUB_TUTO_CONSOLE:3.0", "subtitle:SUB_TUTO_CARNET:2.0", "subtitle:SUB_TUTO_PHOTO:3.5"])
+once = true
+cooldown = 0.0
