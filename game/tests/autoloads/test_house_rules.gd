@@ -124,6 +124,13 @@ func test_ashes_ending_wins() -> void:
 	for i: int in range(1, 46):
 		InventoryManager.check_item(StringName("t%02d" % i), PhotoData.new())
 	EventBus.player_interacted.emit(&"cellar_stove", &"burn")
+	# S-10 : le sous-titre part tout de suite, la fin 4 s plus tard.
+	assert_int(_subs.size()).is_equal(1)
+	if _subs.size() == 1:
+		assert_that(_subs[0][0]).is_equal(&"SUB_BURNING")
+		assert_float(float(_subs[0][1])).is_equal(4.0)
+	assert_array(_endings).is_empty()
+	await get_tree().create_timer(HouseDirector.BURN_ENDING_DELAY + 0.5).timeout
 	assert_array(_endings).is_equal([&"ashes"])
 	for i: int in range(46, 61):
 		InventoryManager.check_item(StringName("t%02d" % i), PhotoData.new())
@@ -155,6 +162,27 @@ func test_subtitle_and_reveal_actions() -> void:
 		assert_that(_subs[1][0]).is_equal(&"SUB_B")
 		assert_float(float(_subs[1][1])).is_equal(HouseDirector.SUBTITLE_DEFAULT_DURATION)
 	assert_bool(InventoryManager.is_present(&"t_sub_phantom")).is_true()
+
+
+func test_item_moved_trigger() -> void:
+	HouseDirector.register_rule(_make_rule(&"r_any", "item_moved", "", "", ["event:any_move"]))
+	HouseDirector.register_rule(_make_rule(&"r_knife", "item_moved", "t01", "", ["event:knife_move"]))
+	EventBus.item_moved.emit(&"t02", &"hall", &"kitchen", &"anchor_a")
+	assert_bool(&"any_move" in _events).is_true()
+	assert_bool(&"knife_move" in _events).is_false()
+	EventBus.item_moved.emit(&"t01", &"hall", &"living", &"anchor_b")
+	assert_bool(&"knife_move" in _events).is_true()
+
+
+func test_ending_trigger() -> void:
+	HouseDirector.register_rule(_make_rule(&"r_ashes", "ending", "ashes", "", ["event:ashes_epi"]))
+	HouseDirector.register_rule(_make_rule(&"r_closed", "ending", "closed", "", ["event:closed_epi"]))
+	HouseDirector.register_rule(_make_rule(&"r_any", "ending", "", "", ["event:any_epi"]))
+	EventBus.player_interacted.emit(&"cellar_stove", &"burn")
+	await get_tree().create_timer(HouseDirector.BURN_ENDING_DELAY + 0.5).timeout
+	assert_bool(&"ashes_epi" in _events).is_true()
+	assert_bool(&"any_epi" in _events).is_true()
+	assert_bool(&"closed_epi" in _events).is_false()
 
 
 func test_move_replayed_on_load() -> void:
