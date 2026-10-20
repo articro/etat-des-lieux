@@ -47,6 +47,7 @@ func _ready() -> void:
 	await _test_exit_releases_mouse()
 	await _test_interact_target_signal()
 	await _test_pause_with_ui()
+	await _test_item_target()
 
 	_report()
 
@@ -492,6 +493,61 @@ func _test_pause_with_ui() -> void:
 	menu.queue_free()
 	await get_tree().process_frame
 	get_tree().paused = false
+
+
+## G-11 : cible = un Item réel du Niveau (scenes/items/item.tscn), pas un nœud
+## à metadata. On vérifie le signal ET le liseré (set_highlight) sur l'Item.
+func _test_item_target() -> void:
+	print("[Cible Item — contrat réel du Niveau]")
+	var scene := load("res://scenes/items/item.tscn") as PackedScene
+	_check(scene != null, "item.tscn du Niveau se charge")
+	if scene == null:
+		return
+	var item := scene.instantiate() as Item
+	_check(item != null, "la racine est bien un Item")
+	if item == null:
+		return
+	var data := ItemData.new()
+	data.id = &"test_real_item"
+	data.room_id = &"test_room"
+	data.label_key = &""
+	data.lore_key = &""
+	data.min_photo_coverage = 0.02
+	item.data = data
+	_room.add_child(item)
+	item.global_position = Vector3(3.0, 1.55, 2.2)
+	_player.global_position = Vector3(3.0, 0.0, 4.5)
+	_player.rotation = Vector3.ZERO
+	_player.get_node("Head").rotation = Vector3.ZERO
+	var events: Array = []
+	var cb := func(target_id: StringName, kind: StringName) -> void:
+		events.append([target_id, kind])
+	EventBus.interact_target_changed.connect(cb)
+	await _wait_physics(6)
+	var last := events.size() - 1
+	_check(last >= 0 and events[last][0] == &"test_real_item" and events[last][1] == &"pickup",
+		"Item visé : interact_target_changed(test_real_item, pickup) — obtenu %s"
+			% str(events[last] if last >= 0 else "rien"))
+	var highlight := item.get_node_or_null("Highlight") as MeshInstance3D
+	_check(highlight != null, "l'Item expose un nœud Highlight (liseré du Niveau)")
+	_check(highlight != null and highlight.visible, "set_highlight(true) appliqué à l'Item visé")
+	var interactor := _player.get_node_or_null("Head/Camera/InteractRay") as Interactor
+	if interactor != null:
+		_check(interactor.current_target_id() == &"test_real_item", "l'Interactor cible l'Item")
+	_player.rotation.y = PI
+	await _wait_physics(6)
+	last = events.size() - 1
+	_check(last >= 0 and events[last][0] == &"", "en détournant le regard : (\"\", \"\")")
+	_check(highlight != null and not highlight.visible, "set_highlight(false) retiré")
+	_player.rotation.y = 0.0
+	await _wait_physics(6)
+	_check(highlight != null and highlight.visible, "retour sur l'Item : liseré rallumé")
+	item.queue_free()
+	await _wait_physics(4)
+	last = events.size() - 1
+	_check(last >= 0 and events[last][0] == &"", "Item libéré : cible vidée proprement (aucune erreur)")
+	EventBus.interact_target_changed.disconnect(cb)
+	_check(true, "fin du test Item sans erreur de script")
 
 
 func _on_photo_taken(photo: PhotoData) -> void:

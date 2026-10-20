@@ -37,6 +37,7 @@ func _ready() -> void:
 	_player = _find_player()
 	if _player != null:
 		_progress_bar = _player.get_node_or_null(LIGHT_NAME) as ProgressBar
+	EventBus.pause_toggled.connect(_on_pause_toggled)
 
 
 func _find_player() -> PlayerController:
@@ -51,6 +52,8 @@ func _find_player() -> PlayerController:
 func _physics_process(_delta: float) -> void:
 	var collider: Object = get_collider()
 	var node: Node = collider as Node
+	if node != null and not is_instance_valid(node):
+		node = null
 	_set_target(node)
 
 
@@ -122,9 +125,12 @@ func emitted_target_id() -> StringName:
 # --- Résolution de la cible ---------------------------------------------------
 
 ## Décrit une cible d'interaction ; dictionnaire vide si aucune cible.
+## Une instance libérée (objet déplacé, scène changée) est traitée comme vide.
 static func describe(node: Node) -> Dictionary:
 	var current: Node = node
 	while current != null:
+		if not is_instance_valid(current):
+			break
 		var found := _describe_one(current)
 		if not found.is_empty():
 			return found
@@ -166,16 +172,26 @@ static func _make(node: Node, raw_id: Variant, default_kind: StringName) -> Dict
 # --- Interne ------------------------------------------------------------------
 
 func _set_target(node: Node) -> void:
+	if node != null and not is_instance_valid(node):
+		node = null
 	var described := describe(node)
 	var described_node: Node = described.get("node", null) as Node
-	if described_node == _target:
+	var target_alive := _target != null and is_instance_valid(_target)
+	# Même cible encore vivante : rien à refaire.
+	if described_node != null and target_alive and described_node == _target:
 		return
-	_clear_highlight(_target)
+	# Rien à viser, et on ne visait déjà rien : pas de réémission.
+	if described_node == null and not target_alive and _target_id == &"":
+		return
+	# Attention : une référence libérée se compare comme `null` en GDScript, et
+	# la passer en argument typé `Node` déclenche une erreur de type. On vérifie
+	# donc la validité AVANT l'appel, d'où `target_alive`.
+	if target_alive:
+		_clear_highlight(_target)
 	_cancel_hold()
 	_target = described_node
-	if described.is_empty():
-		# Plus rien sous le réticule : le contrat veut (&"", &"") — pas le
-		# kind par défaut de l'interaction.
+	if described_node == null:
+		# Le contrat veut (&"", &"") quand plus rien n'est visé.
 		_target_id = &""
 		_kind = &""
 		_duration = 0.0
@@ -183,8 +199,8 @@ func _set_target(node: Node) -> void:
 		_target_id = described.get("id", &"") as StringName
 		_kind = described.get("kind", &"use") as StringName
 		_duration = float(described.get("duration", 0.0))
-	if _target != null and _target.has_method(&"set_highlight"):
-		_target.call(&"set_highlight", true)
+		if _target.has_method(&"set_highlight"):
+			_target.call(&"set_highlight", true)
 	_emit_target_changed()
 
 
@@ -220,6 +236,13 @@ func _update_bar(ratio: float) -> void:
 	_progress_bar.value = ratio * 100.0
 
 
-func _clear_highlight(node: Node) -> void:
-	if node != null and node.has_method(&"set_highlight"):
+func _clear_highlight(node: Object) -> void:
+	if node != null and is_instance_valid(node) and node.has_method(&"set_highlight"):
 		node.call(&"set_highlight", false)
+
+
+## En pause, le raycast s'arrête mais le liseré resterait allumé derrière le
+## menu : on vide la cible (émis comme (&"", &"") pour le réticule).
+func _on_pause_toggled(paused: bool) -> void:
+	if paused:
+		_set_target(null)
