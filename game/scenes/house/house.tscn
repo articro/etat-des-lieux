@@ -1,9 +1,12 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scenes/house/house.gd" id="1_house"]
 [ext_resource type="PackedScene" path="res://scenes/house/rooms/hall.tscn" id="2_hall"]
 [ext_resource type="PackedScene" path="res://scenes/house/rooms/study.tscn" id="3_study"]
 [ext_resource type="PackedScene" path="res://scenes/house/rooms/cellar.tscn" id="4_cellar"]
+[ext_resource type="PackedScene" path="res://scenes/house/rooms/kitchen.tscn" id="5_kitchen"]
+[ext_resource type="PackedScene" path="res://scenes/house/rooms/living.tscn" id="6_living"]
+[ext_resource type="PackedScene" path="res://scenes/house/rooms/exterior.tscn" id="7_exterior"]
 
 [sub_resource type="Environment" id="HouseEnvironment"]
 background_mode = 1
@@ -45,24 +48,19 @@ environment = SubResource("HouseEnvironment")
 position = Vector3(3.75, 0, 0)
 
 [node name="Cellar" parent="Rooms" instance=ExtResource("4_cellar")]
-position = Vector3(-3.75, -3.5, 0)
+position = Vector3(-3.75, -2.1, 0)
+
+[node name="Kitchen" parent="Rooms" instance=ExtResource("5_kitchen")]
+position = Vector3(-3.75, 0, 0)
+
+[node name="Living" parent="Rooms" instance=ExtResource("6_living")]
+position = Vector3(-4.0, 0, 4.75)
+
+[node name="Exterior" parent="Rooms" instance=ExtResource("7_exterior")]
+position = Vector3(0, 0, -9)
 
 [node name="PlayerSpawn" type="Marker3D" parent="."]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0.05, -3.4)
-
-[node name="TempBlockers" type="Node3D" parent="."]
-
-[node name="KitchenDoorTemp" type="CSGBox3D" parent="TempBlockers"]
-position = Vector3(-1.59, 1.3, 0)
-size = Vector3(0.18, 2.6, 1.0)
-use_collision = true
-collision_layer = 1
-
-[node name="FrontDoorTemp" type="CSGBox3D" parent="TempBlockers"]
-position = Vector3(0, 1.3, -4.59)
-size = Vector3(1.0, 2.6, 0.18)
-use_collision = true
-collision_layer = 1
 
 [node name="StandaloneCamera" type="Camera3D" parent="."]
 position = Vector3(0, 1.55, -4.0)

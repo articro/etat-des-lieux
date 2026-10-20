@@ -1,0 +1,280 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scenes/house/room.gd" id="1_room"]
+
+[sub_resource type="StandardMaterial3D" id="FloorMat"]
+albedo_color = Color(0.29, 0.28, 0.26, 1)
+roughness = 0.94
+
+[sub_resource type="StandardMaterial3D" id="WallMat"]
+albedo_color = Color(0.43, 0.42, 0.39, 1)
+roughness = 0.92
+
+[sub_resource type="StandardMaterial3D" id="CeilingMat"]
+albedo_color = Color(0.50, 0.49, 0.46, 1)
+roughness = 0.95
+
+[sub_resource type="StandardMaterial3D" id="CounterMat"]
+albedo_color = Color(0.34, 0.32, 0.29, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="HatchMat"]
+albedo_color = Color(0.25, 0.22, 0.18, 1)
+roughness = 0.96
+
+[sub_resource type="BoxShape3D" id="ZoneShape"]
+size = Vector3(4.5, 2.6, 4.5)
+
+[node name="Kitchen" type="Node3D"]
+script = ExtResource("1_room")
+metadata/room_id = &"kitchen"
+
+[node name="Blockout" type="Node3D" parent="."]
+
+[node name="StandaloneOnly" type="Node3D" parent="."]
+
+[node name="StandaloneEastDoorFill" type="CSGBox3D" parent="StandaloneOnly"]
+size = Vector3(0.18, 2.6, 0.9)
+position = Vector3(2.34, 1.3, 0)
+use_collision = false
+collision_layer = 0
+material = SubResource("WallMat")
+
+[node name="FloorWest" type="CSGBox3D" parent="Blockout"]
+size = Vector3(2.75, 0.2, 4.5)
+position = Vector3(-0.875, -0.1, 0)
+use_collision = true
+collision_layer = 1
+material = SubResource("FloorMat")
+
+[node name="FloorEast" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.75, 0.2, 4.5)
+position = Vector3(1.875, -0.1, 0)
+use_collision = true
+collision_layer = 1
+material = SubResource("FloorMat")
+
+[node name="FloorHatchNorth" type="CSGBox3D" parent="Blockout"]
+size = Vector3(1, 0.2, 2.75)
+position = Vector3(1, -0.1, 0.875)
+use_collision = true
+collision_layer = 1
+material = SubResource("FloorMat")
+
+[node name="FloorHatchSouth" type="CSGBox3D" parent="Blockout"]
+size = Vector3(1, 0.2, 0.75)
+position = Vector3(1, -0.1, -1.875)
+use_collision = true
+collision_layer = 1
+material = SubResource("FloorMat")
+
+[node name="Ceiling" type="CSGBox3D" parent="Blockout"]
+size = Vector3(4.5, 0.12, 4.5)
+position = Vector3(0, 2.66, 0)
+use_collision = false
+collision_layer = 0
+material = SubResource("CeilingMat")
+
+[node name="WallWest" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.18, 2.6, 4.5)
+position = Vector3(-2.34, 1.3, 0)
+use_collision = true
+collision_layer = 1
+material = SubResource("WallMat")
+
+[node name="WallNorth" type="CSGBox3D" parent="Blockout"]
+size = Vector3(4.5, 2.6, 0.18)
+position = Vector3(0, 1.3, 2.34)
+use_collision = true
+collision_layer = 1
+material = SubResource("WallMat")
+
+[node name="WallSouth" type="CSGBox3D" parent="Blockout"]
+size = Vector3(4.5, 2.6, 0.18)
+position = Vector3(0, 1.3, -2.34)
+use_collision = true
+collision_layer = 1
+material = SubResource("WallMat")
+
+[node name="WallEastSouth" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.18, 2.6, 1.8)
+position = Vector3(2.34, 1.3, -1.35)
+use_collision = true
+collision_layer = 1
+material = SubResource("WallMat")
+
+[node name="WallEastNorth" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.18, 2.6, 1.8)
+position = Vector3(2.34, 1.3, 1.35)
+use_collision = true
+collision_layer = 1
+material = SubResource("WallMat")
+
+[node name="CounterCabinet" type="CSGBox3D" parent="Blockout"]
+size = Vector3(1.25, 0.72, 0.62)
+position = Vector3(-1.5, 0.36, 1.5)
+use_collision = true
+collision_layer = 1
+material = SubResource("CounterMat")
+
+[node name="CounterTop" type="CSGBox3D" parent="Blockout"]
+size = Vector3(1.42, 0.12, 0.72)
+position = Vector3(-1.5, 0.78, 1.5)
+use_collision = true
+collision_layer = 1
+material = SubResource("CeilingMat")
+
+[node name="SinkBasin" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.64, 0.07, 0.42)
+position = Vector3(-1.5, 0.88, 1.5)
+use_collision = true
+collision_layer = 1
+material = SubResource("CounterMat")
+
+[node name="WallShelf" type="CSGBox3D" parent="Blockout"]
+size = Vector3(1.35, 0.10, 0.30)
+position = Vector3(-1.48, 1.74, 1.52)
+use_collision = true
+collision_layer = 1
+material = SubResource("CounterMat")
+
+[node name="PantryCabinet" type="CSGBox3D" parent="Blockout"]
+size = Vector3(1.25, 0.72, 0.62)
+position = Vector3(0.75, 0.36, 1.5)
+use_collision = true
+collision_layer = 1
+material = SubResource("CounterMat")
+
+[node name="PantryTop" type="CSGBox3D" parent="Blockout"]
+size = Vector3(1.42, 0.12, 0.72)
+position = Vector3(0.75, 0.78, 1.5)
+use_collision = true
+collision_layer = 1
+material = SubResource("CeilingMat")
+
+[node name="StoveBlockout" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.78, 0.78, 0.70)
+position = Vector3(-1.42, 0.39, -0.30)
+use_collision = true
+collision_layer = 1
+material = SubResource("CounterMat")
+
+[node name="HatchHinge" type="Node3D" parent="Blockout"]
+position = Vector3(1, 0.04, -0.5)
+
+[node name="HatchPanel" type="CSGBox3D" parent="Blockout/HatchHinge"]
+size = Vector3(1, 0.08, 1)
+position = Vector3(0, 0, -0.5)
+use_collision = true
+collision_layer = 1
+material = SubResource("HatchMat")
+
+[node name="Zone" type="Area3D" parent="."]
+collision_layer = 4
+collision_mask = 0
+monitoring = true
+monitorable = true
+metadata/room_id = &"kitchen"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Zone"]
+position = Vector3(0, 1.3, 0)
+shape = SubResource("ZoneShape")
+
+[node name="Anchors" type="Node3D" parent="."]
+
+[node name="Items" type="Node3D" parent="."]
+
+[node name="PracticalLights" type="Node3D" parent="."]
+
+[node name="KitchenPendantCord" type="CSGBox3D" parent="PracticalLights"]
+size = Vector3(0.025, 0.16, 0.025)
+position = Vector3(0, 2.48, 0.25)
+use_collision = false
+collision_layer = 0
+material = SubResource("CounterMat")
+
+[node name="KitchenPendantShade" type="CSGBox3D" parent="PracticalLights"]
+size = Vector3(0.36, 0.10, 0.30)
+position = Vector3(0, 2.34, 0.25)
+use_collision = false
+collision_layer = 0
+material = SubResource("CounterMat")
+
+[node name="KitchenCeilingLight" type="OmniLight3D" parent="PracticalLights"]
+position = Vector3(0, 2.24, 0.25)
+light_color = Color(1, 0.76, 0.53, 1)
+light_energy = 0.42
+omni_range = 5.5
+omni_attenuation = 1.5
+shadow_enabled = false
+
+[node name="kitchen_anchor_table" type="Marker3D" parent="Anchors"]
+position = Vector3(0, 0.375, 0.25)
+
+[node name="kitchen_anchor_chairs" type="Marker3D" parent="Anchors"]
+position = Vector3(0.98, 0.225, 0.25)
+
+[node name="kitchen_anchor_sink_item" type="Marker3D" parent="Anchors"]
+position = Vector3(-1.5, 1.02, 1.5)
+
+[node name="kitchen_anchor_sink" type="Marker3D" parent="Anchors"]
+position = Vector3(-1.08, 0.25, 1.02)
+
+[node name="kitchen_anchor_stove" type="Marker3D" parent="Anchors"]
+position = Vector3(-1.42, 0.92, -0.30)
+
+[node name="kitchen_anchor_coffee_mill" type="Marker3D" parent="Anchors"]
+position = Vector3(-0.35, 0.98, 0.05)
+
+[node name="kitchen_anchor_scales" type="Marker3D" parent="Anchors"]
+position = Vector3(0.35, 0.98, 0.05)
+
+[node name="kitchen_anchor_jars" type="Marker3D" parent="Anchors"]
+position = Vector3(-1.35, 1.08, 1.52)
+
+[node name="kitchen_anchor_preserves_item" type="Marker3D" parent="Anchors"]
+position = Vector3(0.72, 1.08, 1.55)
+
+[node name="kitchen_anchor_preserves" type="Marker3D" parent="Anchors"]
+position = Vector3(0.72, 1.08, 1.12)
+
+[node name="kitchen_anchor_clock_stopped" type="Marker3D" parent="Anchors"]
+position = Vector3(1.40, 1.65, 2.10)
+
+[node name="kitchen_anchor_calendar" type="Marker3D" parent="Anchors"]
+position = Vector3(2.10, 1.52, -0.40)
+
+[node name="kitchen_anchor_cookware" type="Marker3D" parent="Anchors"]
+position = Vector3(-1.30, 2.02, 1.52)
+
+[node name="kitchen_anchor_tureen" type="Marker3D" parent="Anchors"]
+position = Vector3(0, 0.98, 0.55)
+
+[node name="kitchen_anchor_tin_box" type="Marker3D" parent="Anchors"]
+position = Vector3(-0.55, 0.98, 0.55)
+
+[node name="kitchen_anchor_stool" type="Marker3D" parent="Anchors"]
+position = Vector3(-0.28, 0.30, -1.55)
+
+[node name="kitchen_anchor_lamp" type="Marker3D" parent="Anchors"]
+position = Vector3(0, 2.31, 0.25)
+
+[node name="kitchen_anchor_key_l" type="Marker3D" parent="Anchors"]
+position = Vector3(0.55, 0.98, 0.55)
+
+[node name="StandaloneLights" type="Node3D" parent="."]
+
+[node name="PreviewOmni" type="OmniLight3D" parent="StandaloneLights"]
+position = Vector3(0, 2.1, 0)
+light_color = Color(0.83, 0.81, 0.75, 1)
+light_energy = 0.9
+omni_range = 9.0
+shadow_enabled = false
+
+[node name="StandaloneCamera" type="Camera3D" parent="."]
+position = Vector3(0, 1.55, -1.8)
+rotation_degrees = Vector3(0, 180, 0)
+current = false
+fov = 72.0
+near = 0.05
+far = 80.0

@@ -44,6 +44,8 @@ func _connect_event_bus() -> void:
 		EventBus.item_moved.connect(_on_item_moved)
 	if not EventBus.item_revealed.is_connected(_on_item_revealed):
 		EventBus.item_revealed.connect(_on_item_revealed)
+	if not EventBus.house_event_triggered.is_connected(_on_house_event_triggered):
+		EventBus.house_event_triggered.connect(_on_house_event_triggered)
 
 
 func _index_rooms() -> void:
@@ -167,3 +169,17 @@ func _on_item_revealed(item_id: StringName) -> void:
 		push_warning("House : objet révélé '%s' absent des salles chargées." % item_id)
 		return
 	item.set_present(true)
+
+
+func _on_house_event_triggered(event_id: StringName) -> void:
+	if event_id != &"cellar_door_opens":
+		return
+	var hatch := get_node_or_null("Rooms/Kitchen/Blockout/HatchHinge") as Node3D
+	if hatch == null:
+		push_warning("House : trappe de cave absente, ouverture ignorée.")
+		return
+	if bool(hatch.get_meta(&"opened", false)):
+		return
+	hatch.set_meta(&"opened", true)
+	var tween: Tween = create_tween()
+	tween.tween_property(hatch, "rotation_degrees", Vector3(90.0, 0.0, 0.0), 0.85).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)

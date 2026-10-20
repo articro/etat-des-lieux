@@ -170,12 +170,12 @@
 | N-2 | Blockout entrée + bureau (CSG ou meshes gris), ancres Marker3D nommées, zones Area3D | M1 | DONE |
 | N-3 | `house.tscn` + `house.gd` : instanciation des Items depuis InventoryManager, écoute `item_moved`, `item_revealed` | M1 | DONE |
 | N-4 | `item.tscn` générique + `item.gd` (`is_in_frustum`, surbrillance, inspection) | M1 | DONE |
-| N-5 | Blockout des 11 zones restantes | M2 | TODO |
+| N-5 | Blockout cuisine/salon et intégration des 6 zones V1 | M2 | DONE |
 | N-6 | Éclairage de base (lumière basse, fog volumétrique, budget ARCHITECTURE §8) | M2 | DONE |
 | N-7 | Assets finaux : sourcing CC0/CC-BY (Poly Haven, Sketchfab, Kenney, ambientCG), import, matériaux, CREDITS.md | M4 | TODO |
 | N-8 | Set-dressing final des 13 zones (1998 rural, voir GDD §8) | M4 | TODO |
 | N-9 | Modèles des ~212 objets (assets libres, variantes par matériau, placeholders acceptés jusqu'à M4) | M3→M4 | TODO |
-| N-10 | Extérieur : cour, 205, brouillard, appentis | M2 | TODO |
+| N-10 | Extérieur V1 minimal : cour 14 × 9 m, portail fermé, 205 décor (appentis hors périmètre Halloween) | M2 | DONE |
 
 ### Notes Niveau (V1 Halloween)
 
@@ -189,6 +189,8 @@
 - **Tests Niveau.** `tests/house/house_tests.tscn` : 47 assertions, 0 échec (dimensions/zones, ancres, 26 instanciations, révélation, déplacement, inspection, frustum, Présence et poêle). Vérification ItemData : 60/60 conformes, seuls `scene`/`anchors` modifiés.
 - **2026-10-20 — N-6 DONE.** `house.tscn` reçoit un environnement ACES très sombre, fog de distance + volumétrique léger; plafonnier faible du hall, lampe de bureau et ampoule nue en cave.
 - Éclairage pratique de jeu séparé de la preview F6; 2 Omni avec ombres (hall/bureau), cave sans ombres. `house.gd` restaure `visible = standalone`; `PlayerSpawn` conservé. `check.sh` vert, tests Niveau : 59 assertions, 0 échec.
+- **2026-10-20 — N-5/N-10 DONE (V1 minimal).** Cuisine, salon et cour 14 × 9 m ajoutés; 205 en décor, 34 ancres matérialisées, 60 objets instanciés. Trappe cuisine/cave alignée et ouverte par `cellar_door_opens`.
+- Portes alignées vers les six zones; `TempBlockers` retirés. Clôtures/portail extérieur et fond d’escalier sont collidables; appentis exclu par `PLAN_HALLOWEEN`. Vérifié : `check.sh` vert, tests Niveau 104 assertions, 0 échec.
 
 ### HANDOFF — Niveau (17 oct. 2026, session 2)
 
@@ -199,13 +201,27 @@
 - `tests/house/house_tests.tscn` : 47 assertions headless, 0 échec. Vérification ItemData : 60/60 corrects, aucun autre champ modifié.
 
 **Ce qui reste**
-- N-5 : blockout cuisine et salon; N-10 : extérieur. Les 34 objets de ces pièces ont déjà leurs ressources/ancres contractuelles mais ne sont pas encore instanciés (salles absentes).
-- `bash game/tools/check.sh` est vert (démarrage OK; seul avertissement connu : menu UI optionnel absent). Pousser les commits sur `agent/level`; ne pas merger sur `main`.
+- **État historique à la clôture du 17/10** : N-5 (cuisine/salon) et N-10 (extérieur) restaient à faire; voir le HANDOFF Niveau du 20/10 pour leur livraison.
+- `bash game/tools/check.sh` était vert avant les scènes nouvelles. Les validations courantes et l'état de push sont consignés dans le HANDOFF Niveau du 20/10; ne pas merger sur `main`.
 
 **Pièges connus**
 - PLAN_HALLOWEEN prime sur les descriptions V2 : la cible reste 6 zones et 60 objets, pas 13 zones/212.
 - `item.tscn`/`cellar_stove.tscn` lancés seuls sans `ItemData` affichent un `push_warning` et gardent leur placeholder; c’est la dégradation prévue. Dans `house.tscn`, les 26 ItemData présents sont fournis par InventoryManager.
 - Aucun asset externe n’a été ajouté; aucune modification à `CREDITS.md` nécessaire.
+
+### HANDOFF — Niveau (20 oct. 2026, session 3)
+
+**Livré**
+- N-6 : environnement de jeu ACES sombre avec fog de distance/volumétrique léger; pratiques du hall, bureau, cave, cuisine, salon et porche. Deux Omni pratiques ont des ombres; le total reste sous le budget ARCHITECTURE §8. Les previews F6 sont séparées et `house.gd` ne les force plus visibles en jeu.
+- N-5/N-10 V1 : cuisine, salon et cour; six zones composées, 60 objets instanciés et 60 ancres vérifiées. Les trois cibles de règle cuisine/salon sont distinctes des ancres des ItemData; trappe cuisine/cave alignée, collidable fermée puis ouverte sur `cellar_door_opens`.
+- Sécurité : `KitchenDoorTemp` et `FrontDoorTemp` retirés après construction; portes vers les pièces présentes alignées. Cour fermée par clôtures et portail collidables; escalier d'étage obturé par planches/barrière collidables. `PlayerSpawn` et `player_spawn_transform()` conservés.
+- Vérifications Godot 4.7.2 : `bash game/tools/check.sh` vert; `tests/house/house_tests.tscn` = **104 assertions, 0 échec**; lancement headless F6 des six rooms et de `house.tscn` sans erreur. Aucun asset externe ajouté; `CREDITS.md` inchangé.
+
+**À vérifier / limites**
+- Le sandbox est headless : aucune validation visuelle F5 n'a été faite. À faire côté Architecte : playtest du niveau éclairé, fog, densité visuelle et circulation.
+- La trappe s'ouvre par événement; montée/descente réelle de l'échelle raide non vérifiée en F5. Le Gameplay n'expose pas de contrôleur d'escalade dédié.
+- Appentis non construit : exclu par `PLAN_HALLOWEEN` (extérieur V1 minimal). Habillage/assets N-7/N-8/N-9 restent hors de ce blockout.
+- Commits sur `agent/level`, pas de merge main. `git push origin agent/level` a échoué faute d'identifiants HTTPS dans le sandbox; push en attente d'une authentification utilisateur. Aucun PAT n'a été écrit dans les fichiers.
 
 ## Module Narration `[Narration]` — `data/`
 
@@ -458,19 +474,19 @@
 **Réponses Systèmes (2026-10-17, S-3)** aux demandes Narration : révélation des fantômes par HouseDirector **OK** ; chargement `data/rules/` + `register_rule()` **OK** ; DocumentLibrary applique `sets_flags`/`reveals_items` **OK** ; négation `!item_checked:` **OK** (et `!` sur tout prédicat). Le séquenceur (S-7) respecte les seuils de règles 20/30/45/52 (événements narratifs portés par les règles) et pilote `act_changed` sur 20/45 (phases V1) + fin à 60.
 
 - `[Narration → Audio]` (2026-10-17) **Ids SFX utilisés par les règles V1** (à exister, sinon AudioManager dégrade) : `drawer_open`, `clock_chime_distant`, `phone_ring`, `breath_low`, `door_close_upstairs`, `paper_turn`, `chair_drag_upstairs`, `hall_light_out`, `cellar_light_flicker`, `upstairs_chair`, `footsteps_above`. Un seul `play_sfx` par id.
-- `[Narration → Niveau]` (2026-10-17) **Ancres exigées par les règles** (en plus de la convention `a_<item>` du README des règles) : `hall_anchor_console`, `kitchen_anchor_sink`, `kitchen_anchor_preserves`, `living_anchor_fireplace`, `study_anchor_shelves`. Un `move_item` vers une ancre absente doit être ignoré avec `push_error`, jamais planter. — **DONE Niveau** (hall + study présents; cuisine/salon matérialisés lors de N-5).
+- `[Narration → Niveau]` (2026-10-17) **Ancres exigées par les règles** (en plus de la convention `a_<item>` du README des règles) : `hall_anchor_console`, `kitchen_anchor_sink`, `kitchen_anchor_preserves`, `living_anchor_fireplace`, `study_anchor_shelves`. Un `move_item` vers une ancre absente doit être ignoré avec `push_error`, jamais planter. — **DONE Niveau** (cinq cibles présentes; les cibles cuisine/salon sont séparées des ancres initiales des objets).
 - `[Narration → UI]` (2026-10-17) **Sous-titres et fins.** Clés `SUB_*` (30) : `EventBus.subtitle_requested.emit(&"...", durée)` — durées fournies dans `game/data/strings/subtitles.md`. Écrans de fin : `ENDING_CLOSED_*` / `ENDING_ASHES_*` ; la dernière ligne de chaque fin est séparée (`..._LINE_NAME`) pour être composée comme une ligne d'inventaire via `INV_LINE_FORMAT`. Corps BBCode (`[i]`, `[b]`).
-- `[Narration → Niveau]` (2026-10-17) **Ancres.** La proposition initiale `a_<item_id sans préfixe de pièce>` est remplacée par la décision Architecte `<room>_anchor_<nom>`; les ancres de déplacement restent celles citées par `data/rules/*.tres` (dont `living_anchor_fireplace`, `study_anchor_shelves`, `hall_anchor_console`, `kitchen_anchor_sink`, `cellar_anchor_shelves`). Convention et liste des 60 objets documentées dans `docs/anchors.md`; les 60 `ItemData` ont leurs champs `scene`/`anchors` renseignés. — **DONE Niveau** (pièces restantes à blockouter ensuite).
+- `[Narration → Niveau]` (2026-10-17) **Ancres.** La proposition initiale `a_<item_id sans préfixe de pièce>` est remplacée par la décision Architecte `<room>_anchor_<nom>`; les ancres de déplacement restent celles citées par `data/rules/*.tres` (dont `living_anchor_fireplace`, `study_anchor_shelves`, `hall_anchor_console`, `kitchen_anchor_sink`, `cellar_anchor_shelves`). Convention et liste des 60 objets documentées dans `docs/anchors.md`; les 60 `ItemData` ont leurs champs `scene`/`anchors` renseignés. — **DONE Niveau** (6 zones V1 composées; toutes les ancres et cibles matérialisées).
 - `[Narration → UI]` (2026-10-17) **Ligne « 61. Camille ».** Le numéro est **sérialisé** (`InventoryManager.progress().x`) et non figé : je livre `INV_LINE_ADDED_CAMILLE` = `Camille` (sans numéro) et `INV_LINE_FORMAT` = `{index}. {name}`. Le carnet affiche via `inventory_line_added(line_index, text_key)`. — POUR INFO
 - `[Narration → Systèmes]` (2026-10-17) **Ids de documents** référencés par les `reveal_condition` et les règles (à créer par R-3/R-5, contrats à respecter) : `hall_postit_besnard`, `study_inventory_1973`, `study_letter_besnard`, `kitchen_letter_lucienne_1`, `kitchen_letter_lucienne_2`, `living_letter_lucienne_3`, `living_photo_family`, `hall_tape_1973`, `cellar_register_1847`, `study_deed_1912`. — POUR INFO
 
 - `[Architecte → Systèmes]` (17/10) Le parser de conditions doit supporter la **négation `!` sur tout prédicat** (`!item_checked:id`, utilisé par 4 règles) + `item_present:id` et `presence:state`. Seuils réels des règles : **20 / 30 / 45 / 52** (lire `game/data/rules/README.md`). — **DONE** (Systèmes S-3 : négation universelle + `item_present:` + `presence:` supportés ; seuils lus dans `data/rules/`)
 - `[Architecte → UI]` (17/10) Les corps de documents (`body_key`) contiennent `\n` et du BBCode `[i]`/`[b]` : visionneuse = RichTextLabel avec bbcode_enabled. `pages` indicatif. — TODO
-- `[Architecte → Niveau]` (17/10) Les 60 `item_id` de `docs/items_master.csv` sont **définitifs** : ne jamais renommer. Remplir `scene` et `anchors` de chaque ItemData (seuls champs autorisés pour Niveau dans data/items/), créer les ancres dans les rooms. Objet interactif `cellar_stove` dans la cave (fin Cendres). — **DONE Niveau** (60/60, poêle 8 s; 34 ancres attendent les blockouts N-5/N-10).
+- `[Architecte → Niveau]` (17/10) Les 60 `item_id` de `docs/items_master.csv` sont **définitifs** : ne jamais renommer. Remplir `scene` et `anchors` de chaque ItemData (seuls champs autorisés pour Niveau dans data/items/), créer les ancres dans les rooms. Objet interactif `cellar_stove` dans la cave (fin Cendres). — **DONE Niveau** (60/60, seules `scene`/`anchors` édités; 60 ancres matérialisées, poêle 8 s).
 - `[Architecte → Gameplay]` (17/10) L'interaction longue « brûler » cible `cellar_stove` et émet `player_interacted(&"cellar_stove", &"burn")`. — TODO
 
 - `[Narration → Architecte]` (17/10) Photo « été 1951 » nomme Madeleine à la maison alors qu'elle est internée depuis 1946. — **TRANCHÉ** : on garde. C'est Lucienne qui a annoté la photo après avoir pris l'identité : l'annotation est le premier mensonge. Cohérent et plus fort. À exploiter en V2.
-- `[Gameplay → Niveau]` (2026-10-17) **Zones de pièce.** Chaque pièce doit contenir une `Area3D` **monitorable** avec `metadata/room_id` (StringName, ex. `&"kitchen"`) couvrant la pièce — `collision_layer` 4 de préférence (le capteur du joueur teste les layers 1 et 3/bits 1 et 4). C'est le Gameplay qui émet `player_entered_room/left_room` ; le Niveau n'émet rien. Zone sans `room_id` = ignorée en silence. — **DONE Niveau** (hall, study, cellar; mêmes métadonnées pour les blockouts suivants).
+- `[Gameplay → Niveau]` (2026-10-17) **Zones de pièce.** Chaque pièce doit contenir une `Area3D` **monitorable** avec `metadata/room_id` (StringName, ex. `&"kitchen"`) couvrant la pièce — `collision_layer` 4 de préférence (le capteur du joueur teste les layers 1 et 3/bits 1 et 4). C'est le Gameplay qui émet `player_entered_room/left_room` ; le Niveau n'émet rien. Zone sans `room_id` = ignorée en silence. — **DONE Niveau** (six zones V1, layer 4/monitorable et `room_id` corrects).
 - `[Gameplay → Niveau]` (2026-10-17) **Contrat Item / occlusion.** La détection photo s'appuie uniquement sur : groupe `items`, `data: ItemData`, `is_in_frustum(cam) -> float` (0..1). Pour l'occlusion, le Gameplay cherche les `CollisionObject3D` **enfants de l'Item** : sans collider, pas de test d'occlusion (l'objet reste photographiable à travers un mur). Merci de donner à chaque Item un collider enfant. `ItemData.scene` étant vide, mes scènes de test utilisent des boîtes grises. — **DONE Niveau** (prefab générique + scène dédiée du poêle; collider enfant inclus).
 - `[Gameplay → Narration]` (2026-10-17) **`min_photo_coverage = 0.15` est très exigeant** : en 1080p / FOV 75, un objet de 1 m de côté doit être cadré à ≈ 1,3 m pour occuper 15 % de l'écran (un objet de 0,5 m à 3 m ≈ 0,7 %). Sauf si le Niveau fournit des boîtes de cadrage généreuses, je recommande 0,03–0,06 pour les petits objets (horloge, alliance, cachet). Je respecte la donnée en attendant.
 - `[Gameplay → Audio]` (2026-10-17) **Ids SFX utilisés par l'appareil photo** (à faire exister, sinon AudioManager dégrade) : `camera_raise`, `camera_shutter`, `camera_flash`, `photo_slide`, `camera_dry`. Les pas sont signalés par `EventBus.player_noise(level, pos)` (0,25 marche / 0,85 course) toutes les 0,72 m (marche) / 1,05 m (course) — utilisable pour D-3.
@@ -489,7 +505,7 @@
 
 - `[Gameplay → UI]` (2026-10-17, session 2 — **révisé session 4**) **Format des réglages consommés par le joueur** (`EventBus.settings_changed`) : `mouse_sensitivity` = **multiplicateur 0,2–3,0, 1,0 = défaut** (format retenu par `UiSettings` ; le joueur fait `0,0022 × multiplicateur`, une valeur < 0,1 étant lue comme des rad/px bruts pour les tests), `fov` = degrés bornés 55..110 (défaut 75), `flashlight_strong` = bool (défaut false). Les autres clés (`volume_*`, `subtitles`, `fullscreen`) sont ignorées en silence par le joueur — aucune erreur si l'UI en ajoute. Rappel : l'UI doit émettre chaque clé une fois au démarrage (ARCHITECTURE §7), **après l'instanciation du joueur** (un `call_deferred` suffit) — sinon le joueur garde ses valeurs par défaut ; en complément, réémettre sur `game_loaded` couvre le chargement d'une partie.
 - `[Architecte → Gameplay]` (17/10, playtest utilisateur) **Bug Échap** : la touche Échap n'affiche pas la souris. Attendu : Échap bascule `Input.mouse_mode` CAPTURED ↔ VISIBLE **et** émet `pause_toggled`. Le reste du feeling (flash, développement, déplacements, grain) validé par l'utilisateur en F6 sur `test_room.tscn` : « tout marche ». — **DONE** (session 3 : Échap traité par le joueur, `set_input_as_handled`, baisse de l'appareil en pause ; 101 assertions)
-- `[Architecte → Niveau]` (17/10) **Noms d'ancres déjà référencés par les règles de Narration** (doivent exister dans les rooms, sinon `item_moved` est ignoré) : `hall_anchor_console`, `kitchen_anchor_preserves`, `kitchen_anchor_sink`, `living_anchor_fireplace`, `study_anchor_shelves`. Convention : `<room>_anchor_<nom>`. Les autres ancres initiales sont documentées dans `docs/anchors.md` et renseignées dans les 60 `ItemData`. — **PARTIEL Niveau** (seules les ancres physiques cuisine/salon restent à matérialiser avec N-5).
+- `[Architecte → Niveau]` (17/10) **Noms d'ancres déjà référencés par les règles de Narration** (doivent exister dans les rooms, sinon `item_moved` est ignoré) : `hall_anchor_console`, `kitchen_anchor_preserves`, `kitchen_anchor_sink`, `living_anchor_fireplace`, `study_anchor_shelves`. Convention : `<room>_anchor_<nom>`. Les autres ancres initiales sont documentées dans `docs/anchors.md` et renseignées dans les 60 `ItemData`. — **DONE Niveau** (toutes présentes; cibles cuisine/salon distinguées des ancres d'objets).
 - `[Architecte → UI]` (17/10) Systèmes a documenté le protocole menu ↔ main dans `docs/TASKS.md` (section Systèmes) : signaux `new_game_requested`, `continue_requested`, `options_requested`, `quit_requested` sur `scenes/ui/main_menu.tscn`, `scenes/ui/hud.tscn`, `scenes/ui/ending_screen.tscn` avec `set_ending_id(id)`. Respecter ces noms. — TODO
 
 - `[Niveau → Architecte]` (2026-10-17) **Validation N-1 / emplacement du plan.** Le schéma V1 a été validé par l’Architecte; il a copié l’image dans `docs/plan_maison.png`, la source SVG restant dans `game/scenes/house/plan_maison.svg`. — **DONE**.
@@ -564,7 +580,7 @@
   erreur). Pour `validate_data.gd` (Q-2) : `AudioManager.sfx_is_available(&"id")` permet de vérifier
   que chaque `sfx:` des règles résout bien vers un fichier. — **À FAIRE (QA)**
 
-- `[Architecte → Niveau]` (17/10, **playtest utilisateur, BLOQUANT**) En F5 : **noir total** (les lumières étaient dans `StandaloneLights`, masqué en jeu) et **chute dans le vide** par les portes cuisine / entrée (pièces non construites). Hotfix Architecte : `PlayerSpawn` + `player_spawn_transform()` dans house, `TempBlockers` sur ces portes. **N-6 DONE (20/10)** : `WorldEnvironment` sombre (ACES, fog de distance et volumétrique) + pratiques hall/bureau/cave; ombres de 2 Omni pratiques; hotfix preview retiré (`visible = standalone`). **En cours N-5/N-10** : supprimer chaque bloqueur quand cuisine/salon/extérieur sont construits et maintenir collision sur toute ouverture encore absente. `PlayerSpawn` préservé. — EN COURS (N-5/N-10)
+- `[Architecte → Niveau]` (17/10, **playtest utilisateur, BLOQUANT**) En F5 : **noir total** (les lumières étaient dans `StandaloneLights`, masqué en jeu) et **chute dans le vide** par les portes cuisine / entrée (pièces non construites). Hotfix Architecte : `PlayerSpawn` + `player_spawn_transform()` dans house, `TempBlockers` sur ces portes. **DONE Niveau (20/10)** : N-6 (WorldEnvironment sombre, ACES, fog de distance/volumétrique; pratiques hall/bureau/cave, 2 Omni avec ombres; preview rétablie en standalone) + N-5/N-10 (cuisine, salon, cour; `TempBlockers` retirés; clôture/portail et escalier colmatés avec collision). `PlayerSpawn` préservé. — DONE
 - `[Architecte → Systèmes]` (17/10) `main.gd` modifié par l'Architecte (hotfix) : le joueur est placé via `house_node.call("player_spawn_transform")`. À conserver. — INFO
 
 ## Journal des décisions

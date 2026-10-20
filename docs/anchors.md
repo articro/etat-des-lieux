@@ -5,9 +5,9 @@
 ## Repères de blockout
 
 - Repère local d’une pièce : origine au centre du sol, `+Y` vers le haut. Les objets sont positionnés par le centre de leur placeholder; un objet à poser au sol a donc une ancre à la moitié de sa hauteur.
-- Entrée du hall au `z = -4,5 m`; fond et escalier condamné au `z = +4,5 m`. L’axe `X` mesure la largeur du couloir. Le bureau est à l’est du hall; la cave est déjà placée sous l’emplacement réservé à la cuisine.
-- Rez-de-chaussée : plafonds à `2,6 m`; portes `0,9 × 2,1 m`. Hall/couloir `3 × 9 m` (largeur libre ≥ `1,4 m`), cuisine `4,5 × 4,5 m`, salon `5 × 5 m`, bureau `4,5 × 4 m`.
-- Cave `6 × 4 m`, hauteur `2,1 m`, sous la cuisine; dans `house.tscn`, racine à `(-3.75, -3.5, 0)`, accès par trappe et échelle raide. Cour `≈ 14 × 9 m`.
+- Entrée du hall au `z = -4,5 m`; fond et escalier condamné au `z = +4,5 m`. L’axe `X` mesure la largeur du couloir. Porte ouest à `z = 0` vers la cuisine, porte est vers le bureau, porte ouest à `z = 3,25` vers le salon; le fond nord reste condamné.
+- Rez-de-chaussée : plafonds à `2,6 m`; portes `0,9 × 2,1 m`. Hall/couloir `3 × 9 m` (largeur libre ≥ `1,4 m`), cuisine `4,5 × 4,5 m`, salon `5 × 5 m`, bureau `4,5 × 4 m`. Cuisine centrée en `(-3.75, 0, 0)`; salon en `(-4, 0, 4.75)`.
+- Cave `6 × 4 m`, hauteur `2,1 m`, sous la cuisine; dans `house.tscn`, racine à `(-3.75, -2.1, 0)`. Trappe cuisine/cave alignée en coordonnées locales `(1, -1)`; elle reste fermée et collidable jusqu’à `cellar_door_opens`. Cour `≈ 14 × 9 m`, racine `(0, 0, -9)`.
 - Le hall montre l’escalier barré et le mot de Besnard, mais l’étage n’est pas une zone jouable. Le téléphone et le répondeur sont sur la console du hall.
 
 ## Ancres d’événements
@@ -15,9 +15,9 @@
 | Pièce | Nom | Usage | État |
 |---|---|---|---|
 | hall | `hall_anchor_console` | Cible des déplacements vers la console; place au sol à côté du meuble | présent dans `rooms/hall.tscn` |
-| kitchen | `kitchen_anchor_sink` | Cible de déplacement près de l’évier | à créer avec la cuisine (N-5) |
-| kitchen | `kitchen_anchor_preserves` | Apparition de `kitchen_key_l` près des confitures | à créer avec la cuisine (N-5) |
-| living | `living_anchor_fireplace` | Cible des fauteuils près de la cheminée | à créer avec le salon (N-5) |
+| kitchen | `kitchen_anchor_sink` | Cible de déplacement du tabouret devant l’évier (distincte de l’ancre de l’objet) | présent dans `rooms/kitchen.tscn` |
+| kitchen | `kitchen_anchor_preserves` | Apparition de `kitchen_key_l` près des confitures (distincte de l’ancre de l’objet) | présent dans `rooms/kitchen.tscn` |
+| living | `living_anchor_fireplace` | Cible des fauteuils devant la cheminée (distincte de l’ancre de l’objet) | présent dans `rooms/living.tscn` |
 | study | `study_anchor_shelves` | Cible du cachet sur le dessus du rayonnage | présent dans `rooms/study.tscn` (distincte de l’ancre d’objet) |
 | hall | `hall_anchor_stairs_top` | Repère visuel pour la Présence photographiée sur l’escalier, hors zone jouable | présent dans `rooms/hall.tscn` |
 | cellar | `cellar_anchor_presence_spawn` | Spawn de la Présence, au fond le plus éloigné de l’échelle | présent dans `rooms/cellar.tscn`; instance de `presence.tscn` alignée sur ce repère |
@@ -26,7 +26,7 @@ Le poêle de la cave est un Item dédié (`scenes/items/cellar_stove.tscn`) : `m
 
 ## Ancres initiales par objet
 
-Chaque ligne correspond à un `ItemData` de `docs/items_master.csv`; les 60 `.tres` ont `anchors = [&"<ancre>"]`. `scene` pointe vers `res://scenes/items/item.tscn`, sauf `cellar_stove` qui utilise `res://scenes/items/cellar_stove.tscn` pour son interaction `burn` de 8 s. Les ancres des pièces pas encore blockoutées seront matérialisées lors de N-5/N-10.
+Chaque ligne correspond à un `ItemData` de `docs/items_master.csv`; les 60 `.tres` ont `anchors = [&"<ancre>"]`. `scene` pointe vers `res://scenes/items/item.tscn`, sauf `cellar_stove` qui utilise `res://scenes/items/cellar_stove.tscn` pour son interaction `burn` de 8 s. Les trois objets associés à une cible de règle (`kitchen_sink`, `kitchen_preserves`, `living_fireplace`) ont une ancre initiale dédiée, distincte de la cible.
 
 ### Extérieur — `exterior`
 
@@ -58,12 +58,12 @@ Chaque ligne correspond à un `ItemData` de `docs/items_master.csv`; les 60 `.tr
 |---:|---|---|
 | 15 | `kitchen_table` | `kitchen_anchor_table` |
 | 16 | `kitchen_chairs` | `kitchen_anchor_chairs` |
-| 17 | `kitchen_sink` | `kitchen_anchor_sink` |
+| 17 | `kitchen_sink` | `kitchen_anchor_sink_item` |
 | 18 | `kitchen_stove` | `kitchen_anchor_stove` |
 | 19 | `kitchen_coffee_mill` | `kitchen_anchor_coffee_mill` |
 | 20 | `kitchen_scales` | `kitchen_anchor_scales` |
 | 21 | `kitchen_jars` | `kitchen_anchor_jars` |
-| 22 | `kitchen_preserves` | `kitchen_anchor_preserves` |
+| 22 | `kitchen_preserves` | `kitchen_anchor_preserves_item` |
 | 23 | `kitchen_clock_stopped` | `kitchen_anchor_clock_stopped` |
 | 24 | `kitchen_calendar` | `kitchen_anchor_calendar` |
 | 25 | `kitchen_cookware` | `kitchen_anchor_cookware` |
@@ -78,7 +78,7 @@ Chaque ligne correspond à un `ItemData` de `docs/items_master.csv`; les 60 `.tr
 | Index | `item_id` | `Marker3D` / `anchors[0]` |
 |---:|---|---|
 | 31 | `living_piano` | `living_anchor_piano` |
-| 32 | `living_fireplace` | `living_anchor_fireplace` |
+| 32 | `living_fireplace` | `living_anchor_fireplace_item` |
 | 33 | `living_armchairs` | `living_anchor_armchairs` |
 | 34 | `living_sofa` | `living_anchor_sofa` |
 | 35 | `living_sideboard` | `living_anchor_sideboard` |
@@ -122,6 +122,9 @@ Chaque ligne correspond à un `ItemData` de `docs/items_master.csv`; les 60 `.tr
 
 - `rooms/hall.tscn` : zone `Area3D` `metadata/room_id = &"hall"`, collision layer `4`, `monitorable = true`; `Anchors` contient les 10 ancres d’objets du hall, `hall_anchor_console` et `hall_anchor_stairs_top`; `Items` reste vide dans la scène source.
 - `rooms/study.tscn` : zone `Area3D` `metadata/room_id = &"study"`, collision layer `4`, `monitorable = true`; `Anchors` contient les 12 ancres d’objets plus `study_anchor_shelves` au sommet du rayonnage; `Items` reste vide dans la scène source.
-- `rooms/cellar.tscn` : blockout `6 × 4 × 2,1 m`, zone `Area3D` monitorable/couche `4`, ouverture de trappe + échelle, table du registre, 4 ancres d’objets et `cellar_anchor_presence_spawn`; instancie `presence.tscn` à ce repère.
-- `house.gd` instancie les objets dans `Items` et écoute `item_moved` / `item_revealed` via `EventBus`. Une ancre cible absente déclenche `push_error` et annule le déplacement sans planter.
-- Les zones à venir reprennent exactement la même arborescence `Anchors`, `Items`, `Zone` et le même contrat `room_id`.
+- `rooms/cellar.tscn` : blockout `6 × 4 × 2,1 m`, zone `Area3D` monitorable/couche `4`, ouverture de plafond alignée sur la trappe cuisine, échelle, table du registre, 4 ancres d’objets et `cellar_anchor_presence_spawn`; instancie `presence.tscn` à ce repère.
+- `rooms/kitchen.tscn` : cuisine `4,5 × 4,5 m`, 16 ancres d’objets, évier/cuisinière en blockout, cible de règle séparée près de l’évier et cible des confitures; trappe à charnière collidable, ouverte par l’événement `cellar_door_opens`.
+- `rooms/living.tscn` : salon `5 × 5 m`, cheminée en blockout, 14 ancres d’objets et cible de règle séparée devant le foyer; porte ouest du hall alignée sur son ouverture est.
+- `rooms/exterior.tscn` : cour `14 × 9 m`, 4 ancres d’objets, 205 en décor, sol et clôtures collidables; portail sud fermé avec collision, seule sortie reliée au hall au nord.
+- `rooms/hall.tscn` ouvre les portes vers cuisine, salon, bureau et cour; l’accès à l’étage reste condamné par planches et barrière collidables. `house.tscn` compose les six zones et 60 objets; les `TempBlockers` cuisine/entrée ont été retirés.
+- Chaque room conserve `Anchors`, `Items`, `Zone` et le contrat `room_id`; `room.gd` cache les remplissages et lumières de preview quand la room est composée. `house.gd` écoute `item_moved` / `item_revealed` et `house_event_triggered` via `EventBus`; ancre cible absente = `push_error` sans crash.

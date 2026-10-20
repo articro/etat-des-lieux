@@ -1,0 +1,306 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://scenes/house/room.gd" id="1_room"]
+
+[sub_resource type="StandardMaterial3D" id="GroundMat"]
+albedo_color = Color(0.24, 0.25, 0.23, 1)
+roughness = 0.98
+
+[sub_resource type="StandardMaterial3D" id="FenceMat"]
+albedo_color = Color(0.19, 0.20, 0.19, 1)
+roughness = 0.94
+metallic = 0.12
+
+[sub_resource type="StandardMaterial3D" id="GateMat"]
+albedo_color = Color(0.13, 0.14, 0.13, 1)
+roughness = 0.76
+metallic = 0.35
+
+[sub_resource type="StandardMaterial3D" id="StoneMat"]
+albedo_color = Color(0.39, 0.38, 0.35, 1)
+roughness = 0.96
+
+[sub_resource type="StandardMaterial3D" id="CarMat"]
+albedo_color = Color(0.16, 0.18, 0.18, 1)
+roughness = 0.72
+metallic = 0.24
+
+[sub_resource type="StandardMaterial3D" id="PorchFixtureMat"]
+albedo_color = Color(0.61, 0.45, 0.27, 1)
+roughness = 0.65
+emission_enabled = true
+emission = Color(0.72, 0.38, 0.13, 1)
+emission_energy_multiplier = 0.22
+
+[sub_resource type="BoxShape3D" id="ZoneShape"]
+size = Vector3(14, 2.6, 9)
+
+[node name="Exterior" type="Node3D"]
+script = ExtResource("1_room")
+metadata/room_id = &"exterior"
+
+[node name="Blockout" type="Node3D" parent="."]
+
+[node name="StandaloneOnly" type="Node3D" parent="."]
+
+[node name="StandaloneNorthDoorFill" type="CSGBox3D" parent="StandaloneOnly"]
+size = Vector3(1.0, 2.4, 0.18)
+position = Vector3(0, 1.2, 4.59)
+use_collision = false
+collision_layer = 0
+material = SubResource("FenceMat")
+
+[node name="Ground" type="CSGBox3D" parent="Blockout"]
+size = Vector3(14, 0.2, 9)
+position = Vector3(0, -0.1, 0)
+use_collision = true
+collision_layer = 1
+material = SubResource("GroundMat")
+
+[node name="FenceWest" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.18, 2.4, 9)
+position = Vector3(-6.91, 1.2, 0)
+use_collision = true
+collision_layer = 1
+material = SubResource("FenceMat")
+
+[node name="FenceEast" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.18, 2.4, 9)
+position = Vector3(6.91, 1.2, 0)
+use_collision = true
+collision_layer = 1
+material = SubResource("FenceMat")
+
+[node name="NorthFenceLeft" type="CSGBox3D" parent="Blockout"]
+size = Vector3(6.5, 2.4, 0.18)
+position = Vector3(-3.75, 1.2, 4.59)
+use_collision = true
+collision_layer = 1
+material = SubResource("FenceMat")
+
+[node name="NorthFenceRight" type="CSGBox3D" parent="Blockout"]
+size = Vector3(6.5, 2.4, 0.18)
+position = Vector3(3.75, 1.2, 4.59)
+use_collision = true
+collision_layer = 1
+material = SubResource("FenceMat")
+
+[node name="SouthFenceLeft" type="CSGBox3D" parent="Blockout"]
+size = Vector3(5.8, 2.4, 0.18)
+position = Vector3(-4.1, 1.2, -4.59)
+use_collision = true
+collision_layer = 1
+material = SubResource("FenceMat")
+
+[node name="SouthFenceRight" type="CSGBox3D" parent="Blockout"]
+size = Vector3(5.8, 2.4, 0.18)
+position = Vector3(4.1, 1.2, -4.59)
+use_collision = true
+collision_layer = 1
+material = SubResource("FenceMat")
+
+[node name="GatePanelLeft" type="CSGBox3D" parent="Blockout"]
+size = Vector3(1.2, 2.05, 0.12)
+position = Vector3(-0.6, 1.025, -4.59)
+use_collision = true
+collision_layer = 1
+material = SubResource("GateMat")
+
+[node name="GatePanelRight" type="CSGBox3D" parent="Blockout"]
+size = Vector3(1.2, 2.05, 0.12)
+position = Vector3(0.6, 1.025, -4.59)
+use_collision = true
+collision_layer = 1
+material = SubResource("GateMat")
+
+[node name="GatePostLeft" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.14, 2.4, 0.2)
+position = Vector3(-1.2, 1.2, -4.59)
+use_collision = true
+collision_layer = 1
+material = SubResource("GateMat")
+
+[node name="GatePostRight" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.14, 2.4, 0.2)
+position = Vector3(1.2, 1.2, -4.59)
+use_collision = true
+collision_layer = 1
+material = SubResource("GateMat")
+
+[node name="WellBase" type="CSGCylinder3D" parent="Blockout"]
+radius = 0.68
+height = 0.72
+position = Vector3(-4.8, 0.36, 1.25)
+use_collision = true
+collision_layer = 1
+material = SubResource("StoneMat")
+
+[node name="WellRim" type="CSGCylinder3D" parent="Blockout"]
+radius = 0.78
+height = 0.16
+position = Vector3(-4.8, 0.80, 1.25)
+use_collision = true
+collision_layer = 1
+material = SubResource("StoneMat")
+
+[node name="BenchSeat" type="CSGBox3D" parent="Blockout"]
+size = Vector3(1.45, 0.16, 0.42)
+position = Vector3(2.3, 0.48, -0.85)
+use_collision = true
+collision_layer = 1
+material = SubResource("StoneMat")
+
+[node name="BenchLegLeft" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.18, 0.46, 0.28)
+position = Vector3(1.75, 0.23, -0.85)
+use_collision = true
+collision_layer = 1
+material = SubResource("StoneMat")
+
+[node name="BenchLegRight" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.18, 0.46, 0.28)
+position = Vector3(2.85, 0.23, -0.85)
+use_collision = true
+collision_layer = 1
+material = SubResource("StoneMat")
+
+[node name="WheelbarrowTub" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.92, 0.42, 0.60)
+position = Vector3(-1.55, 0.56, 1.45)
+use_collision = false
+collision_layer = 0
+material = SubResource("GateMat")
+
+[node name="WheelbarrowWheel" type="CSGCylinder3D" parent="Blockout"]
+radius = 0.24
+height = 0.12
+position = Vector3(-1.55, 0.28, 1.82)
+rotation_degrees = Vector3(90, 0, 0)
+use_collision = false
+collision_layer = 0
+material = SubResource("GateMat")
+
+[node name="WheelbarrowHandleLeft" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.06, 0.06, 0.80)
+position = Vector3(-1.86, 0.68, 0.98)
+use_collision = false
+collision_layer = 0
+material = SubResource("GateMat")
+
+[node name="WheelbarrowHandleRight" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.06, 0.06, 0.80)
+position = Vector3(-1.24, 0.68, 0.98)
+use_collision = false
+collision_layer = 0
+material = SubResource("GateMat")
+
+[node name="CarBody" type="CSGBox3D" parent="Blockout"]
+size = Vector3(2.7, 0.75, 1.28)
+position = Vector3(3.55, 0.67, 1.55)
+use_collision = false
+collision_layer = 0
+material = SubResource("CarMat")
+
+[node name="CarRoof" type="CSGBox3D" parent="Blockout"]
+size = Vector3(1.55, 0.55, 1.06)
+position = Vector3(3.55, 1.30, 1.55)
+use_collision = false
+collision_layer = 0
+material = SubResource("CarMat")
+
+[node name="CarWheelFrontLeft" type="CSGCylinder3D" parent="Blockout"]
+radius = 0.30
+height = 0.18
+position = Vector3(2.55, 0.30, 0.98)
+rotation_degrees = Vector3(0, 0, 90)
+use_collision = false
+collision_layer = 0
+material = SubResource("GateMat")
+
+[node name="CarWheelFrontRight" type="CSGCylinder3D" parent="Blockout"]
+radius = 0.30
+height = 0.18
+position = Vector3(4.55, 0.30, 0.98)
+rotation_degrees = Vector3(0, 0, 90)
+use_collision = false
+collision_layer = 0
+material = SubResource("GateMat")
+
+[node name="CarWheelRearLeft" type="CSGCylinder3D" parent="Blockout"]
+radius = 0.30
+height = 0.18
+position = Vector3(2.55, 0.30, 2.12)
+rotation_degrees = Vector3(0, 0, 90)
+use_collision = false
+collision_layer = 0
+material = SubResource("GateMat")
+
+[node name="CarWheelRearRight" type="CSGCylinder3D" parent="Blockout"]
+radius = 0.30
+height = 0.18
+position = Vector3(4.55, 0.30, 2.12)
+rotation_degrees = Vector3(0, 0, 90)
+use_collision = false
+collision_layer = 0
+material = SubResource("GateMat")
+
+[node name="PorchLightFixture" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.28, 0.34, 0.12)
+position = Vector3(0, 2.16, 4.34)
+use_collision = false
+collision_layer = 0
+material = SubResource("PorchFixtureMat")
+
+[node name="Zone" type="Area3D" parent="."]
+collision_layer = 4
+collision_mask = 0
+monitoring = true
+monitorable = true
+metadata/room_id = &"exterior"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Zone"]
+position = Vector3(0, 1.3, 0)
+shape = SubResource("ZoneShape")
+
+[node name="Anchors" type="Node3D" parent="."]
+
+[node name="Items" type="Node3D" parent="."]
+
+[node name="PracticalLights" type="Node3D" parent="."]
+
+[node name="PorchLight" type="OmniLight3D" parent="PracticalLights"]
+position = Vector3(0, 1.96, 4.22)
+light_color = Color(1, 0.73, 0.48, 1)
+light_energy = 0.38
+omni_range = 5.4
+omni_attenuation = 1.5
+shadow_enabled = false
+
+[node name="exterior_anchor_gate" type="Marker3D" parent="Anchors"]
+position = Vector3(0, 0.90, -3.45)
+
+[node name="exterior_anchor_well" type="Marker3D" parent="Anchors"]
+position = Vector3(-4.8, 0.95, 1.25)
+
+[node name="exterior_anchor_wheelbarrow" type="Marker3D" parent="Anchors"]
+position = Vector3(-1.55, 0.52, 1.45)
+
+[node name="exterior_anchor_bench" type="Marker3D" parent="Anchors"]
+position = Vector3(2.3, 0.70, -0.85)
+
+[node name="StandaloneLights" type="Node3D" parent="."]
+
+[node name="PreviewOmni" type="OmniLight3D" parent="StandaloneLights"]
+position = Vector3(0, 3.4, 0)
+light_color = Color(0.83, 0.81, 0.75, 1)
+light_energy = 1.0
+omni_range = 18.0
+shadow_enabled = false
+
+[node name="StandaloneCamera" type="Camera3D" parent="."]
+position = Vector3(0, 1.55, 3.55)
+rotation_degrees = Vector3(0, 0, 0)
+current = false
+fov = 72.0
+near = 0.05
+far = 80.0

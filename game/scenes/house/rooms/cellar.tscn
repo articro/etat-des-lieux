@@ -43,29 +43,29 @@ collision_layer = 1
 material = SubResource("FloorMat")
 
 [node name="CeilingLeft" type="CSGBox3D" parent="Blockout"]
-size = Vector3(4.7, 0.12, 4)
-position = Vector3(-0.65, 2.16, 0)
+size = Vector3(3.5, 0.12, 4)
+position = Vector3(-1.25, 2.16, 0)
 use_collision = false
 collision_layer = 0
 material = SubResource("CeilingMat")
 
 [node name="CeilingRight" type="CSGBox3D" parent="Blockout"]
-size = Vector3(0.3, 0.12, 4)
-position = Vector3(2.85, 2.16, 0)
+size = Vector3(1.5, 0.12, 4)
+position = Vector3(2.25, 2.16, 0)
 use_collision = false
 collision_layer = 0
 material = SubResource("CeilingMat")
 
 [node name="CeilingHatchFront" type="CSGBox3D" parent="Blockout"]
 size = Vector3(1, 0.12, 0.5)
-position = Vector3(2.2, 2.16, -1.75)
+position = Vector3(1, 2.16, -1.75)
 use_collision = false
 collision_layer = 0
 material = SubResource("CeilingMat")
 
 [node name="CeilingHatchBack" type="CSGBox3D" parent="Blockout"]
 size = Vector3(1, 0.12, 2.5)
-position = Vector3(2.2, 2.16, 0.75)
+position = Vector3(1, 2.16, 0.75)
 use_collision = false
 collision_layer = 0
 material = SubResource("CeilingMat")
@@ -100,49 +100,49 @@ material = SubResource("WallMat")
 
 [node name="LadderRailLeft" type="CSGBox3D" parent="Blockout"]
 size = Vector3(0.07, 1.9, 0.07)
-position = Vector3(1.93, 1.05, -1)
+position = Vector3(0.73, 1.05, -1)
 use_collision = true
 collision_layer = 1
 material = SubResource("PropMat")
 
 [node name="LadderRailRight" type="CSGBox3D" parent="Blockout"]
 size = Vector3(0.07, 1.9, 0.07)
-position = Vector3(2.47, 1.05, -1)
+position = Vector3(1.27, 1.05, -1)
 use_collision = true
 collision_layer = 1
 material = SubResource("PropMat")
 
 [node name="LadderRung1" type="CSGBox3D" parent="Blockout"]
 size = Vector3(0.58, 0.05, 0.06)
-position = Vector3(2.2, 0.28, -1)
+position = Vector3(1, 0.28, -1)
 use_collision = true
 collision_layer = 1
 material = SubResource("PropMat")
 
 [node name="LadderRung2" type="CSGBox3D" parent="Blockout"]
 size = Vector3(0.58, 0.05, 0.06)
-position = Vector3(2.2, 0.62, -1)
+position = Vector3(1, 0.62, -1)
 use_collision = true
 collision_layer = 1
 material = SubResource("PropMat")
 
 [node name="LadderRung3" type="CSGBox3D" parent="Blockout"]
 size = Vector3(0.58, 0.05, 0.06)
-position = Vector3(2.2, 0.96, -1)
+position = Vector3(1, 0.96, -1)
 use_collision = true
 collision_layer = 1
 material = SubResource("PropMat")
 
 [node name="LadderRung4" type="CSGBox3D" parent="Blockout"]
 size = Vector3(0.58, 0.05, 0.06)
-position = Vector3(2.2, 1.30, -1)
+position = Vector3(1, 1.30, -1)
 use_collision = true
 collision_layer = 1
 material = SubResource("PropMat")
 
 [node name="LadderRung5" type="CSGBox3D" parent="Blockout"]
 size = Vector3(0.58, 0.05, 0.06)
-position = Vector3(2.2, 1.64, -1)
+position = Vector3(1, 1.64, -1)
 use_collision = true
 collision_layer = 1
 material = SubResource("PropMat")

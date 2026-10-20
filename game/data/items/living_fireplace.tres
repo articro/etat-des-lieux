@@ -16,5 +16,5 @@ phantom_kind = "none"
 reveal_condition = ""
 movable = false
 scene = ExtResource("2_item_scene")
-anchors = Array[StringName]([&"living_anchor_fireplace"])
+anchors = Array[StringName]([&"living_anchor_fireplace_item"])
 min_photo_coverage = 0.04

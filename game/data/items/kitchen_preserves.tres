@@ -16,5 +16,5 @@ phantom_kind = "none"
 reveal_condition = ""
 movable = true
 scene = ExtResource("2_item_scene")
-anchors = Array[StringName]([&"kitchen_anchor_preserves"])
+anchors = Array[StringName]([&"kitchen_anchor_preserves_item"])
 min_photo_coverage = 0.04

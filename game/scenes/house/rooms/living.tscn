@@ -1,0 +1,215 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scenes/house/room.gd" id="1_room"]
+
+[sub_resource type="StandardMaterial3D" id="FloorMat"]
+albedo_color = Color(0.27, 0.26, 0.25, 1)
+roughness = 0.95
+
+[sub_resource type="StandardMaterial3D" id="WallMat"]
+albedo_color = Color(0.40, 0.39, 0.37, 1)
+roughness = 0.93
+
+[sub_resource type="StandardMaterial3D" id="CeilingMat"]
+albedo_color = Color(0.48, 0.47, 0.44, 1)
+roughness = 0.96
+
+[sub_resource type="StandardMaterial3D" id="FireplaceMat"]
+albedo_color = Color(0.29, 0.28, 0.26, 1)
+roughness = 0.97
+
+[sub_resource type="StandardMaterial3D" id="FixtureMat"]
+albedo_color = Color(0.56, 0.41, 0.23, 1)
+roughness = 0.66
+emission_enabled = true
+emission = Color(0.58, 0.30, 0.10, 1)
+emission_energy_multiplier = 0.18
+
+[sub_resource type="BoxShape3D" id="ZoneShape"]
+size = Vector3(5, 2.6, 5)
+
+[node name="Living" type="Node3D"]
+script = ExtResource("1_room")
+metadata/room_id = &"living"
+
+[node name="Blockout" type="Node3D" parent="."]
+
+[node name="StandaloneOnly" type="Node3D" parent="."]
+
+[node name="StandaloneEastDoorFill" type="CSGBox3D" parent="StandaloneOnly"]
+size = Vector3(0.18, 2.6, 0.9)
+position = Vector3(2.41, 1.3, -1.5)
+use_collision = false
+collision_layer = 0
+material = SubResource("WallMat")
+
+[node name="Floor" type="CSGBox3D" parent="Blockout"]
+size = Vector3(5, 0.2, 5)
+position = Vector3(0, -0.1, 0)
+use_collision = true
+collision_layer = 1
+material = SubResource("FloorMat")
+
+[node name="Ceiling" type="CSGBox3D" parent="Blockout"]
+size = Vector3(5, 0.12, 5)
+position = Vector3(0, 2.66, 0)
+use_collision = false
+collision_layer = 0
+material = SubResource("CeilingMat")
+
+[node name="WallWest" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.18, 2.6, 5)
+position = Vector3(-2.41, 1.3, 0)
+use_collision = true
+collision_layer = 1
+material = SubResource("WallMat")
+
+[node name="WallNorth" type="CSGBox3D" parent="Blockout"]
+size = Vector3(5, 2.6, 0.18)
+position = Vector3(0, 1.3, 2.41)
+use_collision = true
+collision_layer = 1
+material = SubResource("WallMat")
+
+[node name="WallSouth" type="CSGBox3D" parent="Blockout"]
+size = Vector3(5, 2.6, 0.18)
+position = Vector3(0, 1.3, -2.23)
+use_collision = true
+collision_layer = 1
+material = SubResource("WallMat")
+
+[node name="WallEastDoorSouth" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.18, 2.6, 0.55)
+position = Vector3(2.41, 1.3, -2.225)
+use_collision = true
+collision_layer = 1
+material = SubResource("WallMat")
+
+[node name="WallEastDoorNorth" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.18, 2.6, 3.55)
+position = Vector3(2.41, 1.3, 0.725)
+use_collision = true
+collision_layer = 1
+material = SubResource("WallMat")
+
+[node name="FireplaceLeftPillar" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.24, 1.08, 0.34)
+position = Vector3(-0.66, 0.54, 2.05)
+use_collision = true
+collision_layer = 1
+material = SubResource("FireplaceMat")
+
+[node name="FireplaceRightPillar" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.24, 1.08, 0.34)
+position = Vector3(0.66, 0.54, 2.05)
+use_collision = true
+collision_layer = 1
+material = SubResource("FireplaceMat")
+
+[node name="FireplaceMantle" type="CSGBox3D" parent="Blockout"]
+size = Vector3(1.55, 0.14, 0.42)
+position = Vector3(0, 1.16, 2.05)
+use_collision = true
+collision_layer = 1
+material = SubResource("FireplaceMat")
+
+[node name="FireplaceHearth" type="CSGBox3D" parent="Blockout"]
+size = Vector3(1.55, 0.16, 0.62)
+position = Vector3(0, 0.08, 1.72)
+use_collision = true
+collision_layer = 1
+material = SubResource("FireplaceMat")
+
+[node name="WallSconce" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.08, 0.24, 0.18)
+position = Vector3(2.24, 1.95, 0.35)
+use_collision = false
+collision_layer = 0
+material = SubResource("FixtureMat")
+
+[node name="Zone" type="Area3D" parent="."]
+collision_layer = 4
+collision_mask = 0
+monitoring = true
+monitorable = true
+metadata/room_id = &"living"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Zone"]
+position = Vector3(0, 1.3, 0)
+shape = SubResource("ZoneShape")
+
+[node name="Anchors" type="Node3D" parent="."]
+
+[node name="Items" type="Node3D" parent="."]
+
+[node name="PracticalLights" type="Node3D" parent="."]
+
+[node name="LivingWallSconce" type="OmniLight3D" parent="PracticalLights"]
+position = Vector3(2.16, 1.92, 0.35)
+light_color = Color(1, 0.73, 0.47, 1)
+light_energy = 0.34
+omni_range = 4.6
+omni_attenuation = 1.7
+shadow_enabled = false
+
+[node name="living_anchor_piano" type="Marker3D" parent="Anchors"]
+position = Vector3(-1.72, 0.38, 1.15)
+
+[node name="living_anchor_fireplace_item" type="Marker3D" parent="Anchors"]
+position = Vector3(0, 0.50, 1.93)
+
+[node name="living_anchor_fireplace" type="Marker3D" parent="Anchors"]
+position = Vector3(0, 0.50, 1.22)
+
+[node name="living_anchor_armchairs" type="Marker3D" parent="Anchors"]
+position = Vector3(0, 0.38, 0.55)
+
+[node name="living_anchor_sofa" type="Marker3D" parent="Anchors"]
+position = Vector3(0, 0.38, -1.35)
+
+[node name="living_anchor_sideboard" type="Marker3D" parent="Anchors"]
+position = Vector3(1.45, 0.42, 0.95)
+
+[node name="living_anchor_rug" type="Marker3D" parent="Anchors"]
+position = Vector3(0, 0.03, -0.20)
+
+[node name="living_anchor_frames" type="Marker3D" parent="Anchors"]
+position = Vector3(0, 1.70, 2.07)
+
+[node name="living_anchor_sheet_music" type="Marker3D" parent="Anchors"]
+position = Vector3(-1.28, 0.88, 1.12)
+
+[node name="living_anchor_radio" type="Marker3D" parent="Anchors"]
+position = Vector3(1.45, 0.94, 0.95)
+
+[node name="living_anchor_bookcase" type="Marker3D" parent="Anchors"]
+position = Vector3(1.95, 0.95, -0.55)
+
+[node name="living_anchor_curtains" type="Marker3D" parent="Anchors"]
+position = Vector3(-2.06, 1.20, 0.75)
+
+[node name="living_anchor_workbasket" type="Marker3D" parent="Anchors"]
+position = Vector3(-1.35, 0.24, -1.18)
+
+[node name="living_anchor_curtain_part" type="Marker3D" parent="Anchors"]
+position = Vector3(-2.06, 1.30, -0.65)
+
+[node name="living_anchor_portrait_louis" type="Marker3D" parent="Anchors"]
+position = Vector3(1.15, 1.58, 2.07)
+
+[node name="StandaloneLights" type="Node3D" parent="."]
+
+[node name="PreviewOmni" type="OmniLight3D" parent="StandaloneLights"]
+position = Vector3(0, 2.2, 0)
+light_color = Color(0.83, 0.81, 0.75, 1)
+light_energy = 0.9
+omni_range = 9.0
+shadow_enabled = false
+
+[node name="StandaloneCamera" type="Camera3D" parent="."]
+position = Vector3(0, 1.55, -2.05)
+rotation_degrees = Vector3(0, 180, 0)
+current = false
+fov = 72.0
+near = 0.05
+far = 80.0
