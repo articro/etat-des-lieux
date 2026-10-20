@@ -25,11 +25,9 @@ func _configure_standalone_preview() -> void:
 		_standalone_camera.current = standalone
 	elif standalone:
 		push_warning("House : caméra de prévisualisation absente.")
-	# HOTFIX Architecte 17/10 : tant que Niveau n'a pas livré l'éclairage de jeu
-	# (N-6 : WorldEnvironment + lumières pratiques), les lumières de prévisualisation
-	# restent allumées en jeu. À retirer quand N-6 est livré.
+	# Les lumières de prévisualisation F6 restent séparées de l'éclairage de jeu.
 	if _standalone_lights != null:
-		_standalone_lights.visible = true
+		_standalone_lights.visible = standalone
 
 
 ## Point d'apparition du joueur (contrat ARCHITECTURE §7) : Marker3D "PlayerSpawn".

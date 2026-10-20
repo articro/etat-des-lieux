@@ -171,7 +171,7 @@
 | N-3 | `house.tscn` + `house.gd` : instanciation des Items depuis InventoryManager, écoute `item_moved`, `item_revealed` | M1 | DONE |
 | N-4 | `item.tscn` générique + `item.gd` (`is_in_frustum`, surbrillance, inspection) | M1 | DONE |
 | N-5 | Blockout des 11 zones restantes | M2 | TODO |
-| N-6 | Éclairage de base (lumière basse, fog volumétrique, budget ARCHITECTURE §8) | M2 | TODO |
+| N-6 | Éclairage de base (lumière basse, fog volumétrique, budget ARCHITECTURE §8) | M2 | DONE |
 | N-7 | Assets finaux : sourcing CC0/CC-BY (Poly Haven, Sketchfab, Kenney, ambientCG), import, matériaux, CREDITS.md | M4 | TODO |
 | N-8 | Set-dressing final des 13 zones (1998 rural, voir GDD §8) | M4 | TODO |
 | N-9 | Modèles des ~212 objets (assets libres, variantes par matériau, placeholders acceptés jusqu'à M4) | M3→M4 | TODO |
@@ -187,6 +187,8 @@
 - **2026-10-17 — N-4 DONE.** Prefab gris avec collider enfant, groupe `items`, couverture écran, interaction et surbrillance; l’API d’inspection renvoie id et clés/textes traduits.
   Les 60 `.tres` ont `scene` + `anchors[0]` renseignés (aucun autre champ de données modifié); le poêle a son prefab dédié `burn` / 8 s. Ancres documentées dans `docs/anchors.md`.
 - **Tests Niveau.** `tests/house/house_tests.tscn` : 47 assertions, 0 échec (dimensions/zones, ancres, 26 instanciations, révélation, déplacement, inspection, frustum, Présence et poêle). Vérification ItemData : 60/60 conformes, seuls `scene`/`anchors` modifiés.
+- **2026-10-20 — N-6 DONE.** `house.tscn` reçoit un environnement ACES très sombre, fog de distance + volumétrique léger; plafonnier faible du hall, lampe de bureau et ampoule nue en cave.
+- Éclairage pratique de jeu séparé de la preview F6; 2 Omni avec ombres (hall/bureau), cave sans ombres. `house.gd` restaure `visible = standalone`; `PlayerSpawn` conservé. `check.sh` vert, tests Niveau : 59 assertions, 0 échec.
 
 ### HANDOFF — Niveau (17 oct. 2026, session 2)
 
@@ -562,7 +564,7 @@
   erreur). Pour `validate_data.gd` (Q-2) : `AudioManager.sfx_is_available(&"id")` permet de vérifier
   que chaque `sfx:` des règles résout bien vers un fichier. — **À FAIRE (QA)**
 
-- `[Architecte → Niveau]` (17/10, **playtest utilisateur, BLOQUANT**) En F5 : **noir total** (les lumières sont dans `StandaloneLights`, masqué en jeu) et **chute dans le vide** par la porte cuisine / porte d'entrée (pièces non construites). HOTFIX Architecte sur main : `PlayerSpawn` + `player_spawn_transform()` dans house, `TempBlockers` (2 CSG avec collision sur ces 2 portes), lumières de preview forcées visibles. **À toi (priorité avant cuisine/salon)** : N-6 maintenant = `WorldEnvironment` (ambiance très sombre, fog volumétrique léger, tonemap) + lumières pratiques crédibles par pièce (plafonnier faible du hall, lampe de bureau, ampoule nue cave) avec ombres sur ≤ 4 lumières ; ensuite retire le hotfix dans `house.gd` (ligne `_standalone_lights.visible = true`) et remets `= standalone`. Chaque nouvelle pièce : retirer son TempBlocker et boucher ses propres portes vers les pièces manquantes. Voir ARCHITECTURE §7 « Apparition du joueur ». — TODO
+- `[Architecte → Niveau]` (17/10, **playtest utilisateur, BLOQUANT**) En F5 : **noir total** (les lumières étaient dans `StandaloneLights`, masqué en jeu) et **chute dans le vide** par les portes cuisine / entrée (pièces non construites). Hotfix Architecte : `PlayerSpawn` + `player_spawn_transform()` dans house, `TempBlockers` sur ces portes. **N-6 DONE (20/10)** : `WorldEnvironment` sombre (ACES, fog de distance et volumétrique) + pratiques hall/bureau/cave; ombres de 2 Omni pratiques; hotfix preview retiré (`visible = standalone`). **En cours N-5/N-10** : supprimer chaque bloqueur quand cuisine/salon/extérieur sont construits et maintenir collision sur toute ouverture encore absente. `PlayerSpawn` préservé. — EN COURS (N-5/N-10)
 - `[Architecte → Systèmes]` (17/10) `main.gd` modifié par l'Architecte (hotfix) : le joueur est placé via `house_node.call("player_spawn_transform")`. À conserver. — INFO
 
 ## Journal des décisions

@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://scenes/house/room.gd" id="1_room"]
 [ext_resource type="PackedScene" path="res://scenes/player/presence.tscn" id="2_presence"]
@@ -18,6 +18,13 @@ roughness = 0.98
 [sub_resource type="StandardMaterial3D" id="PropMat"]
 albedo_color = Color(0.43, 0.41, 0.37, 1)
 roughness = 0.95
+
+[sub_resource type="StandardMaterial3D" id="BulbMat"]
+albedo_color = Color(0.86, 0.63, 0.34, 1)
+roughness = 0.44
+emission_enabled = true
+emission = Color(1, 0.58, 0.21, 1)
+emission_energy_multiplier = 0.7
 
 [sub_resource type="BoxShape3D" id="ZoneShape"]
 size = Vector3(6, 2.1, 4)
@@ -197,6 +204,32 @@ shape = SubResource("ZoneShape")
 [node name="Anchors" type="Node3D" parent="."]
 
 [node name="Items" type="Node3D" parent="."]
+
+[node name="PracticalLights" type="Node3D" parent="."]
+
+[node name="BareBulbCord" type="CSGBox3D" parent="PracticalLights"]
+size = Vector3(0.025, 0.18, 0.025)
+position = Vector3(0, 2.01, 0)
+use_collision = false
+collision_layer = 0
+material = SubResource("PropMat")
+
+[node name="BareBulb" type="CSGSphere3D" parent="PracticalLights"]
+radius = 0.08
+radial_segments = 12
+rings = 6
+position = Vector3(0, 1.88, 0)
+use_collision = false
+collision_layer = 0
+material = SubResource("BulbMat")
+
+[node name="CellarBareBulbLight" type="OmniLight3D" parent="PracticalLights"]
+position = Vector3(0, 1.88, 0)
+light_color = Color(1, 0.74, 0.48, 1)
+light_energy = 0.48
+omni_range = 4.8
+omni_attenuation = 1.5
+shadow_enabled = false
 
 [node name="cellar_anchor_shelves" type="Marker3D" parent="Anchors"]
 position = Vector3(2.20, 0.90, 1.18)

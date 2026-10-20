@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scenes/house/room.gd" id="1_room"]
 
@@ -21,6 +21,13 @@ roughness = 0.9
 [sub_resource type="StandardMaterial3D" id="DarkMat"]
 albedo_color = Color(0.015, 0.016, 0.018, 1)
 roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="PracticalFixtureMat"]
+albedo_color = Color(0.63, 0.47, 0.27, 1)
+roughness = 0.62
+emission_enabled = true
+emission = Color(0.75, 0.39, 0.12, 1)
+emission_energy_multiplier = 0.25
 
 [sub_resource type="BoxShape3D" id="ZoneShape"]
 size = Vector3(3, 2.6, 9)
@@ -241,6 +248,23 @@ shape = SubResource("ZoneShape")
 [node name="Anchors" type="Node3D" parent="."]
 
 [node name="Items" type="Node3D" parent="."]
+
+[node name="PracticalLights" type="Node3D" parent="."]
+
+[node name="CeilingFixture" type="CSGBox3D" parent="PracticalLights"]
+size = Vector3(0.48, 0.06, 0.26)
+position = Vector3(0, 2.56, 0.2)
+use_collision = false
+collision_layer = 0
+material = SubResource("PracticalFixtureMat")
+
+[node name="HallCeilingLight" type="OmniLight3D" parent="PracticalLights"]
+position = Vector3(0, 2.43, 0.2)
+light_color = Color(1, 0.78, 0.58, 1)
+light_energy = 0.58
+omni_range = 6.2
+omni_attenuation = 1.4
+shadow_enabled = true
 
 [node name="hall_anchor_console_table" type="Marker3D" parent="Anchors"]
 position = Vector3(-1.05, 0.38, -3.4)

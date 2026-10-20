@@ -22,6 +22,7 @@ func _ready() -> void:
 
 	_test_room_zones()
 	_test_hall_blockout()
+	_test_game_lighting()
 	_test_cellar_integration()
 	_test_item_population_and_reveal()
 	_test_item_move()
@@ -75,6 +76,39 @@ func _test_hall_blockout() -> void:
 	_expect(phone != null and hall.get_node_or_null("Items/hall_answering_machine") != null, "téléphone + répondeur dans le hall")
 	_expect(stairs != null and stairs.global_position.z > 4.5, "ancre d'apparition au sommet des marches condamnées")
 	_expect(camera != null and camera.global_transform.basis.z.z < -0.99, "longue vue du hall orientée depuis l'entrée")
+
+
+func _test_game_lighting() -> void:
+	var world_environment := _house.get_node_or_null("WorldEnvironment") as WorldEnvironment
+	_expect(world_environment != null and world_environment.environment != null, "WorldEnvironment de la maison présent")
+	if world_environment == null or world_environment.environment == null:
+		return
+	var environment := world_environment.environment
+	_expect(environment.background_color.r < 0.03 and environment.ambient_light_energy < 0.3, "ambiance globale très sombre")
+	_expect(environment.tonemap_mode == Environment.TONE_MAPPER_ACES, "tonemap ACES actif")
+	_expect(environment.fog_enabled and environment.volumetric_fog_enabled, "fog de distance et volumétrique activés")
+
+	var hall_light := _house.get_node_or_null("Rooms/Hall/PracticalLights/HallCeilingLight") as OmniLight3D
+	var study_light := _house.get_node_or_null("Rooms/Study/PracticalLights/StudyDeskLamp") as OmniLight3D
+	var cellar_light := _house.get_node_or_null("Rooms/Cellar/PracticalLights/CellarBareBulbLight") as OmniLight3D
+	_expect(hall_light != null and hall_light.shadow_enabled and hall_light.light_energy < 1.0, "plafonnier bas du hall avec ombres")
+	_expect(study_light != null and study_light.shadow_enabled and study_light.light_energy < 1.0, "lampe de bureau faible avec ombres")
+	_expect(cellar_light != null and not cellar_light.shadow_enabled, "ampoule nue de cave sans ombres")
+	var shadowed_omni_count: int = 0
+	for light_node: Node in _house.find_children("*", "OmniLight3D", true, false):
+		var omni := light_node as OmniLight3D
+		if omni != null and omni.shadow_enabled:
+			shadowed_omni_count += 1
+	_expect(shadowed_omni_count <= 4, "budget des OmniLight avec ombres respecté")
+
+	var preview_lights := _house.get_node_or_null("StandaloneLights") as Node3D
+	var hall_preview_lights := _house.get_node_or_null("Rooms/Hall/StandaloneLights") as Node3D
+	_expect(preview_lights != null and not preview_lights.visible, "lumières de preview house masquées en jeu")
+	_expect(hall_preview_lights != null and not hall_preview_lights.visible, "lumières de preview hall masquées en jeu")
+	var spawn := _house.get_node_or_null("PlayerSpawn") as Marker3D
+	_expect(spawn != null and _house.has_method("player_spawn_transform"), "contrat PlayerSpawn préservé")
+	if spawn != null and _house.has_method("player_spawn_transform"):
+		_expect(_house.call("player_spawn_transform") == spawn.global_transform, "transform de spawn fourni par house.gd")
 
 
 func _test_cellar_integration() -> void:
