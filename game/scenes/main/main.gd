@@ -119,10 +119,12 @@ func _start_game(from_save: bool) -> void:
 	_ending_shown = false
 	# La maison et le joueur d'abord : ils doivent être dans l'arbre avant le
 	# rattrapage post-chargement (game_loaded) pour appliquer les événements.
-	_instance_optional(HOUSE_SCENE, _game_root)
+	var house_node := _instance_optional(HOUSE_SCENE, _game_root)
 	var player_node := _instance_optional(PLAYER_SCENE, _game_root)
 	if player_node is Node3D:
 		_player = player_node as Node3D
+		if house_node != null and house_node.has_method("player_spawn_transform"):
+			_player.global_transform = house_node.call("player_spawn_transform")
 		_player_start = _player.global_transform
 	else:
 		_player = null

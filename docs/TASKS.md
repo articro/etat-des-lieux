@@ -29,6 +29,7 @@
 | A0-3 | Dépôt GitHub `articro/etat-des-lieux`, push initial, 6 branches agents | DONE |
 | A0-7 | Intégration Narration session 1 (60 objets, 10 docs, 18 règles) sur main, traduction enregistrée | DONE |
 | A0-8 | Intégration Narration session 2 (relecture, itch_textes.md) | DONE |
+| A0-15 | HOTFIX playtest J1 : PlayerSpawn, TempBlockers, lumières en jeu ; contrat §7 complété | DONE |
 | A0-14 | Intégration Audio S1 (67 OGG, 52 ids, AudioManager complet) — les 6 modules ont livré leur priorité V1 en J1 | DONE |
 | A0-13 | Intégration Niveau S1 (hall/bureau/cave, 47 tests) + Systèmes S3 + Gameplay S3 + UI S2 — 372 assertions vertes | DONE |
 | A0-12 | Intégration UI S1 (92 tests) + Systèmes S2 + Gameplay S2 ; signal interact_target_changed ; API all_items | DONE |
@@ -560,6 +561,9 @@
   vérifie les 5 matériaux, émet tous les signaux, vérifie la dégradation, échoue sur la moindre
   erreur). Pour `validate_data.gd` (Q-2) : `AudioManager.sfx_is_available(&"id")` permet de vérifier
   que chaque `sfx:` des règles résout bien vers un fichier. — **À FAIRE (QA)**
+
+- `[Architecte → Niveau]` (17/10, **playtest utilisateur, BLOQUANT**) En F5 : **noir total** (les lumières sont dans `StandaloneLights`, masqué en jeu) et **chute dans le vide** par la porte cuisine / porte d'entrée (pièces non construites). HOTFIX Architecte sur main : `PlayerSpawn` + `player_spawn_transform()` dans house, `TempBlockers` (2 CSG avec collision sur ces 2 portes), lumières de preview forcées visibles. **À toi (priorité avant cuisine/salon)** : N-6 maintenant = `WorldEnvironment` (ambiance très sombre, fog volumétrique léger, tonemap) + lumières pratiques crédibles par pièce (plafonnier faible du hall, lampe de bureau, ampoule nue cave) avec ombres sur ≤ 4 lumières ; ensuite retire le hotfix dans `house.gd` (ligne `_standalone_lights.visible = true`) et remets `= standalone`. Chaque nouvelle pièce : retirer son TempBlocker et boucher ses propres portes vers les pièces manquantes. Voir ARCHITECTURE §7 « Apparition du joueur ». — TODO
+- `[Architecte → Systèmes]` (17/10) `main.gd` modifié par l'Architecte (hotfix) : le joueur est placé via `house_node.call("player_spawn_transform")`. À conserver. — INFO
 
 ## Journal des décisions
 

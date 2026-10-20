@@ -253,6 +253,11 @@ Mini-langage de condition (implémenté dans `house_director.gd`, fonction `eval
 - Chaque `rooms/<room_id>.tscn` contient un nœud `Anchors` avec des `Marker3D` nommés, et un nœud `Items` où les `Item` sont instanciés **au chargement** par `house.gd` à partir de `InventoryManager.get_items_in_room()`. Le Niveau ne place pas les objets à la main : il place les **ancres**. Le lien objet↔ancre par défaut est dans `ItemData.anchors[0]`.
 - Nœud `Item` (`scenes/items/item.gd`) : `class_name Item extends Node3D`, `@export var data: ItemData`, groupe `"items"`, expose `func is_in_frustum(cam: Camera3D) -> float` (couverture écran estimée).
 
+### Apparition du joueur et pièces non construites
+- `house.tscn` contient un `Marker3D` nommé **`PlayerSpawn`** (dans le hall, près de la porte d'entrée, regardant vers l'intérieur) et `house.gd` expose `func player_spawn_transform() -> Transform3D`. `main.gd` y place le joueur après instanciation.
+- **Toute ouverture vers une pièce non encore construite doit être bouchée** (porte fermée en CSG avec collision) : le joueur ne doit jamais pouvoir sortir du monde. Le nœud `TempBlockers` de `house.tscn` sert à ça ; Niveau retire chaque bloqueur quand la pièce correspondante arrive.
+- **L'éclairage de jeu** (WorldEnvironment + lumières pratiques) est obligatoire dans `house.tscn` / les rooms, distinct des lumières de prévisualisation F6.
+
 ### Options / réglages
 - L'UI (menu Options) persiste les réglages dans `user://settings.cfg` (ConfigFile) et émet `EventBus.settings_changed(key, value)` à chaque changement **et une fois pour chaque clé au démarrage** (`UiSettings.apply_all()`, idempotent, appelé par le menu principal et par le HUD — `main.tscn` n'a rien à appeler).
 - Les consommateurs (Player : sensibilité, FOV, lampe forte ; AudioManager : volumes ; etc.) écoutent ce signal. Pas d'API directe UI → Player.
