@@ -6,6 +6,10 @@
 ## se compose comme une ligne d'inventaire (`INV_LINE_FORMAT` + `..._LINE_NAME`,
 ## numéro sérialisé : 61 pour « Inventaire clos », 1 pour « Cendres »), puis
 ## l'épilogue. Entrée accélère, Échap révèle tout.
+##
+## **Fin Cendres** : la réplique `SUB_DAWN` (« Le jour se lève… », Narration) est portée
+## par cet écran et non par une règle — elle part quand l'épilogue s'écrit, une seule
+## fois, via `EventBus.subtitle_requested` (consigne Architecte du 20/10 soir).
 class_name EndingScreen
 extends Control
 
@@ -19,6 +23,8 @@ const SIZE_PARAGRAPH := 23
 const SIZE_LINE := 28
 const SIZE_EPILOGUE := 16
 const LINE_COLOR := Color(0.62, 0.69, 0.88)
+## Durée de la réplique de l'aube sur la fin Cendres.
+const DAWN_DURATION := 4.0
 
 ## Émis quand tout est affiché (tests).
 signal finished()
@@ -27,6 +33,7 @@ var _ending_id := StringName()
 var _steps: Array[String] = []
 var _styles: Array[int] = []
 var _cursor := -1
+var _dawn_emitted := false
 var _typing := false
 var _tween: Tween
 var _current: Label
@@ -60,6 +67,7 @@ func set_ending_id(ending_id: StringName) -> void:
 	if _column == null:
 		return
 	_ending_id = ending_id
+	_dawn_emitted = false
 	if _title != null:
 		_title.text = _ending_title(ending_id)
 	_build_steps(ending_id)
@@ -136,6 +144,7 @@ func _next_step() -> void:
 	if _cursor >= _steps.size():
 		_show_buttons()
 		return
+	_maybe_dawn(_styles[_cursor])
 	var label := _make_step_label(_styles[_cursor])
 	label.text = _steps[_cursor]
 	label.visible_characters = 0
@@ -146,6 +155,19 @@ func _next_step() -> void:
 	_tween.tween_property(label, "visible_characters", length, maxf(0.35, float(length) * TYPE_SPEED))
 	_tween.tween_interval(STEP_PAUSE)
 	_tween.tween_callback(_next_step)
+
+
+## « Le jour se lève sur du brouillard. Je repars. » — une seule fois, sur la fin
+## Cendres, au moment de l'épilogue. Passée en sous-titre : la boîte de l'écran de fin
+## est déjà dans la scène, et le réglage « sous-titres » reste respecté.
+func _maybe_dawn(style: int) -> void:
+	if _dawn_emitted or style != STYLE_EPILOGUE or _ending_id != &"ashes":
+		return
+	if not UiText.has_key(&"SUB_DAWN"):
+		push_warning("Fin Cendres : clé SUB_DAWN absente — réplique de l'aube ignorée.")
+		return
+	_dawn_emitted = true
+	EventBus.subtitle_requested.emit(&"SUB_DAWN", DAWN_DURATION)
 
 
 func _make_step_label(style: int) -> Label:
@@ -205,6 +227,7 @@ func reveal_all() -> void:
 	_kill_tween()
 	while _cursor + 1 < _steps.size():
 		_cursor += 1
+		_maybe_dawn(_styles[_cursor])
 		var pending := _make_step_label(_styles[_cursor])
 		pending.text = _steps[_cursor]
 	for child: Node in _column.get_children():

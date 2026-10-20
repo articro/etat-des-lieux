@@ -370,6 +370,11 @@ func _test_endings() -> void:
 	var ending := await _instance(ENDING_SCENE) as EndingScreen
 	if ending == null:
 		return
+	# Les répliques demandées pendant la fin (SUB_DAWN, fin Cendres)
+	var spoken: Array[StringName] = []
+	var record := func(key: StringName, _duration: float) -> void:
+		spoken.append(key)
+	EventBus.subtitle_requested.connect(record)
 	ending.set_ending_id(&"closed")
 	var title := ending.get_node_or_null("Center/Column/Title") as Label
 	_check(title != null and title.text == String(TranslationServer.translate(&"ENDING_CLOSED_TITLE")), "titre de la fin close")
@@ -385,6 +390,7 @@ func _test_endings() -> void:
 		)
 	var buttons := ending.get_node_or_null("Center/Column/Buttons") as HBoxContainer
 	_check(buttons != null and buttons.visible, "les boutons apparaissent à la fin")
+	_check(not spoken.has(&"SUB_DAWN"), "la fin close ne joue pas la réplique de l'aube")
 	ending.queue_free()
 	await get_tree().process_frame
 
@@ -396,8 +402,10 @@ func _test_endings() -> void:
 		_check(ashes_texts.size() >= 6, "fin Cendres complète (%d blocs)" % ashes_texts.size())
 		if ashes_texts.size() >= 2:
 			_check(ashes_texts[ashes_texts.size() - 2].begins_with("1."), "la fin Cendres repart à la ligne 1 (%s)" % ashes_texts[ashes_texts.size() - 2])
+		_check(spoken.count(&"SUB_DAWN") == 1, "la fin Cendres joue « Le jour se lève… » une fois (%s)" % str(spoken))
 		ashes.queue_free()
 		await get_tree().process_frame
+	EventBus.subtitle_requested.disconnect(record)
 
 
 # --- Rattrapage après chargement d'une sauvegarde ---

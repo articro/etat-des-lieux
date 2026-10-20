@@ -419,7 +419,9 @@
 **Ce qui marche**
 - **U-11** `subtitle_box.gd` : file FIFO dans `SubtitleBox` (plus de `Timer`, tout passe par un `Tween` par ligne : fondu 0,16 s → durée → fondu 0,5 s → **écart 0,3 s** → ligne suivante). `MAX_QUEUED = 4` lignes en attente ; au-delà, `push_warning` + demande ignorée. `remaining_time()` = temps restant de toute la file (durées cumulées). `hide_line()` vide la file.
 - La lore d'un objet coché n'a pas de chemin privilégié : `hud_hints._show_lore()` appelle `show_line()`, donc elle prend sa place **derrière** les lignes déjà en file (contrat §7). Rien à changer dans `hud_hints.gd`.
-- **Tests** : `res://tests/ui/ui_tests.tscn` = **136 vérifications, 0 échec**, dont 15 pour U-11 (ordre FIFO, non-écrasement, écart de 0,3 s mesuré entre deux lignes, plafond à 4, lore derrière les règles, `hide_line` vide la file). Gameplay 134/0, Niveau 104/0, Audio OK, `check.sh` vert.
+- **Tests** : `res://tests/ui/ui_tests.tscn` = **138 vérifications, 0 échec**, dont 15 pour U-11 et 2 pour `SUB_DAWN` (ordre FIFO, non-écrasement, écart de 0,3 s mesuré entre deux lignes, plafond à 4, lore derrière les règles, `hide_line` vide la file). Gameplay 134/0, Niveau 104/0, Audio OK, `check.sh` vert.
+
+- **SUB_DAWN** (consigne Architecte 20/10 soir) : `ending_screen.gd` émet désormais la réplique de l'aube à l'épilogue de la fin **Cendres** (une fois, 4,0 s). Elle n'existait nulle part dans le code avant ce commit.
 
 **Pièges (nouveaux)**
 1. **Plus de nœud `Hold`** dans `subtitles.tscn` : le minutage est porté par le tween. Ne pas recréer de `Timer` à côté.
@@ -659,6 +661,7 @@
   - **Audio** : validé par l'utilisateur (« immersif »). Rien à faire sauf `typewriter_line` pour le bandeau ✓.
   — TODO (tous)
 
+- `[UI → Architecte]` (2026-10-20 soir) **`SUB_DAWN` : « textes déjà en place » n'était pas exact.** Ta réponse (2) confie `SUB_DAWN` à l'écran de fin côté UI ; au commit `a2fdbd1` **aucun code ne l'émettait** (`grep -rn SUB_DAWN game --include=*.gd` ne renvoyait que mes tests et le banc d'essai) : la réplique n'aurait jamais été jouée. **Câblé dans le même push qu'U-11** : `ending_screen._maybe_dawn()` émet `subtitle_requested(&"SUB_DAWN", 4.0)` quand l'épilogue s'écrit, **fin Cendres uniquement**, une seule fois — y compris si le joueur appuie sur Échap (`reveal_all`), et dans le respect du réglage « sous-titres ». La fin *Inventaire clos* ne la joue pas. Clé absente → warning, pas de crash. +2 vérifications (138 au total). Conséquence pour S-10 : Systèmes n'a plus que `SUB_BURNING` puis `ending_reached(&"ashes")` 4 s plus tard à faire. — FAIT (UI)
 - `[Architecte → tous]` (20/10 soir) **Intégration S-9 / U-10 / G-11 / R-10 sur main** (470 assertions vertes). Réponses aux 3 demandes Narration : (1) **File de sous-titres → UI (U-11, PRIORITÉ)** : `SubtitleBox` empile (FIFO, max 4, durées cumulées, 0,3 s d'écart), les lignes de lore (`item_checked`) passent après les lignes de règles en attente ; (2) **Fin Cendres** → **Systèmes (S-10)** : sur `player_interacted(cellar_stove, burn)`, émettre `subtitle_requested(SUB_BURNING, 4.0)` puis `ending_reached(&"ashes")` **4 s plus tard** ; `SUB_DAWN` est porté par l'écran de fin (UI, textes déjà en place) ; (3) **Triggers `item_moved` et `ending`** ajoutés à HouseRule (Architecte, fait dans la classe) → **Systèmes (S-10)** les implémente ; Narration rebranche « premier objet déplacé » sur `item_moved` once. — TODO (UI, Systèmes, puis Narration)
 
 ## Journal des décisions
