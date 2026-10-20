@@ -13,6 +13,7 @@ var _lines: Array[Array] = []
 var _revealed: Array[StringName] = []
 var _attention_log: Array[float] = []
 var _presence_log: Array[StringName] = []
+var _subtitles: Array[Array] = []
 
 @onready var _label: Label = $Label
 
@@ -27,6 +28,7 @@ func _ready() -> void:
 	EventBus.item_revealed.connect(func(id: StringName) -> void: _revealed.append(id))
 	EventBus.house_attention_changed.connect(func(value: float) -> void: _attention_log.append(value))
 	EventBus.presence_state_changed.connect(func(state: StringName) -> void: _presence_log.append(state))
+	EventBus.subtitle_requested.connect(func(key: StringName, duration: float) -> void: _subtitles.append([key, duration]))
 
 	_test_parser()
 	_test_rules_and_reveals()
@@ -34,6 +36,7 @@ func _ready() -> void:
 	_test_sequencer_ashes()
 	_test_save_roundtrip()
 	_test_move_replay()
+	_test_subtitle_and_reveal()
 	_test_player_caught()
 	_report()
 
@@ -309,6 +312,7 @@ func _reset_scenario() -> void:
 	_revealed.clear()
 	_attention_log.clear()
 	_presence_log.clear()
+	_subtitles.clear()
 
 
 # --- Sauvegarde / chargement (S-5) ---
@@ -375,6 +379,47 @@ func _test_move_replay() -> void:
 		_expect(_moves[0]["id"] == &"t02", "rejeu : bon objet")
 		_expect(_moves[0]["to"] == &"living", "rejeu : bonne pièce")
 		_expect(_moves[0]["anchor"] == &"anchor_replay", "rejeu : bonne ancre")
+
+
+# --- Actions subtitle: / reveal: (S-9, playtest J4) ---
+
+func _test_subtitle_and_reveal() -> void:
+	_reset_scenario()
+	_register_items(6)
+	var phantom := ItemData.new()
+	phantom.id = &"t_sub_phantom"
+	phantom.list_index = 7
+	phantom.room_id = &"hall"
+	phantom.is_phantom = true
+	InventoryManager._register_item(phantom)
+
+	var rule := HouseRule.new()
+	rule.id = &"test_rule_sub"
+	rule.trigger = "doc_read"
+	rule.trigger_param = "sub_doc"
+	rule.actions = ["subtitle:SUB_TEST_A:2.5", "subtitle:SUB_TEST_B", "reveal:t_sub_phantom"]
+	rule.once = true
+	HouseDirector.register_rule(rule)
+
+	DocumentLibrary.mark_read(&"sub_doc")
+	_expect(_subtitles.size() == 2, "actions subtitle émises")
+	if _subtitles.size() == 2:
+		_expect(_subtitles[0][0] == &"SUB_TEST_A" and is_equal_approx(float(_subtitles[0][1]), 2.5), "subtitle:clé:durée")
+		_expect(_subtitles[1][0] == &"SUB_TEST_B" and is_equal_approx(float(_subtitles[1][1]), HouseDirector.SUBTITLE_DEFAULT_DURATION), "subtitle:clé = durée par défaut")
+	_expect(&"t_sub_phantom" in _revealed, "action reveal: révèle le fantôme")
+	_expect(InventoryManager.is_present(&"t_sub_phantom"), "fantôme présent après reveal:")
+
+	# Actions mal formées : warning à l'enregistrement, aucun crash, rien d'émis.
+	_subtitles.clear()
+	var bad_rule := HouseRule.new()
+	bad_rule.id = &"test_rule_bad_sub"
+	bad_rule.trigger = "doc_read"
+	bad_rule.trigger_param = "bad_doc"
+	bad_rule.actions = ["subtitle:", "subtitle:SUB_C:pas_un_nombre"]
+	bad_rule.once = true
+	HouseDirector.register_rule(bad_rule)
+	DocumentLibrary.mark_read(&"bad_doc")
+	_expect(_subtitles.is_empty(), "actions subtitle invalides ignorées sans crash")
 
 
 # --- Player caught (GDD §4.4) : téléportation à l'entrée + une coche au hasard ---

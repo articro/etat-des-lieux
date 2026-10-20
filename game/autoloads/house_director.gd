@@ -18,7 +18,9 @@ const KNOWN_TRIGGERS: Array[String] = [
 	"room_left", "room_entered", "progress", "attention_above",
 	"doc_read", "flash_count", "idle", "item_checked", "noise",
 ]
-const KNOWN_ACTIONS: Array[String] = ["move_item", "event", "attention", "presence", "sfx"]
+const KNOWN_ACTIONS: Array[String] = ["move_item", "event", "attention", "presence", "sfx", "subtitle", "reveal"]
+## Durée par défaut d'un sous-titre si `subtitle:<clé>` n'en précise pas (S-9).
+const SUBTITLE_DEFAULT_DURATION := 3.0
 
 ## Séquenceur V1 (PLAN_HALLOWEEN §1) : calme 0-20, inquiétude 20-45, cave 45-60.
 const THRESHOLD_ACT2 := 20
@@ -309,6 +311,22 @@ func _execute_action(rule: HouseRule, action: String) -> void:
 				push_error("HouseDirector : sfx attend 2 parties '%s' (règle %s)." % [action, rule.id])
 				return
 			_play_sfx(StringName(parts[1]))
+		"subtitle":
+			if parts.size() < 2 or parts.size() > 3 or parts[1].is_empty():
+				push_error("HouseDirector : subtitle attend '<clé>[:<durée>]' '%s' (règle %s)." % [action, rule.id])
+				return
+			var duration := SUBTITLE_DEFAULT_DURATION
+			if parts.size() == 3:
+				if not parts[2].strip_edges().is_valid_float():
+					push_error("HouseDirector : durée de sous-titre invalide '%s' (règle %s)." % [action, rule.id])
+					return
+				duration = parts[2].to_float()
+			EventBus.subtitle_requested.emit(StringName(parts[1]), duration)
+		"reveal":
+			if parts.size() != 2:
+				push_error("HouseDirector : reveal attend 2 parties '%s' (règle %s)." % [action, rule.id])
+				return
+			InventoryManager.reveal_item(StringName(parts[1]))
 		_:
 			push_error("HouseDirector : action inconnue '%s' (règle %s)." % [action, rule.id])
 
@@ -353,6 +371,10 @@ func _action_is_valid(action: String) -> bool:
 	match parts[0]:
 		"move_item":
 			return parts.size() == 4
+		"subtitle":
+			if parts.size() < 2 or parts.size() > 3 or parts[1].is_empty():
+				return false
+			return parts.size() == 2 or parts[2].strip_edges().is_valid_float()
 		_:
 			return parts.size() == 2
 
