@@ -221,7 +221,7 @@
 - Le sandbox est headless : aucune validation visuelle F5 n'a été faite. À faire côté Architecte : playtest du niveau éclairé, fog, densité visuelle et circulation.
 - La trappe s'ouvre par événement; montée/descente réelle de l'échelle raide non vérifiée en F5. Le Gameplay n'expose pas de contrôleur d'escalade dédié.
 - Appentis non construit : exclu par `PLAN_HALLOWEEN` (extérieur V1 minimal). Habillage/assets N-7/N-8/N-9 restent hors de ce blockout.
-- Commits sur `agent/level`, pas de merge main. `git push origin agent/level` a échoué faute d'identifiants HTTPS dans le sandbox; push en attente d'une authentification utilisateur. Aucun PAT n'a été écrit dans les fichiers.
+- Commits Niveau `f08ea17` (N-6) et `22da7bf` (N-5/N-10) sur `agent/level`, sans merge main. Après vérifications vertes, `origin/agent/level` a été poussé jusqu'à `22da7bf`; l'authentification utilisateur n'a été utilisée que dans l'URL de la commande `git push`, sans être enregistrée dans le workspace.
 
 ## Module Narration `[Narration]` — `data/`
 
