@@ -2,7 +2,7 @@
 ##
 ## Émet des signaux factices (`EventBus`) et appelle les API publiques des autoloads
 ## pour exercer carnet, coches, photos, documents, sous-titres, HUD, pause et les
-## deux fins — sans joueur ni maison. Touches 1 à 7 (actions `ui_test_*` créées ici
+## deux fins — sans joueur ni maison. Touches 1 à 8 (actions `ui_test_*` créées ici
 ## à l'exécution, comme le filet de sécurité `input_actions.gd` du Gameplay).
 extends Node
 
@@ -16,6 +16,7 @@ const SUB_KEYS: Array[StringName] = [&"SUB_TAPE", &"SUB_DRAWER_OPENS", &"SUB_PRE
 const TEST_ACTIONS: Array[StringName] = [
 	&"ui_test_check", &"ui_test_line", &"ui_test_photo", &"ui_test_document",
 	&"ui_test_subtitle", &"ui_test_ending_closed", &"ui_test_ending_ashes",
+	&"ui_test_target",
 ]
 
 var _ending: EndingScreen
@@ -23,6 +24,7 @@ var _doc_index := 0
 var _sub_index := 0
 var _photo_index := 0
 var _items: Array[ItemData] = []
+var _target_on := false
 
 
 func _ready() -> void:
@@ -58,6 +60,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		_show_ending(&"closed")
 	elif event.is_action_pressed(&"ui_test_ending_ashes"):
 		_show_ending(&"ashes")
+	elif event.is_action_pressed(&"ui_test_target"):
+		_toggle_target()
 	else:
 		return
 	get_viewport().set_input_as_handled()
@@ -73,6 +77,24 @@ func _check_next() -> void:
 		print("coché : %s (%s)" % [item.id, "ok" if ok else "refusé"])
 		return
 	print("plus aucun objet à cocher")
+
+
+## U-10 : simule l'arrivée sur un objet (libellé + aide « photographier »), puis le quitte.
+func _toggle_target() -> void:
+	if _target_on:
+		_target_on = false
+		EventBus.interact_target_changed.emit(StringName(), StringName())
+		print("cible : aucune")
+		return
+	for item: ItemData in _items:
+		if InventoryManager.is_checked(item.id) or not InventoryManager.is_present(item.id):
+			continue
+		_target_on = true
+		EventBus.interact_target_changed.emit(item.id, &"pickup")
+		EventBus.player_interacted.emit(item.id, &"pickup")
+		print("cible : %s" % item.id)
+		return
+	print("plus aucun objet à viser")
 
 
 func _emit_photo() -> void:

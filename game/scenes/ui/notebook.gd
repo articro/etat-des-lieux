@@ -299,10 +299,7 @@ func _make_item_line(item: ItemData) -> Control:
 
 ## « 23. Pendule arrêtée, 3 h 10 » — format fourni par Narration (INV_LINE_FORMAT).
 func _line_text(index: int, item_name: String) -> String:
-	var text := UiText.format(&"INV_LINE_FORMAT", {"index": index, "name": item_name})
-	if text == String(&"INV_LINE_FORMAT"):
-		return "%d. %s" % [index, item_name]
-	return text
+	return UiText.inventory_line(index, item_name)
 
 
 func _room_name(room_id: StringName) -> String:

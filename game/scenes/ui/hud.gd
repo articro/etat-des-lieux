@@ -17,6 +17,7 @@ const HOVER_SIGNAL := &"interact_target_changed"
 
 var _film: Label
 var _reticle: Reticle
+var _hints: HudHints
 var _context_tween: Tween
 ## Vrai dès qu'un `interact_target_changed` a été reçu : la cible survolée devient
 ## alors la seule source de la forme du réticule (décision Architecte, 17/10).
@@ -28,6 +29,12 @@ func _ready() -> void:
 	UiSettings.apply_all()
 	_film = get_node_or_null("FilmCounter") as Label
 	_reticle = get_node_or_null("Reticle") as Reticle
+	_hints = get_node_or_null("Hints") as HudHints
+	if _hints != null:
+		# Les lignes de lore passent par la boîte de sous-titres du HUD (U-10).
+		_hints.set_subtitle_box(get_node_or_null("Subtitles") as SubtitleBox)
+	else:
+		push_warning("HUD : retours de lisibilité (U-10) absents.")
 	if _film == null:
 		push_warning("HUD : compteur de films absent — dégradé.")
 	else:
@@ -46,6 +53,11 @@ func _ready() -> void:
 		EventBus.connect(HOVER_SIGNAL, _on_interact_target_changed)
 	else:
 		push_warning("HUD : EventBus.interact_target_changed absent — réticule non contextuel.")
+
+
+## Retours de lisibilité U-10 (tests).
+func hints() -> HudHints:
+	return _hints
 
 
 func film_text() -> String:

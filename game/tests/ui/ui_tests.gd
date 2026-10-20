@@ -45,6 +45,7 @@ func _ready() -> void:
 	await _test_endings()
 	await _test_input_priority()
 	await _test_save_reload()
+	await _test_readability()
 
 	_report()
 
@@ -347,6 +348,106 @@ func _test_save_reload() -> void:
 	_check(notebook.line_count() == 66, "la liste est reconstruite sans doublon (%d lignes)" % notebook.line_count())
 	_check(notebook.photo_count() == 0, "les photos (non persistées) sont vidées")
 	notebook.queue_free()
+	await get_tree().process_frame
+
+
+# --- U-10 : lisibilité et retour joueur (ARCHITECTURE §7) ---
+
+func _test_readability() -> void:
+	print("[Lisibilité U-10]")
+	var hud := await _instance(HUD_SCENE) as HudUi
+	if hud == null:
+		return
+	var hints := hud.hints()
+	var subs := hud.get_node_or_null("Subtitles") as SubtitleBox
+	_check(hints != null, "retours de lisibilité présents dans le HUD")
+	if hints == null:
+		hud.queue_free()
+		return
+	UiSettings.set_value(&"subtitles", true)
+
+	# 1. Libellé 1973 sous le réticule
+	var item := InventoryManager.get_item(&"hall_barometer")
+	_check(item != null and not InventoryManager.is_checked(item.id), "objet de test non coché au départ")
+	EventBus.interact_target_changed.emit(&"hall_barometer", &"pickup")
+	await get_tree().process_frame
+	_check(hints.target_visible(), "le libellé apparaît sous le réticule")
+	_check(
+		hints.target_text() == UiText.inventory_line(item.list_index, String(tr(item.label_key))),
+		"libellé 1973 + numéro de ligne (%s)" % hints.target_text()
+	)
+	_check(not hints.target_state_visible(), "pas d'indicateur « déjà inventorié » tant qu'il n'est pas coché")
+
+	# Plus de cible → plus de libellé
+	EventBus.interact_target_changed.emit(StringName(), StringName())
+	await get_tree().process_frame
+	_check(not hints.target_visible(), "plus de cible → libellé effacé")
+
+	# 3. E sur un objet → aide « photographier pour inventorier »
+	EventBus.interact_target_changed.emit(&"hall_barometer", &"pickup")
+	EventBus.player_interacted.emit(&"hall_barometer", &"pickup")
+	await get_tree().process_frame
+	_check(hints.hint_visible(), "aide « photographier » affichée sur E (pickup)")
+	_check(tr(&"UI_HINT_PHOTOGRAPH") != "UI_HINT_PHOTOGRAPH", "clé UI_HINT_PHOTOGRAPH résolue (%s)" % tr(&"UI_HINT_PHOTOGRAPH"))
+	await _wait(3.4)
+	_check(not hints.hint_visible(), "l'aide s'efface seule après 3 s")
+
+	# 2. Bandeau ✓ puis lore — par le vrai chemin (check_item émet item_checked)
+	_check(InventoryManager.check_item(&"hall_barometer", _fake_photo(&"hall")), "check_item accepte l'objet")
+	await _wait(0.4)
+	var expected := UiText.format(
+		&"UI_CHECK_BANNER", {"index": item.list_index, "label": String(tr(item.label_key))}
+	)
+	_check(hints.banner_text() == expected, "bandeau ✓ (%s)" % hints.banner_text())
+	await _wait(2.6)
+	_check(hints.banner_text().is_empty(), "le bandeau disparaît après 2,5 s")
+	await _wait(1.6)
+	_check(
+		subs != null and subs.current_text() == String(tr(item.lore_key)),
+		"la ligne de lore part en sous-titre 4 s après le coche"
+	)
+
+	# Indicateur « déjà inventorié »
+	EventBus.interact_target_changed.emit(&"hall_barometer", &"pickup")
+	await get_tree().process_frame
+	_check(hints.target_state_visible(), "« déjà inventorié » une fois coché")
+
+	# File d'attente : une photo peut cocher plusieurs objets, jamais deux bandeaux
+	await _wait(5.0)
+	_check(hints.queued_entries() == 0, "la file se vide (%d)" % hints.queued_entries())
+	var second := InventoryManager.get_item(&"hall_doorbell")
+	InventoryManager.check_item(&"hall_doorbell", null)
+	InventoryManager.check_item(&"hall_coat_rack", null)
+	await get_tree().process_frame
+	_check(hints.queued_entries() == 2, "deux bandeaux en file, jamais simultanés (%d)" % hints.queued_entries())
+	_check(
+		hints.banner_text() == UiText.format(
+			&"UI_CHECK_BANNER", {"index": second.list_index, "label": String(tr(second.label_key))}
+		),
+		"le premier bandeau de la file s'affiche (%s)" % hints.banner_text()
+	)
+	await _wait(2.9)
+	_check(hints.queued_entries() == 1, "le second bandeau prend la suite (%d)" % hints.queued_entries())
+	_check(hints.banner_text() != "", "second bandeau affiché (%s)" % hints.banner_text())
+	await _wait(8.5)
+	_check(hints.queued_entries() == 0, "file terminée (%d)" % hints.queued_entries())
+
+	# 4. Rappel « Tab : carnet » après 2 photos, une seule fois
+	_check(hints.notice_text().is_empty(), "aucun rappel avant 2 photographies")
+	EventBus.photo_taken.emit(_fake_photo(&"hall"))
+	await get_tree().process_frame
+	_check(hints.notice_text().is_empty(), "toujours rien après 1 photographie")
+	EventBus.photo_taken.emit(_fake_photo(&"hall"))
+	await get_tree().process_frame
+	_check(hints.notice_text() == tr(&"UI_HINT_NOTEBOOK"), "rappel « %s » après 2 photographies" % hints.notice_text())
+	EventBus.notebook_opened.emit()
+	EventBus.game_loaded.emit()
+	await _wait(5.0)
+	EventBus.photo_taken.emit(_fake_photo(&"hall"))
+	EventBus.photo_taken.emit(_fake_photo(&"hall"))
+	await get_tree().process_frame
+	_check(hints.notice_text().is_empty(), "carnet déjà ouvert → plus de rappel")
+	hud.queue_free()
 	await get_tree().process_frame
 
 
