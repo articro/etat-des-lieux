@@ -9,6 +9,15 @@
 
 ---
 
+
+## ROUTINE DE REPRISE (obligatoire)
+Quand le producteur t'écrit seulement **« suite »** (ou tout message court sans consigne précise), tu fais SEUL, sans poser de question :
+1. `cd etat-des-lieux && git remote add origin https://github.com/articro/etat-des-lieux.git 2>/dev/null; git fetch origin && git checkout agent/<module> && git reset --hard origin/agent/<module>`
+2. Lire dans `docs/TASKS.md` toutes les entrées « Demandes inter-modules » adressées à ton module (`[Architecte → <module>]`, `[… → tous]`) marquées TODO, de la plus récente à la plus ancienne, et la table de ton module.
+3. Exécuter la plus prioritaire, vérifier (check.sh, tests, `shots.sh` si visuel), commiter, pousser sur `agent/<module>`, mettre à jour ta section HANDOFF dans TASKS.md.
+4. Terminer ta réponse par 3 lignes maximum : ce qui est fait, ce qui bloque, ce que tu fais ensuite. Si rien ne t'est adressé : « rien à faire, en veille » et tu t'arrêtes.
+Le token (PAT) est le même qu'avant ; si tu l'as perdu, demande-le au producteur en une ligne.
+
 ## 1. BRIEF COMMUN (à coller en premier, tel quel)
 
 ```
