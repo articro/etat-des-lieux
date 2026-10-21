@@ -434,9 +434,11 @@
 3. `show_line()` est désormais une **demande**, pas un affichage immédiat : tout appelant qui voulait interrompre doit passer par `hide_line()` d'abord.
 4. Le plafond compte les lignes **en attente** (hors ligne affichée) : 5 lignes émises dans la même frame = 1 affichée + 4 en attente, la 6e ignorée.
 
-**Décisions prises seul (à valider)**
-- File unique, sans priorité explicite : la lore « passe après les règles déjà en file » par simple FIFO (une règle arrivée *après* une lore attend derrière elle — non spécifié au contrat, jugé acceptable).
-- Dépasser le plafond **ignore** la nouvelle ligne (warning) plutôt que d'évincer la plus ancienne : mieux vaut perdre une ligne de fin de paquet que désordonner l'onboarding.
+**Décisions VALIDÉES par l'Architecte (20/10 nuit, `[Architecte → UI]`)**
+- File unique, sans priorité explicite : la lore « passe après les règles déjà en file » par simple FIFO ; **une règle arrivée *après* une lore attend derrière elle** (validé).
+- Dépasser le plafond **ignore** la nouvelle ligne (warning) plutôt que d'évincer la plus ancienne (validé).
+
+**État au 20/10 nuit : module UI en veille jusqu'au prochain playtest utilisateur.** Rien d'ouvert côté UI. Chez les autres modules, trois demandes UI restent en attente et ne bloquent rien : `photo_thumb` + `menu_move`/`menu_select` (Audio), la fusion `ui_strings.csv` → `data/strings/fr.csv` (Narration/Architecte), le carnet 3D en main (V2). Reprendre ici au prochain playtest.
 
 ## Module Audio `[Audio]` — `autoloads/audio_manager.gd`, `assets/audio`
 
