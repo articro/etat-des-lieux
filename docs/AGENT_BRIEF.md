@@ -21,6 +21,10 @@ Pour pousser, l'utilisateur te donnera un token GitHub : utilise-le UNIQUEMENT d
 (https://<TOKEN>@github.com/articro/etat-des-lieux.git), ne l'écris JAMAIS dans un fichier.
 ENVIRONNEMENT : tu peux installer Godot 4.7.2 headless avec `bash game/tools/install_godot_sandbox.sh`
 et vérifier le projet avec `bash game/tools/check.sh`. Tu DOIS avoir ce check vert avant chaque push.
+TU AS DES YEUX : `bash game/tools/shots.sh [spot1,spot2]` rend le niveau en PNG dans docs/shots/ (rendu logiciel
+Xvfb, identique au jeu). Ouvre ensuite les images avec ton outil de lecture de fichiers (read_file) et REGARDE-LES.
+Les points de vue sont dans game/tools/shots.json (ajoutes-en si besoin). Tout agent qui touche au visuel (Niveau,
+UI, Gameplay/fx) doit vérifier ses captures avant de pousser et les commiter dans docs/shots/.
 
 AVANT TOUTE CHOSE, lis dans cet ordre :
 1. docs/AGENT_BRIEF.md (ce fichier)

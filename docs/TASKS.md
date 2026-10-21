@@ -29,6 +29,7 @@
 | A0-3 | Dépôt GitHub `articro/etat-des-lieux`, push initial, 6 branches agents | DONE |
 | A0-7 | Intégration Narration session 1 (60 objets, 10 docs, 18 règles) sur main, traduction enregistrée | DONE |
 | A0-8 | Intégration Narration session 2 (relecture, itch_textes.md) | DONE |
+| A0-21 | **Outil de captures d'écran logiciel** (`tools/shots.sh`, Xvfb + Mesa) : les agents voient le rendu. Baseline dans docs/shots/ | DONE |
 | A0-20 | Hygiène débogueur (retour utilisateur) : erreur meta surface par pas, suites gdUnit4 hors parse, unused_signal | DONE |
 | A0-19 | Intégration U-11 (file sous-titres), SUB_DAWN, S-10 (fin Cendres, triggers item_moved/ending) ; arbitrages file | DONE |
 | A0-18 | Intégration vague « lisibilité » (S-9/U-10/G-11/R-10) ; file sous-titres, fin Cendres, triggers item_moved/ending | DONE |
@@ -681,6 +682,9 @@
 - `[Architecte → Niveau]` (21/10) Aucun sol n'a de `metadata/surface` : les pas tombent sur le repli par pièce. Quand tu habilles les sols (N-7), pose `metadata/surface` sur chaque StaticBody/CSG de sol selon `docs/audio_conventions.md` (carrelage cuisine, parquet salon, pierre cave, gravier cour, bois hall/bureau). — TODO
 - `[Architecte → Systèmes]` (21/10) Les 3 suites gdUnit4 de `tests/autoloads/` provoquaient une erreur de parse à l'ouverture de l'éditeur (addon absent en V1). Déplacées en `tests/autoloads/gdunit4_v2/*.gd.txt`. Ne pas recréer de `.gd` dépendant de gdUnit4 en V1. — INFO
 - `[Architecte → tous]` (21/10) `unused_signal` désactivé dans project.godot (faux positifs EventBus). Les warnings « has no static type » restent : typer les boucles `for x: Type in …` quand vous repassez sur un fichier, sans en faire une tâche. — INFO
+
+- `[Architecte → Niveau]` (21/10, **PRIORITÉ ABSOLUE**) **Playtest utilisateur du hall habillé : refusé.** *« Des objets dans les murs, des murs dans des murs, la plupart des objets pas modélisés »* — captures à l'appui : panneaux de papier peint flottants devant des murs gris, blocs gris encastrés, 80 % des objets encore en cubes. **Tu travaillais à l'aveugle : c'est fini.** Nouvel outil `bash game/tools/shots.sh` → PNG dans `docs/shots/` ; ouvre-les avec read_file et regarde. **Méthode imposée** : (1) `shots.sh` → constate les défauts ; (2) corrige UNE pièce ; (3) `shots.sh` à nouveau et compare ; (4) seulement quand c'est propre : check.sh + push avec les PNG. Critères d'acceptation par pièce : aucune géométrie qui traverse une autre ; papier peint/texture **sur le mur lui-même** (pas un panneau devant) ; chaque objet de la liste a une silhouette reconnaissable à 3 m ; proportions réelles ; rien ne flotte ; lumière lisible sans lampe (on doit deviner la pièce). Commence par refaire le hall jusqu'à ce qu'il soit irréprochable, puis bureau, cuisine, salon, cave, cour. L'utilisateur va aussi déposer des assets choisis à la main dans `game/assets/incoming/` (voir `docs/ASSETS_INCOMING.md`) : utilise-les en priorité. — TODO
+- `[Architecte → UI, Gameplay]` (21/10) Vous avez aussi des yeux maintenant (`shots.sh`, voir AGENT_BRIEF). Pas de tâche immédiate. — INFO
 
 ## Journal des décisions
 

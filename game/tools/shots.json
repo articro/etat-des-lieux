@@ -1,0 +1,11 @@
+{
+  "hall_from_door":  {"pos": [0, 1.6, -3.4],  "look": [0, 1.3, 4.0]},
+  "hall_console":    {"pos": [0.6, 1.6, -2.2], "look": [-1.0, 0.9, -3.4]},
+  "hall_to_stairs":  {"pos": [0, 1.6, 1.5],    "look": [0, 1.2, 4.6]},
+  "study_from_door": {"pos": [1.9, 1.6, 0],    "look": [4.5, 1.2, 0.5]},
+  "study_desk":      {"pos": [3.0, 1.6, -1.5], "look": [4.5, 0.9, 0.3]},
+  "kitchen_from_door": {"pos": [-1.9, 1.6, 0], "look": [-4.5, 1.2, 0.5]},
+  "living_from_door":{"pos": [0, 1.6, 4.0],    "look": [0, 1.2, 7.0]},
+  "cellar":          {"pos": [-3.75, -2.0, -1.5], "look": [-3.75, -2.6, 1.5]},
+  "exterior_gate":   {"pos": [0, 1.6, -12.0],  "look": [0, 1.4, -4.0]}
+}
