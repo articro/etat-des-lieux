@@ -109,6 +109,14 @@ func _test_hall_blockout() -> void:
 	_expect(phone != null and hall.get_node_or_null("Items/hall_answering_machine") != null, "téléphone + répondeur dans le hall")
 	_expect(stairs != null and stairs.global_position.z > 4.5, "ancre d'apparition au sommet des marches condamnées")
 	_expect(camera != null and camera.global_transform.basis.z.z < -0.99, "longue vue du hall orientée depuis l'entrée")
+	var mirror_anchor := hall.get_node_or_null("Anchors/hall_anchor_mirror") as Marker3D
+	var barometer_anchor := hall.get_node_or_null("Anchors/hall_anchor_barometer") as Marker3D
+	var key_board_anchor := hall.get_node_or_null("Anchors/hall_anchor_key_board") as Marker3D
+	var coat_rack_anchor := hall.get_node_or_null("Anchors/hall_anchor_coat_rack") as Marker3D
+	_expect(mirror_anchor != null and is_equal_approx(mirror_anchor.rotation_degrees.y, -90.0), "miroir plaqué sur le mur est")
+	_expect(barometer_anchor != null and is_equal_approx(barometer_anchor.rotation_degrees.y, -90.0), "baromètre plaqué sur le mur est")
+	_expect(key_board_anchor != null and is_equal_approx(key_board_anchor.rotation_degrees.y, 90.0), "tableau à clés plaqué sur le mur ouest")
+	_expect(coat_rack_anchor != null and is_equal_approx(coat_rack_anchor.rotation_degrees.y, -90.0), "portemanteau orienté comme son modèle CC0")
 
 
 func _test_hall_visuals() -> void:
@@ -148,22 +156,28 @@ func _test_hall_visuals() -> void:
 
 	var hall := _house.get_node_or_null("Rooms/Hall") as Node3D
 	var wall: CSGBox3D = null
+	var west_wall: CSGBox3D = null
 	var floor: CSGBox3D = null
 	var ceiling: CSGBox3D = null
 	if hall != null:
 		wall = hall.get_node_or_null("Blockout/WallEastFront") as CSGBox3D
+		west_wall = hall.get_node_or_null("Blockout/WallWestMidLower") as CSGBox3D
 		floor = hall.get_node_or_null("Blockout/Floor") as CSGBox3D
 		ceiling = hall.get_node_or_null("Blockout/Ceiling") as CSGBox3D
 	var wall_material: StandardMaterial3D = null
+	var west_wall_material: StandardMaterial3D = null
 	var floor_material: StandardMaterial3D = null
 	var ceiling_material: StandardMaterial3D = null
 	if wall != null:
 		wall_material = wall.material as StandardMaterial3D
+	if west_wall != null:
+		west_wall_material = west_wall.material as StandardMaterial3D
 	if floor != null:
 		floor_material = floor.material as StandardMaterial3D
 	if ceiling != null:
 		ceiling_material = ceiling.material as StandardMaterial3D
-	_expect(wall_material != null and wall_material.albedo_texture != null and wall_material.normal_enabled, "papier peint CC0 texturé du hall")
+	_expect(wall_material != null and wall_material.albedo_texture != null and wall_material.normal_enabled, "papier peint CC0 texturé du mur est du hall")
+	_expect(west_wall_material != null and west_wall_material.albedo_texture != null and west_wall_material.normal_enabled, "papier peint CC0 sur le mur ouest dégagé des doublons cuisine")
 	_expect(floor_material != null and floor_material.albedo_texture != null and floor_material.normal_enabled, "parquet CC0 texturé du hall")
 	_expect(ceiling_material != null and ceiling_material.albedo_texture != null and ceiling_material.normal_enabled, "plâtre CC0 texturé du plafond du hall")
 
@@ -215,6 +229,18 @@ func _test_added_room_blockouts() -> void:
 	if kitchen == null or living == null or exterior == null:
 		return
 
+	var kitchen_standalone := kitchen.get_node_or_null("StandaloneOnly") as Node3D
+	var study := _house.get_node_or_null("Rooms/Study") as Node3D
+	var study_standalone: Node3D = null
+	if study != null:
+		study_standalone = study.get_node_or_null("StandaloneOnly") as Node3D
+	var living_standalone := living.get_node_or_null("StandaloneOnly") as Node3D
+	_expect(kitchen_standalone != null and not kitchen_standalone.visible, "doublons des murs cuisine masqués dans la maison composée")
+	_expect(kitchen_standalone != null and kitchen_standalone.get_node_or_null("WallEastSouth") is CSGBox3D, "mur est cuisine conservé en scène autonome")
+	_expect(kitchen_standalone != null and kitchen_standalone.get_node_or_null("WallEastNorth") is CSGBox3D, "second segment est cuisine conservé en scène autonome")
+	_expect(study_standalone != null and not study_standalone.visible, "doublons du mur ouest du bureau masqués dans la maison composée")
+	_expect(living_standalone != null and not living_standalone.visible, "doublons du mur salon masqués dans la maison composée")
+
 	var kitchen_items := kitchen.get_node_or_null("Items") as Node3D
 	var living_items := living.get_node_or_null("Items") as Node3D
 	var exterior_items := exterior.get_node_or_null("Items") as Node3D
@@ -237,13 +263,37 @@ func _test_added_room_blockouts() -> void:
 		var gate_panel := exterior.get_node_or_null(NodePath("Blockout/" + gate_name)) as CSGBox3D
 		_expect(gate_panel != null and gate_panel.use_collision, "portail fermé avec collision : " + gate_name)
 	var hall_boards := _house.get_node_or_null("Rooms/Hall/Blockout") as Node3D
-	var stair_board: CSGBox3D = null
-	var stairwell_barrier: CSGBox3D = null
+	var lower_crossbar: CSGBox3D = null
+	var upper_crossbar: CSGBox3D = null
+	var upright_left: CSGBox3D = null
+	var upright_right: CSGBox3D = null
 	if hall_boards != null:
-		stair_board = hall_boards.get_node_or_null("BoardVertical") as CSGBox3D
-		stairwell_barrier = hall_boards.get_node_or_null("StairwellBarrier") as CSGBox3D
-	_expect(stair_board != null and stair_board.use_collision, "planches de l'escalier avec collision")
-	_expect(stairwell_barrier != null and stairwell_barrier.use_collision, "fond de l'escalier condamné avec collision")
+		lower_crossbar = hall_boards.get_node_or_null("BarricadeLowerCrossbar") as CSGBox3D
+		upper_crossbar = hall_boards.get_node_or_null("BarricadeUpperCrossbar") as CSGBox3D
+		upright_left = hall_boards.get_node_or_null("BarricadeUprightLeft") as CSGBox3D
+		upright_right = hall_boards.get_node_or_null("BarricadeUprightRight") as CSGBox3D
+	_expect(lower_crossbar != null and lower_crossbar.use_collision, "traverse basse de barricade avec collision")
+	_expect(upper_crossbar != null and upper_crossbar.use_collision, "traverse haute de barricade avec collision")
+	_expect(upright_left != null and upright_left.use_collision, "montant gauche de barricade avec collision")
+	_expect(upright_right != null and upright_right.use_collision, "montant droit de barricade avec collision")
+
+	var stair_preview := _house.get_node_or_null("Rooms/Hall/StairwellPreview") as Node3D
+	var stair_count: int = 0
+	if stair_preview != null:
+		for step_index: int in range(1, 9):
+			var step := stair_preview.get_node_or_null("StairStep%d" % step_index) as CSGBox3D
+			_expect(step != null, "marche réaliste no %d présente" % step_index)
+			if step == null:
+				continue
+			stair_count += 1
+			_expect(step.size.is_equal_approx(Vector3(1.25, 0.165, 0.30)), "marche no %d : giron 30 cm et contremarche 16,5 cm" % step_index)
+			_expect(step.get_meta(&"surface", &"") == &"wood", "surface audio bois sur la marche no %d" % step_index)
+	_expect(stair_count == 8, "huit marches réalistes et jointives dans l'escalier condamné")
+	var landing := _house.get_node_or_null("Rooms/Hall/StairwellPreview/UpperLanding") as CSGBox3D
+	_expect(landing != null and is_equal_approx(landing.position.y, 1.27), "palier supérieur aligné sur la dernière marche")
+	var stairwell_light := _house.get_node_or_null("Rooms/Hall/PracticalLights/StairwellBounceLight") as OmniLight3D
+	_expect(stairwell_light != null and not stairwell_light.shadow_enabled, "éclairage doux de l'escalier sans ombres")
+
 
 
 func _test_cellar_integration() -> void:

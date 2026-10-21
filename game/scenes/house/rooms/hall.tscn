@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://scenes/house/room.gd" id="1_room"]
 [ext_resource type="Material" path="res://assets/materials/hall_wood_floor.tres" id="2_floor_material"]
@@ -6,16 +6,35 @@
 [ext_resource type="Material" path="res://assets/materials/hall_plaster_ceiling.tres" id="4_ceiling_material"]
 
 [sub_resource type="StandardMaterial3D" id="NoteMat"]
-albedo_color = Color(0.52, 0.52, 0.50, 1)
-roughness = 0.95
+albedo_color = Color(0.84, 0.77, 0.62, 1)
+roughness = 0.96
 
-[sub_resource type="StandardMaterial3D" id="PropMat"]
-albedo_color = Color(0.50, 0.48, 0.44, 1)
-roughness = 0.9
+[sub_resource type="StandardMaterial3D" id="PhoneMat"]
+albedo_color = Color(0.075, 0.047, 0.029, 1)
+roughness = 0.34
+metallic = 0.04
 
-[sub_resource type="StandardMaterial3D" id="DarkMat"]
-albedo_color = Color(0.015, 0.016, 0.018, 1)
-roughness = 1.0
+[sub_resource type="StandardMaterial3D" id="DialMat"]
+albedo_color = Color(0.62, 0.43, 0.16, 1)
+roughness = 0.38
+metallic = 0.68
+
+[sub_resource type="StandardMaterial3D" id="NoteInkMat"]
+albedo_color = Color(0.17, 0.105, 0.062, 1)
+roughness = 0.92
+
+[sub_resource type="StandardMaterial3D" id="StairWoodMat"]
+albedo_color = Color(0.32, 0.205, 0.12, 1)
+roughness = 0.88
+
+[sub_resource type="StandardMaterial3D" id="BarricadeWoodMat"]
+albedo_color = Color(0.33, 0.18, 0.087, 1)
+roughness = 0.88
+
+[sub_resource type="StandardMaterial3D" id="BarricadeNailMat"]
+albedo_color = Color(0.15, 0.16, 0.17, 1)
+roughness = 0.42
+metallic = 0.62
 
 [sub_resource type="StandardMaterial3D" id="PracticalFixtureMat"]
 albedo_color = Color(0.63, 0.47, 0.27, 1)
@@ -43,6 +62,7 @@ position = Vector3(0, -0.1, 0)
 use_collision = true
 collision_layer = 1
 material = ExtResource("2_floor_material")
+metadata/surface = &"wood"
 
 [node name="Ceiling" type="CSGBox3D" parent="Blockout"]
 size = Vector3(3, 0.12, 9)
@@ -128,57 +148,224 @@ use_collision = true
 collision_layer = 1
 material = ExtResource("3_wall_material")
 
-[node name="StairwellBarrier" type="CSGBox3D" parent="Blockout"]
-size = Vector3(1.4, 2.6, 0.16)
-position = Vector3(0, 1.3, 4.48)
-use_collision = true
-collision_layer = 1
-material = SubResource("DarkMat")
-
-[node name="BoardLeft" type="CSGBox3D" parent="Blockout"]
+[node name="BarricadeLowerCrossbar" type="CSGBox3D" parent="Blockout"]
 size = Vector3(1.25, 0.11, 0.08)
-position = Vector3(-0.04, 0.82, 4.32)
-rotation = Vector3(0, 0, 0.2)
+position = Vector3(0, 0.82, 4.27)
 use_collision = true
 collision_layer = 1
-material = SubResource("PropMat")
+material = SubResource("BarricadeWoodMat")
 
-[node name="BoardRight" type="CSGBox3D" parent="Blockout"]
+[node name="BarricadeUpperCrossbar" type="CSGBox3D" parent="Blockout"]
 size = Vector3(1.25, 0.11, 0.08)
-position = Vector3(0.04, 1.45, 4.32)
-rotation = Vector3(0, 0, -0.2)
+position = Vector3(0, 1.45, 4.27)
 use_collision = true
 collision_layer = 1
-material = SubResource("PropMat")
+material = SubResource("BarricadeWoodMat")
 
-[node name="BoardVertical" type="CSGBox3D" parent="Blockout"]
+[node name="BarricadeUprightLeft" type="CSGBox3D" parent="Blockout"]
 size = Vector3(0.1, 1.75, 0.08)
-position = Vector3(0, 1.28, 4.32)
+position = Vector3(-0.45, 1.28, 4.35)
 use_collision = true
 collision_layer = 1
-material = SubResource("PropMat")
+material = SubResource("BarricadeWoodMat")
+
+[node name="BarricadeUprightRight" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.1, 1.75, 0.08)
+position = Vector3(0.45, 1.28, 4.35)
+use_collision = true
+collision_layer = 1
+material = SubResource("BarricadeWoodMat")
+
+[node name="BarricadeNailLowerLeft" type="CSGSphere3D" parent="Blockout"]
+radius = 0.018
+position = Vector3(-0.45, 0.82, 4.212)
+use_collision = false
+collision_layer = 0
+material = SubResource("BarricadeNailMat")
+
+[node name="BarricadeNailLowerRight" type="CSGSphere3D" parent="Blockout"]
+radius = 0.018
+position = Vector3(0.45, 0.82, 4.212)
+use_collision = false
+collision_layer = 0
+material = SubResource("BarricadeNailMat")
+
+[node name="BarricadeNailUpperLeft" type="CSGSphere3D" parent="Blockout"]
+radius = 0.018
+position = Vector3(-0.45, 1.45, 4.212)
+use_collision = false
+collision_layer = 0
+material = SubResource("BarricadeNailMat")
+
+[node name="BarricadeNailUpperRight" type="CSGSphere3D" parent="Blockout"]
+radius = 0.018
+position = Vector3(0.45, 1.45, 4.212)
+use_collision = false
+collision_layer = 0
+material = SubResource("BarricadeNailMat")
 
 [node name="PhoneBase" type="CSGBox3D" parent="Blockout"]
-size = Vector3(0.28, 0.08, 0.2)
-position = Vector3(-0.72, 0.85, -3.4)
-use_collision = true
-collision_layer = 1
-material = SubResource("PropMat")
+size = Vector3(0.28, 0.08, 0.20)
+position = Vector3(-0.76, 0.80, -3.44)
+use_collision = false
+collision_layer = 0
+material = SubResource("PhoneMat")
 
-[node name="PhoneHandset" type="CSGBox3D" parent="Blockout"]
-size = Vector3(0.32, 0.06, 0.07)
-position = Vector3(-0.72, 0.93, -3.4)
-use_collision = true
-collision_layer = 1
-material = SubResource("PropMat")
+[node name="PhoneDialOuter" type="CSGCylinder3D" parent="Blockout"]
+radius = 0.07
+height = 0.008
+position = Vector3(-0.76, 0.844, -3.44)
+use_collision = false
+collision_layer = 0
+material = SubResource("DialMat")
+
+[node name="PhoneDialFace" type="CSGCylinder3D" parent="Blockout"]
+radius = 0.052
+height = 0.004
+position = Vector3(-0.76, 0.850, -3.44)
+use_collision = false
+collision_layer = 0
+material = SubResource("PhoneMat")
+
+[node name="PhoneDialHub" type="CSGCylinder3D" parent="Blockout"]
+radius = 0.016
+height = 0.004
+position = Vector3(-0.76, 0.854, -3.44)
+use_collision = false
+collision_layer = 0
+material = SubResource("DialMat")
+
+[node name="PhoneDialHole01" type="CSGCylinder3D" parent="Blockout"]
+radius = 0.0055
+height = 0.002
+position = Vector3(-0.76, 0.853, -3.400)
+use_collision = false
+collision_layer = 0
+material = SubResource("DialMat")
+
+[node name="PhoneDialHole02" type="CSGCylinder3D" parent="Blockout"]
+radius = 0.0055
+height = 0.002
+position = Vector3(-0.788, 0.853, -3.412)
+use_collision = false
+collision_layer = 0
+material = SubResource("DialMat")
+
+[node name="PhoneDialHole03" type="CSGCylinder3D" parent="Blockout"]
+radius = 0.0055
+height = 0.002
+position = Vector3(-0.800, 0.853, -3.440)
+use_collision = false
+collision_layer = 0
+material = SubResource("DialMat")
+
+[node name="PhoneDialHole04" type="CSGCylinder3D" parent="Blockout"]
+radius = 0.0055
+height = 0.002
+position = Vector3(-0.788, 0.853, -3.468)
+use_collision = false
+collision_layer = 0
+material = SubResource("DialMat")
+
+[node name="PhoneDialHole05" type="CSGCylinder3D" parent="Blockout"]
+radius = 0.0055
+height = 0.002
+position = Vector3(-0.760, 0.853, -3.480)
+use_collision = false
+collision_layer = 0
+material = SubResource("DialMat")
+
+[node name="PhoneDialHole06" type="CSGCylinder3D" parent="Blockout"]
+radius = 0.0055
+height = 0.002
+position = Vector3(-0.732, 0.853, -3.468)
+use_collision = false
+collision_layer = 0
+material = SubResource("DialMat")
+
+[node name="PhoneDialHole07" type="CSGCylinder3D" parent="Blockout"]
+radius = 0.0055
+height = 0.002
+position = Vector3(-0.720, 0.853, -3.440)
+use_collision = false
+collision_layer = 0
+material = SubResource("DialMat")
+
+[node name="PhoneDialHole08" type="CSGCylinder3D" parent="Blockout"]
+radius = 0.0055
+height = 0.002
+position = Vector3(-0.732, 0.853, -3.412)
+use_collision = false
+collision_layer = 0
+material = SubResource("DialMat")
+
+[node name="PhoneCradleLeft" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.035, 0.04, 0.035)
+position = Vector3(-0.87, 0.86, -3.44)
+use_collision = false
+collision_layer = 0
+material = SubResource("PhoneMat")
+
+[node name="PhoneCradleRight" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.035, 0.04, 0.035)
+position = Vector3(-0.65, 0.86, -3.44)
+use_collision = false
+collision_layer = 0
+material = SubResource("PhoneMat")
+
+[node name="PhoneHandsetBar" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.22, 0.035, 0.04)
+position = Vector3(-0.76, 0.915, -3.44)
+use_collision = false
+collision_layer = 0
+material = SubResource("PhoneMat")
+
+[node name="PhoneReceiverLeft" type="CSGCylinder3D" parent="Blockout"]
+radius = 0.035
+height = 0.06
+position = Vector3(-0.90, 0.915, -3.44)
+rotation_degrees = Vector3(0, 0, 90)
+use_collision = false
+collision_layer = 0
+material = SubResource("PhoneMat")
+
+[node name="PhoneReceiverRight" type="CSGCylinder3D" parent="Blockout"]
+radius = 0.035
+height = 0.06
+position = Vector3(-0.62, 0.915, -3.44)
+rotation_degrees = Vector3(0, 0, 90)
+use_collision = false
+collision_layer = 0
+material = SubResource("PhoneMat")
 
 [node name="BesnardNote" type="CSGBox3D" parent="Blockout"]
-size = Vector3(0.24, 0.02, 0.16)
-position = Vector3(-1.06, 0.86, -3.3)
+size = Vector3(0.18, 0.01, 0.08)
+position = Vector3(-0.96, 0.765, -3.23)
 use_collision = true
 collision_layer = 1
 material = SubResource("NoteMat")
 metadata/document_id = &"hall_postit_besnard"
+
+[node name="BesnardNoteLine01" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.11, 0.001, 0.002)
+position = Vector3(-0.96, 0.771, -3.211)
+use_collision = false
+collision_layer = 0
+material = SubResource("NoteInkMat")
+
+[node name="BesnardNoteLine02" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.11, 0.001, 0.002)
+position = Vector3(-0.96, 0.771, -3.230)
+use_collision = false
+collision_layer = 0
+material = SubResource("NoteInkMat")
+
+[node name="BesnardNoteLine03" type="CSGBox3D" parent="Blockout"]
+size = Vector3(0.11, 0.001, 0.002)
+position = Vector3(-0.96, 0.771, -3.249)
+use_collision = false
+collision_layer = 0
+material = SubResource("NoteInkMat")
 
 [node name="WallWestMidLower" type="CSGBox3D" parent="Blockout"]
 size = Vector3(0.18, 2.6, 1.55)
@@ -223,46 +410,134 @@ collision_layer = 0
 material = ExtResource("3_wall_material")
 
 [node name="StairStep1" type="CSGBox3D" parent="StairwellPreview"]
-size = Vector3(1.25, 0.24, 0.36)
-position = Vector3(0, 0.12, 4.88)
+size = Vector3(1.25, 0.165, 0.30)
+position = Vector3(0, 0.0825, 4.88)
 use_collision = false
 collision_layer = 0
-material = SubResource("PropMat")
+material = SubResource("StairWoodMat")
+metadata/surface = &"wood"
 
 [node name="StairStep2" type="CSGBox3D" parent="StairwellPreview"]
-size = Vector3(1.25, 0.24, 0.36)
-position = Vector3(0, 0.39, 5.22)
+size = Vector3(1.25, 0.165, 0.30)
+position = Vector3(0, 0.2475, 5.18)
 use_collision = false
 collision_layer = 0
-material = SubResource("PropMat")
+material = SubResource("StairWoodMat")
+metadata/surface = &"wood"
 
 [node name="StairStep3" type="CSGBox3D" parent="StairwellPreview"]
-size = Vector3(1.25, 0.24, 0.36)
-position = Vector3(0, 0.66, 5.56)
+size = Vector3(1.25, 0.165, 0.30)
+position = Vector3(0, 0.4125, 5.48)
 use_collision = false
 collision_layer = 0
-material = SubResource("PropMat")
+material = SubResource("StairWoodMat")
+metadata/surface = &"wood"
 
 [node name="StairStep4" type="CSGBox3D" parent="StairwellPreview"]
-size = Vector3(1.25, 0.24, 0.36)
-position = Vector3(0, 0.93, 5.9)
+size = Vector3(1.25, 0.165, 0.30)
+position = Vector3(0, 0.5775, 5.78)
 use_collision = false
 collision_layer = 0
-material = SubResource("PropMat")
+material = SubResource("StairWoodMat")
+metadata/surface = &"wood"
 
 [node name="StairStep5" type="CSGBox3D" parent="StairwellPreview"]
-size = Vector3(1.25, 0.24, 0.36)
-position = Vector3(0, 1.2, 6.24)
+size = Vector3(1.25, 0.165, 0.30)
+position = Vector3(0, 0.7425, 6.08)
 use_collision = false
 collision_layer = 0
-material = SubResource("PropMat")
+material = SubResource("StairWoodMat")
+metadata/surface = &"wood"
 
-[node name="DarkLanding" type="CSGBox3D" parent="StairwellPreview"]
-size = Vector3(1.3, 2.4, 1.2)
-position = Vector3(0, 2.1, 7.3)
+[node name="StairStep6" type="CSGBox3D" parent="StairwellPreview"]
+size = Vector3(1.25, 0.165, 0.30)
+position = Vector3(0, 0.9075, 6.38)
 use_collision = false
 collision_layer = 0
-material = SubResource("DarkMat")
+material = SubResource("StairWoodMat")
+metadata/surface = &"wood"
+
+[node name="StairStep7" type="CSGBox3D" parent="StairwellPreview"]
+size = Vector3(1.25, 0.165, 0.30)
+position = Vector3(0, 1.0725, 6.68)
+use_collision = false
+collision_layer = 0
+material = SubResource("StairWoodMat")
+metadata/surface = &"wood"
+
+[node name="StairStep8" type="CSGBox3D" parent="StairwellPreview"]
+size = Vector3(1.25, 0.165, 0.30)
+position = Vector3(0, 1.2375, 6.98)
+use_collision = false
+collision_layer = 0
+material = SubResource("StairWoodMat")
+metadata/surface = &"wood"
+
+[node name="StairPostLeftLower" type="CSGBox3D" parent="StairwellPreview"]
+size = Vector3(0.06, 0.90, 0.06)
+position = Vector3(-0.60, 0.615, 4.88)
+use_collision = false
+collision_layer = 0
+material = SubResource("StairWoodMat")
+
+[node name="StairPostLeftMiddle" type="CSGBox3D" parent="StairwellPreview"]
+size = Vector3(0.06, 0.90, 0.06)
+position = Vector3(-0.60, 1.275, 6.08)
+use_collision = false
+collision_layer = 0
+material = SubResource("StairWoodMat")
+
+[node name="StairPostLeftUpper" type="CSGBox3D" parent="StairwellPreview"]
+size = Vector3(0.06, 0.90, 0.06)
+position = Vector3(-0.60, 1.77, 6.98)
+use_collision = false
+collision_layer = 0
+material = SubResource("StairWoodMat")
+
+[node name="StairPostRightLower" type="CSGBox3D" parent="StairwellPreview"]
+size = Vector3(0.06, 0.90, 0.06)
+position = Vector3(0.60, 0.615, 4.88)
+use_collision = false
+collision_layer = 0
+material = SubResource("StairWoodMat")
+
+[node name="StairPostRightMiddle" type="CSGBox3D" parent="StairwellPreview"]
+size = Vector3(0.06, 0.90, 0.06)
+position = Vector3(0.60, 1.275, 6.08)
+use_collision = false
+collision_layer = 0
+material = SubResource("StairWoodMat")
+
+[node name="StairPostRightUpper" type="CSGBox3D" parent="StairwellPreview"]
+size = Vector3(0.06, 0.90, 0.06)
+position = Vector3(0.60, 1.77, 6.98)
+use_collision = false
+collision_layer = 0
+material = SubResource("StairWoodMat")
+
+[node name="StairHandrailLeft" type="CSGBox3D" parent="StairwellPreview"]
+size = Vector3(0.06, 0.06, 2.40)
+position = Vector3(-0.60, 1.6425, 5.93)
+rotation_degrees = Vector3(-28.8, 0, 0)
+use_collision = false
+collision_layer = 0
+material = SubResource("StairWoodMat")
+
+[node name="StairHandrailRight" type="CSGBox3D" parent="StairwellPreview"]
+size = Vector3(0.06, 0.06, 2.40)
+position = Vector3(0.60, 1.6425, 5.93)
+rotation_degrees = Vector3(-28.8, 0, 0)
+use_collision = false
+collision_layer = 0
+material = SubResource("StairWoodMat")
+
+[node name="UpperLanding" type="CSGBox3D" parent="StairwellPreview"]
+size = Vector3(1.30, 0.10, 1.00)
+position = Vector3(0, 1.27, 7.63)
+use_collision = false
+collision_layer = 0
+material = SubResource("StairWoodMat")
+metadata/surface = &"wood"
 
 [node name="Zone" type="Area3D" parent="."]
 collision_layer = 4
@@ -291,46 +566,172 @@ material = SubResource("PracticalFixtureMat")
 [node name="HallCeilingLight" type="OmniLight3D" parent="PracticalLights"]
 position = Vector3(0, 2.43, 0.2)
 light_color = Color(1, 0.78, 0.58, 1)
-light_energy = 0.58
-omni_range = 6.2
+light_energy = 0.82
+omni_range = 8.2
 omni_attenuation = 1.4
 shadow_enabled = true
+
+[node name="StairwellBounceLight" type="OmniLight3D" parent="PracticalLights"]
+position = Vector3(0, 1.82, 5.58)
+light_color = Color(0.88, 0.76, 0.60, 1)
+light_energy = 0.18
+omni_range = 3.8
+omni_attenuation = 1.6
+shadow_enabled = false
+
+[node name="HallConsoleSconceBackplate" type="CSGBox3D" parent="PracticalLights"]
+size = Vector3(0.025, 0.18, 0.14)
+position = Vector3(-1.4875, 1.90, -3.44)
+use_collision = false
+collision_layer = 0
+material = SubResource("DialMat")
+
+[node name="HallConsoleSconceArm" type="CSGBox3D" parent="PracticalLights"]
+size = Vector3(0.09, 0.02, 0.02)
+position = Vector3(-1.43, 1.88, -3.44)
+use_collision = false
+collision_layer = 0
+material = SubResource("DialMat")
+
+[node name="HallConsoleSconceShade" type="CSGCylinder3D" parent="PracticalLights"]
+radius = 0.055
+height = 0.08
+position = Vector3(-1.345, 1.85, -3.44)
+rotation_degrees = Vector3(0, 0, 90)
+use_collision = false
+collision_layer = 0
+material = SubResource("DialMat")
+
+[node name="HallConsoleSconceBulb" type="CSGSphere3D" parent="PracticalLights"]
+radius = 0.018
+position = Vector3(-1.285, 1.85, -3.44)
+use_collision = false
+collision_layer = 0
+material = SubResource("PracticalFixtureMat")
+
+[node name="HallConsoleSconceLight" type="OmniLight3D" parent="PracticalLights"]
+position = Vector3(-1.24, 1.82, -3.44)
+light_color = Color(1, 0.73, 0.48, 1)
+light_energy = 0.28
+omni_range = 3.6
+omni_attenuation = 1.6
+shadow_enabled = false
+
+[node name="HallEastSconceBackplate" type="CSGBox3D" parent="PracticalLights"]
+size = Vector3(0.025, 0.18, 0.14)
+position = Vector3(1.4875, 1.90, -2.60)
+use_collision = false
+collision_layer = 0
+material = SubResource("DialMat")
+
+[node name="HallEastSconceArm" type="CSGBox3D" parent="PracticalLights"]
+size = Vector3(0.09, 0.02, 0.02)
+position = Vector3(1.43, 1.88, -2.60)
+use_collision = false
+collision_layer = 0
+material = SubResource("DialMat")
+
+[node name="HallEastSconceShade" type="CSGCylinder3D" parent="PracticalLights"]
+radius = 0.055
+height = 0.08
+position = Vector3(1.345, 1.85, -2.60)
+rotation_degrees = Vector3(0, 0, 90)
+use_collision = false
+collision_layer = 0
+material = SubResource("DialMat")
+
+[node name="HallEastSconceBulb" type="CSGSphere3D" parent="PracticalLights"]
+radius = 0.018
+position = Vector3(1.285, 1.85, -2.60)
+use_collision = false
+collision_layer = 0
+material = SubResource("PracticalFixtureMat")
+
+[node name="HallEastSconceLight" type="OmniLight3D" parent="PracticalLights"]
+position = Vector3(1.24, 1.82, -2.60)
+light_color = Color(1, 0.73, 0.48, 1)
+light_energy = 0.32
+omni_range = 3.8
+omni_attenuation = 1.6
+shadow_enabled = false
+
+[node name="HallWestEntrySconceBackplate" type="CSGBox3D" parent="PracticalLights"]
+size = Vector3(0.025, 0.18, 0.14)
+position = Vector3(-1.4875, 1.90, -1.20)
+use_collision = false
+collision_layer = 0
+material = SubResource("DialMat")
+
+[node name="HallWestEntrySconceArm" type="CSGBox3D" parent="PracticalLights"]
+size = Vector3(0.09, 0.02, 0.02)
+position = Vector3(-1.43, 1.88, -1.20)
+use_collision = false
+collision_layer = 0
+material = SubResource("DialMat")
+
+[node name="HallWestEntrySconceShade" type="CSGCylinder3D" parent="PracticalLights"]
+radius = 0.055
+height = 0.08
+position = Vector3(-1.345, 1.85, -1.20)
+rotation_degrees = Vector3(0, 0, 90)
+use_collision = false
+collision_layer = 0
+material = SubResource("DialMat")
+
+[node name="HallWestEntrySconceBulb" type="CSGSphere3D" parent="PracticalLights"]
+radius = 0.018
+position = Vector3(-1.285, 1.85, -1.20)
+use_collision = false
+collision_layer = 0
+material = SubResource("PracticalFixtureMat")
+
+[node name="HallWestEntrySconceLight" type="OmniLight3D" parent="PracticalLights"]
+position = Vector3(-1.24, 1.82, -1.20)
+light_color = Color(1, 0.73, 0.48, 1)
+light_energy = 0.32
+omni_range = 3.8
+omni_attenuation = 1.6
+shadow_enabled = false
 
 [node name="hall_anchor_console_table" type="Marker3D" parent="Anchors"]
 position = Vector3(-1.05, 0.38, -3.4)
 
 [node name="hall_anchor_barometer" type="Marker3D" parent="Anchors"]
-position = Vector3(1.44, 1.42, -3)
+position = Vector3(1.45, 1.42, -3)
+rotation_degrees = Vector3(0, -90, 0)
 
 [node name="hall_anchor_coat_rack" type="Marker3D" parent="Anchors"]
-position = Vector3(-1.1, 0.8, -2.1)
+position = Vector3(-1.1, 0.775, -2.1)
+rotation_degrees = Vector3(0, -90, 0)
 
 [node name="hall_anchor_key_board" type="Marker3D" parent="Anchors"]
 position = Vector3(-1.44, 1.42, -1.35)
+rotation_degrees = Vector3(0, 90, 0)
 
 [node name="hall_anchor_mirror" type="Marker3D" parent="Anchors"]
-position = Vector3(1.44, 1.25, -1.3)
+position = Vector3(1.45, 1.25, -1.3)
+rotation_degrees = Vector3(0, -90, 0)
 
 [node name="hall_anchor_umbrella_stand" type="Marker3D" parent="Anchors"]
-position = Vector3(1.05, 0.3, -3.72)
+position = Vector3(1.05, 0.325, -3.72)
 
 [node name="hall_anchor_doorbell" type="Marker3D" parent="Anchors"]
-position = Vector3(1.15, 1.1, -4.46)
+position = Vector3(1.15, 1.1, -4.4825)
 
 [node name="hall_anchor_answering_machine" type="Marker3D" parent="Anchors"]
-position = Vector3(-1, 0.88, -3.42)
+position = Vector3(-1.18, 0.85, -3.44)
 
 [node name="hall_anchor_hand_railing" type="Marker3D" parent="Anchors"]
-position = Vector3(0, 1.2, 4.02)
+position = Vector3(-0.6, 1.14, 4.88)
 
 [node name="hall_anchor_ring_1951" type="Marker3D" parent="Anchors"]
-position = Vector3(-0.66, 0.785, -3.36)
+position = Vector3(-0.66, 0.785, -3.22)
 
 [node name="hall_anchor_console" type="Marker3D" parent="Anchors"]
 position = Vector3(-0.95, 0.33, -2.75)
 
 [node name="hall_anchor_stairs_top" type="Marker3D" parent="Anchors"]
-position = Vector3(0, 1.32, 6.24)
+position = Vector3(0, 1.32, 7.63)
 
 [node name="StandaloneLights" type="Node3D" parent="."]
 
