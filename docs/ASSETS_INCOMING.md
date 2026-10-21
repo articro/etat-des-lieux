@@ -1,3 +1,5 @@
+> **Non utilisé en V1** : le producteur ne dépose pas d'assets ; Niveau les télécharge lui-même (voir TASKS.md 21/10). Conservé pour V2.
+
 # Assets déposés par le producteur (humain) — `game/assets/incoming/`
 
 Le producteur choisit à l'œil des assets **gratuits et libres** et les dépose ici. Niveau les intègre en priorité.
