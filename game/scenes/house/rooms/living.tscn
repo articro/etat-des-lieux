@@ -78,14 +78,14 @@ use_collision = true
 collision_layer = 1
 material = SubResource("WallMat")
 
-[node name="WallEastDoorSouth" type="CSGBox3D" parent="Blockout"]
+[node name="WallEastDoorSouth" type="CSGBox3D" parent="StandaloneOnly"]
 size = Vector3(0.18, 2.6, 0.55)
 position = Vector3(2.41, 1.3, -2.225)
 use_collision = true
 collision_layer = 1
 material = SubResource("WallMat")
 
-[node name="WallEastDoorNorth" type="CSGBox3D" parent="Blockout"]
+[node name="WallEastDoorNorth" type="CSGBox3D" parent="StandaloneOnly"]
 size = Vector3(0.18, 2.6, 3.55)
 position = Vector3(2.41, 1.3, 0.725)
 use_collision = true
