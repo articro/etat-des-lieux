@@ -13,5 +13,6 @@ normal_enabled = true
 normal_scale = 0.18
 normal_texture = ExtResource("2_normal")
 uv1_triplanar = true
+uv1_world_triplanar = true
 uv1_scale = Vector3(1, 1, 1)
 texture_filter = 1

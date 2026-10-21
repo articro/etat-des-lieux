@@ -25,6 +25,8 @@ func _ready() -> void:
 	_test_hall_visuals()
 	_test_game_lighting()
 	_test_added_room_blockouts()
+	_test_surface_metadata()
+	_test_kitchen_calendar_visuals()
 	_test_cellar_integration()
 	_test_item_population_and_reveal()
 	await _test_hatch_event()
@@ -177,6 +179,9 @@ func _test_hall_visuals() -> void:
 	if ceiling != null:
 		ceiling_material = ceiling.material as StandardMaterial3D
 	_expect(wall_material != null and wall_material.albedo_texture != null and wall_material.normal_enabled, "papier peint CC0 texturé du mur est du hall")
+	_expect(wall_material != null and wall_material.uv1_triplanar and wall_material.uv1_world_triplanar, "papier peint projeté en coordonnées monde sur toutes les faces")
+	_expect(wall_material != null and wall_material.uv1_scale.is_equal_approx(Vector3.ONE), "échelle UV du papier peint uniforme")
+	_expect(west_wall_material != null and west_wall_material == wall_material, "même ressource papier peint sur les murs opposés")
 	_expect(west_wall_material != null and west_wall_material.albedo_texture != null and west_wall_material.normal_enabled, "papier peint CC0 sur le mur ouest dégagé des doublons cuisine")
 	_expect(floor_material != null and floor_material.albedo_texture != null and floor_material.normal_enabled, "parquet CC0 texturé du hall")
 	_expect(ceiling_material != null and ceiling_material.albedo_texture != null and ceiling_material.normal_enabled, "plâtre CC0 texturé du plafond du hall")
@@ -194,9 +199,13 @@ func _test_game_lighting() -> void:
 
 	var hall_light := _house.get_node_or_null("Rooms/Hall/PracticalLights/HallCeilingLight") as OmniLight3D
 	var study_light := _house.get_node_or_null("Rooms/Study/PracticalLights/StudyDeskLamp") as OmniLight3D
+	var study_doorway_light := _house.get_node_or_null("Rooms/Study/PracticalLights/StudyDoorwayFillLight") as OmniLight3D
 	var cellar_light := _house.get_node_or_null("Rooms/Cellar/PracticalLights/CellarBareBulbLight") as OmniLight3D
 	_expect(hall_light != null and hall_light.shadow_enabled and hall_light.light_energy < 1.0, "plafonnier bas du hall avec ombres")
 	_expect(study_light != null and study_light.shadow_enabled and study_light.light_energy < 1.0, "lampe de bureau faible avec ombres")
+	_expect(study_doorway_light != null and not study_doorway_light.shadow_enabled and study_doorway_light.light_energy > 0.8, "lumière douce du bureau qui déborde dans l'embrasure")
+	if study_doorway_light != null:
+		_expect(study_doorway_light.position.x > -2.16 and study_doorway_light.position.x < -1.5 and absf(study_doorway_light.position.z) < 0.45, "remplissage lumineux placé derrière l'ouverture du bureau")
 	_expect(cellar_light != null and not cellar_light.shadow_enabled, "ampoule nue de cave sans ombres")
 	var shadowed_omni_count: int = 0
 	for light_node: Node in _house.find_children("*", "OmniLight3D", true, false):
@@ -294,6 +303,48 @@ func _test_added_room_blockouts() -> void:
 	var stairwell_light := _house.get_node_or_null("Rooms/Hall/PracticalLights/StairwellBounceLight") as OmniLight3D
 	_expect(stairwell_light != null and not stairwell_light.shadow_enabled, "éclairage doux de l'escalier sans ombres")
 
+
+
+func _test_surface_metadata() -> void:
+	var floor_paths: Array[String] = [
+		"Rooms/Hall/Blockout/Floor",
+		"Rooms/Study/Blockout/Floor",
+		"Rooms/Kitchen/Blockout/FloorWest",
+		"Rooms/Kitchen/Blockout/FloorEast",
+		"Rooms/Kitchen/Blockout/FloorHatchNorth",
+		"Rooms/Kitchen/Blockout/FloorHatchSouth",
+		"Rooms/Kitchen/Blockout/HatchHinge/HatchPanel",
+		"Rooms/Living/Blockout/Floor",
+		"Rooms/Cellar/Blockout/Floor",
+		"Rooms/Exterior/Blockout/Ground",
+	]
+	var expected_surfaces: Array[StringName] = [
+		&"wood", &"wood", &"tile", &"tile", &"tile", &"tile", &"tile", &"wood", &"stone", &"gravel",
+	]
+	for index: int in range(floor_paths.size()):
+		var floor_node: Node = _house.get_node_or_null(NodePath(floor_paths[index]))
+		var matches_surface: bool = false
+		if floor_node != null and floor_node.has_meta(&"surface"):
+			matches_surface = StringName(str(floor_node.get_meta(&"surface"))) == expected_surfaces[index]
+		_expect(matches_surface, "metadata audio surface %s = %s" % [floor_paths[index], String(expected_surfaces[index])])
+
+
+func _test_kitchen_calendar_visuals() -> void:
+	var calendar := _find_item(&"kitchen_calendar")
+	_expect(calendar != null, "calendrier de cuisine instancié")
+	if calendar == null:
+		return
+	_expect(calendar.visual_kind() == &"csg", "calendrier de cuisine modélisé en CSG plutôt qu'en bloc générique")
+	var visual := calendar.get_node_or_null("Visual") as MeshInstance3D
+	var composition: Node3D = null
+	if visual != null:
+		composition = visual.get_node_or_null("CSGVisual") as Node3D
+	_expect(composition != null and composition.get_child_count() >= 20, "calendrier lisible avec page, en-tête, reliure et grille")
+	var anchor := _house.get_node_or_null("Rooms/Kitchen/Anchors/kitchen_anchor_calendar") as Marker3D
+	_expect(anchor != null and is_equal_approx(anchor.rotation_degrees.y, -90.0), "calendrier fixé sur le mur mitoyen côté cuisine")
+	if anchor != null:
+		_expect(anchor.position.x < 2.05, "calendrier posé sur la face intérieure du mur côté cuisine")
+		_expect(calendar.global_position.is_equal_approx(anchor.global_position), "calendrier placé au nu du mur, hors du hall")
 
 
 func _test_cellar_integration() -> void:

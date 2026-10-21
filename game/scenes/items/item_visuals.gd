@@ -15,6 +15,7 @@ const CSG_ITEM_IDS: Array[StringName] = [
 	&"hall_doorbell",
 	&"hall_hand_railing",
 	&"hall_ring_1951",
+	&"kitchen_calendar",
 ]
 
 
@@ -209,6 +210,23 @@ static func _build_csg(item_id: StringName, visual: MeshInstance3D) -> bool:
 			_add_torus(details, "GoldWeddingBand", 0.15, 0.215, Vector3.ZERO, Vector3.ZERO, gold)
 			_add_sphere(details, "RubySetting", 0.054, Vector3(0.0, 0.205, 0.0), gold)
 			_add_sphere(details, "Ruby", 0.038, Vector3(0.0, 0.236, 0.0), ruby)
+			return true
+
+		&"kitchen_calendar":
+			var calendar_header := _color_material(Color(0.53, 0.13, 0.10), 0.76)
+			var calendar_grid := _color_material(Color(0.18, 0.15, 0.13), 0.82)
+			_add_box(details, "CalendarBacking", Vector3(0.42, 0.46, 0.16), Vector3.ZERO, wood)
+			_add_box(details, "CalendarPage", Vector3(0.38, 0.40, 0.018), Vector3(0.0, -0.02, 0.092), ivory)
+			_add_box(details, "CalendarHeader", Vector3(0.37, 0.07, 0.012), Vector3(0.0, 0.145, 0.105), calendar_header)
+			for ring_index: int in range(7):
+				var ring_x: float = -0.15 + float(ring_index) * 0.05
+				_add_torus(details, "CalendarBinding_%02d" % ring_index, 0.006, 0.012, Vector3(ring_x, 0.205, 0.115), Vector3.ZERO, brass)
+			for line_index: int in range(6):
+				var line_y: float = 0.08 - float(line_index) * 0.05
+				_add_box(details, "CalendarGridH_%02d" % line_index, Vector3(0.32, 0.006, 0.008), Vector3(0.0, line_y, 0.114), calendar_grid)
+			for line_index: int in range(8):
+				var line_x: float = -0.15 + float(line_index) * 0.043
+				_add_box(details, "CalendarGridV_%02d" % line_index, Vector3(0.006, 0.26, 0.008), Vector3(line_x, -0.045, 0.114), calendar_grid)
 			return true
 
 		_:

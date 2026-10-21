@@ -46,6 +46,7 @@ position = Vector3(-0.875, -0.1, 0)
 use_collision = true
 collision_layer = 1
 material = SubResource("FloorMat")
+metadata/surface = &"tile"
 
 [node name="FloorEast" type="CSGBox3D" parent="Blockout"]
 size = Vector3(0.75, 0.2, 4.5)
@@ -53,6 +54,7 @@ position = Vector3(1.875, -0.1, 0)
 use_collision = true
 collision_layer = 1
 material = SubResource("FloorMat")
+metadata/surface = &"tile"
 
 [node name="FloorHatchNorth" type="CSGBox3D" parent="Blockout"]
 size = Vector3(1, 0.2, 2.75)
@@ -60,6 +62,7 @@ position = Vector3(1, -0.1, 0.875)
 use_collision = true
 collision_layer = 1
 material = SubResource("FloorMat")
+metadata/surface = &"tile"
 
 [node name="FloorHatchSouth" type="CSGBox3D" parent="Blockout"]
 size = Vector3(1, 0.2, 0.75)
@@ -67,6 +70,7 @@ position = Vector3(1, -0.1, -1.875)
 use_collision = true
 collision_layer = 1
 material = SubResource("FloorMat")
+metadata/surface = &"tile"
 
 [node name="Ceiling" type="CSGBox3D" parent="Blockout"]
 size = Vector3(4.5, 0.12, 4.5)
@@ -168,6 +172,7 @@ position = Vector3(0, 0, -0.5)
 use_collision = true
 collision_layer = 1
 material = SubResource("HatchMat")
+metadata/surface = &"tile"
 
 [node name="Zone" type="Area3D" parent="."]
 collision_layer = 4
@@ -242,7 +247,8 @@ position = Vector3(0.72, 1.08, 1.12)
 position = Vector3(1.40, 1.65, 2.10)
 
 [node name="kitchen_anchor_calendar" type="Marker3D" parent="Anchors"]
-position = Vector3(2.10, 1.52, -0.40)
+position = Vector3(1.99, 1.52, -1.05)
+rotation_degrees = Vector3(0, -90, 0)
 
 [node name="kitchen_anchor_cookware" type="Marker3D" parent="Anchors"]
 position = Vector3(-1.30, 2.02, 1.52)

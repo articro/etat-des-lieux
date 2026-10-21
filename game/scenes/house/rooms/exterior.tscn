@@ -56,6 +56,7 @@ position = Vector3(0, -0.1, 0)
 use_collision = true
 collision_layer = 1
 material = SubResource("GroundMat")
+metadata/surface = &"gravel"
 
 [node name="FenceWest" type="CSGBox3D" parent="Blockout"]
 size = Vector3(0.18, 2.4, 9)

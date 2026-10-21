@@ -42,6 +42,7 @@ position = Vector3(0, -0.1, 0)
 use_collision = true
 collision_layer = 1
 material = SubResource("FloorMat")
+metadata/surface = &"wood"
 
 [node name="Ceiling" type="CSGBox3D" parent="Blockout"]
 size = Vector3(4.5, 0.12, 4)
@@ -123,6 +124,14 @@ position = Vector3(-0.72, 1.28, 1.18)
 use_collision = false
 collision_layer = 0
 material = SubResource("PracticalFixtureMat")
+
+[node name="StudyDoorwayFillLight" type="OmniLight3D" parent="PracticalLights"]
+position = Vector3(-2.05, 1.75, 0.15)
+light_color = Color(1, 0.77, 0.54, 1)
+light_energy = 1.2
+omni_range = 4.8
+omni_attenuation = 1.25
+shadow_enabled = false
 
 [node name="StudyDeskLamp" type="OmniLight3D" parent="PracticalLights"]
 position = Vector3(-0.72, 1.42, 1.18)

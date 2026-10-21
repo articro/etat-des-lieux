@@ -23,6 +23,7 @@ const PLACEHOLDER_SIZES: Dictionary[StringName, Vector3] = {
 	&"study_safe": Vector3(0.80, 1.05, 0.70),
 	&"study_registers": Vector3(0.48, 0.54, 0.38),
 	&"kitchen_table": Vector3(1.35, 0.75, 0.90),
+	&"kitchen_calendar": Vector3(0.38, 0.50, 0.06),
 	&"living_fireplace": Vector3(1.15, 1.00, 0.42),
 	&"cellar_stove": Vector3(0.65, 0.85, 0.65),
 	&"cellar_shelves": Vector3(1.20, 1.80, 0.42),

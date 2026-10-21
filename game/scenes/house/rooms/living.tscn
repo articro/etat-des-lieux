@@ -49,6 +49,7 @@ position = Vector3(0, -0.1, 0)
 use_collision = true
 collision_layer = 1
 material = SubResource("FloorMat")
+metadata/surface = &"wood"
 
 [node name="Ceiling" type="CSGBox3D" parent="Blockout"]
 size = Vector3(5, 0.12, 5)
