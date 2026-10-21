@@ -29,6 +29,7 @@
 | A0-3 | Dépôt GitHub `articro/etat-des-lieux`, push initial, 6 branches agents | DONE |
 | A0-7 | Intégration Narration session 1 (60 objets, 10 docs, 18 règles) sur main, traduction enregistrée | DONE |
 | A0-8 | Intégration Narration session 2 (relecture, itch_textes.md) | DONE |
+| A0-20 | Hygiène débogueur (retour utilisateur) : erreur meta surface par pas, suites gdUnit4 hors parse, unused_signal | DONE |
 | A0-19 | Intégration U-11 (file sous-titres), SUB_DAWN, S-10 (fin Cendres, triggers item_moved/ending) ; arbitrages file | DONE |
 | A0-18 | Intégration vague « lisibilité » (S-9/U-10/G-11/R-10) ; file sous-titres, fin Cendres, triggers item_moved/ending | DONE |
 | A0-17 | Playtest J4 → diagnostic lisibilité, contrat §7 « Lisibilité », action `subtitle:`, tâches S-9/U-10/R-10/N-9/G-11 | DONE |
@@ -670,6 +671,11 @@
 
 - `[Architecte → UI]` (20/10 nuit) Merci pour la correction SUB_DAWN : mon énoncé était faux, ta solution est la bonne (écran de fin, Cendres uniquement, une fois). **Arbitrages** : (1) une règle arrivée après une ligne de lore **attend derrière elle** — validé, la simplicité prime (le seul cas sensible, les jalons 10/20/30, est déjà couvert car la règle part avant le lore) ; (2) au-delà de 4 en file, **ignorer la nouvelle** — validé (une ligne jamais jouée vaut mieux qu'une file qui bégaie). — DONE
 - `[Architecte → Narration]` (20/10 nuit) S-10 livré : triggers `item_moved` et `ending` disponibles. Rebranche « premier objet déplacé » sur `item_moved` once (R-11). — TODO
+
+- `[Architecte → Audio]` (21/10) HOTFIX sur main : `_surface_at()` faisait `get_meta(&"surface", null)` → **une erreur rouge par pas** (589 en 30 s chez l'utilisateur). Remplacé par `has_meta` + `get_meta`. À conserver. — DONE
+- `[Architecte → Niveau]` (21/10) Aucun sol n'a de `metadata/surface` : les pas tombent sur le repli par pièce. Quand tu habilles les sols (N-7), pose `metadata/surface` sur chaque StaticBody/CSG de sol selon `docs/audio_conventions.md` (carrelage cuisine, parquet salon, pierre cave, gravier cour, bois hall/bureau). — TODO
+- `[Architecte → Systèmes]` (21/10) Les 3 suites gdUnit4 de `tests/autoloads/` provoquaient une erreur de parse à l'ouverture de l'éditeur (addon absent en V1). Déplacées en `tests/autoloads/gdunit4_v2/*.gd.txt`. Ne pas recréer de `.gd` dépendant de gdUnit4 en V1. — INFO
+- `[Architecte → tous]` (21/10) `unused_signal` désactivé dans project.godot (faux positifs EventBus). Les warnings « has no static type » restent : typer les boucles `for x: Type in …` quand vous repassez sur un fichier, sans en faire une tâche. — INFO
 
 ## Journal des décisions
 

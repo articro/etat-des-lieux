@@ -30,6 +30,7 @@ SaveManager="*res://autoloads/save_manager.gd"
 [debug]
 
 gdscript/warnings/untyped_declaration=1
+gdscript/warnings/unused_signal=0
 gdscript/warnings/unsafe_method_access=1
 
 [display]

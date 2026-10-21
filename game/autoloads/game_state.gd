@@ -47,8 +47,10 @@ func to_save_dict() -> Dictionary:
 func from_save_dict(d: Dictionary) -> void:
 	current_act = int(d.get("act", 1))
 	attention = float(d.get("attention", 0.0))
-	_flags = d.get("flags", {}).duplicate()
-	_counters = d.get("counters", {}).duplicate()
+	var flags: Dictionary = d.get("flags", {})
+	_flags = flags.duplicate()
+	var counters: Dictionary = d.get("counters", {})
+	_counters = counters.duplicate()
 	_current_room = StringName(d.get("room", "exterior"))
 
 

@@ -856,9 +856,11 @@ func _surface_at(world_position: Vector3) -> StringName:
 	var node: Node = hit.get("collider") as Node
 	var depth: int = 0
 	while node != null and depth < 4:
-		var raw: Variant = node.get_meta(&"surface", null)
-		if raw != null and String(raw) != "":
-			return StringName(String(raw))
+		# HOTFIX Architecte 21/10 : get_meta(key, null) déclenche une erreur par pas en 4.7 → has_meta d'abord.
+		if node.has_meta(&"surface"):
+			var raw: Variant = node.get_meta(&"surface")
+			if String(raw) != "":
+				return StringName(String(raw))
 		node = node.get_parent()
 		depth += 1
 	return SURFACE_FALLBACK_BY_ROOM.get(_current_room, &"wood")
