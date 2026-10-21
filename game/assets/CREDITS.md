@@ -49,6 +49,41 @@ Format : OGG Vorbis mono 44 100 Hz. Poids total ≈ 1,6 Mo.
 
 ---
 
+## Niveau — N-9 / N-7 (hall, livraison J5)
+
+Modèles téléchargés en glTF/GLB, textures Poly Haven limitées à 1K; les scènes leur donnent une échelle adaptée aux dimensions d'`ItemData`. Les textures de surface ambientCG sont en 1K JPG. CC0 vérifié sur les pages officielles de chaque ressource.
+
 | Fichier | Type | Source (URL) | Auteur | Licence |
 |---|---|---|---|---|
-| _(autres modules : à remplir par Niveau, Narration)_ | | | | |
+| `assets/models/polyhaven/ClassicConsole_01/ClassicConsole_01_1k.gltf` | modèle glTF (console du hall) | https://polyhaven.com/a/ClassicConsole_01 | Kirill Sannikov / Poly Haven | CC0 1.0 |
+| `assets/models/polyhaven/ClassicConsole_01/ClassicConsole_01.bin` | géométrie du modèle | idem | Kirill Sannikov / Poly Haven | CC0 1.0 |
+| `assets/models/polyhaven/ClassicConsole_01/textures/ClassicConsole_01_arm_1k.jpg` | texture AO/roughness/metal, 1K | idem | Kirill Sannikov / Poly Haven | CC0 1.0 |
+| `assets/models/polyhaven/ClassicConsole_01/textures/ClassicConsole_01_diff_1k.jpg` | texture diffuse, 1K | idem | Kirill Sannikov / Poly Haven | CC0 1.0 |
+| `assets/models/polyhaven/ClassicConsole_01/textures/ClassicConsole_01_nor_gl_1k.jpg` | normale OpenGL, 1K | idem | Kirill Sannikov / Poly Haven | CC0 1.0 |
+| `assets/models/kenney/furniture-kit/coatRackStanding.glb` | modèle GLB (porte-manteau du hall) | https://kenney.nl/assets/furniture-kit | Kenney (Kenney Vleugels) | CC0 1.0 |
+| `assets/models/polyhaven/ornate_mirror_01/ornate_mirror_01_1k.gltf` | modèle glTF (miroir du hall) | https://polyhaven.com/a/ornate_mirror_01 | James Ray Cock / Poly Haven | CC0 1.0 |
+| `assets/models/polyhaven/ornate_mirror_01/ornate_mirror_01.bin` | géométrie du modèle | idem | James Ray Cock / Poly Haven | CC0 1.0 |
+| `assets/models/polyhaven/ornate_mirror_01/textures/ornate_mirror_01_arm_1k.jpg` | texture AO/roughness/metal, 1K | idem | James Ray Cock / Poly Haven | CC0 1.0 |
+| `assets/models/polyhaven/ornate_mirror_01/textures/ornate_mirror_01_diff_1k.jpg` | texture diffuse, 1K | idem | James Ray Cock / Poly Haven | CC0 1.0 |
+| `assets/models/polyhaven/ornate_mirror_01/textures/ornate_mirror_01_nor_gl_1k.jpg` | normale OpenGL, 1K | idem | James Ray Cock / Poly Haven | CC0 1.0 |
+| `assets/models/kenney/furniture-kit/trashcan.glb` | modèle GLB (base du porte-parapluies, complétée en CSG) | https://kenney.nl/assets/furniture-kit | Kenney (Kenney Vleugels) | CC0 1.0 |
+| `assets/models/polyhaven/cassette_player/cassette_player_1k.gltf` | modèle glTF (répondeur du hall) | https://polyhaven.com/a/cassette_player | Oday Abuzaeed / Poly Haven | CC0 1.0 |
+| `assets/models/polyhaven/cassette_player/cassette_player.bin` | géométrie du modèle | idem | Oday Abuzaeed / Poly Haven | CC0 1.0 |
+| `assets/models/polyhaven/cassette_player/textures/cassette_player_body_arm_1k.jpg` | texture AO/roughness/metal du boîtier, 1K | idem | Oday Abuzaeed / Poly Haven | CC0 1.0 |
+| `assets/models/polyhaven/cassette_player/textures/cassette_player_body_diff_1k.jpg` | texture diffuse du boîtier, 1K | idem | Oday Abuzaeed / Poly Haven | CC0 1.0 |
+| `assets/models/polyhaven/cassette_player/textures/cassette_player_body_nor_gl_1k.jpg` | normale OpenGL du boîtier, 1K | idem | Oday Abuzaeed / Poly Haven | CC0 1.0 |
+| `assets/models/polyhaven/cassette_player/textures/cassette_player_tape_arm_1k.jpg` | texture AO/roughness/metal de la cassette, 1K | idem | Oday Abuzaeed / Poly Haven | CC0 1.0 |
+| `assets/models/polyhaven/cassette_player/textures/cassette_player_tape_nor_gl_1k.jpg` | normale OpenGL de la cassette, 1K | idem | Oday Abuzaeed / Poly Haven | CC0 1.0 |
+| `assets/models/polyhaven/cassette_player/textures/cassette_player_tape_orangeblue_diff_1k.jpg` | texture diffuse de la cassette, 1K | idem | Oday Abuzaeed / Poly Haven | CC0 1.0 |
+| `assets/textures/ambientcg/Wallpaper002A_1K-JPG_Color.jpg` | couleur de base wallpaper, 1K | https://ambientcg.com/view?id=Wallpaper002A | ambientCG | CC0 1.0 |
+| `assets/textures/ambientcg/Wallpaper002A_1K-JPG_NormalGL.jpg` | normale OpenGL wallpaper, 1K | idem | ambientCG | CC0 1.0 |
+| `assets/textures/ambientcg/Wallpaper002A_1K-JPG_Roughness.jpg` | rugosité wallpaper, 1K | idem | ambientCG | CC0 1.0 |
+| `assets/textures/hall_wallpaper_70s_1K.png` | wallpaper 70s original, dérivé de la base ambientCG Wallpaper002A | https://ambientcg.com/view?id=Wallpaper002A | Équipe « État des lieux » (motif original) + ambientCG (texture de surface) | CC0 1.0 |
+| `assets/textures/ambientcg/WoodFloor017_1K-JPG_Color.jpg` | couleur de base parquet, 1K | https://ambientcg.com/view?id=WoodFloor017 | ambientCG | CC0 1.0 |
+| `assets/textures/ambientcg/WoodFloor017_1K-JPG_NormalGL.jpg` | normale OpenGL parquet, 1K | idem | ambientCG | CC0 1.0 |
+| `assets/textures/ambientcg/WoodFloor017_1K-JPG_Roughness.jpg` | rugosité parquet, 1K | idem | ambientCG | CC0 1.0 |
+| `assets/textures/ambientcg/Plaster001_1K-JPG_Color.jpg` | couleur de base plâtre, 1K | https://ambientcg.com/view?id=Plaster001 | ambientCG | CC0 1.0 |
+| `assets/textures/ambientcg/Plaster001_1K-JPG_NormalGL.jpg` | normale OpenGL plâtre, 1K | idem | ambientCG | CC0 1.0 |
+| `assets/textures/ambientcg/Plaster001_1K-JPG_Roughness.jpg` | rugosité plâtre, 1K | idem | ambientCG | CC0 1.0 |
+
+Les objets restants du hall (`baromètre`, tableau de clés, sonnette, main fantôme et bague) sont des compositions CSG du projet; le porte-parapluies combine un modèle Kenney CC0 et des détails CSG originaux.

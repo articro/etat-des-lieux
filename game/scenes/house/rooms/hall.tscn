@@ -1,16 +1,11 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://scenes/house/room.gd" id="1_room"]
+[ext_resource type="Material" path="res://assets/materials/hall_wood_floor.tres" id="2_floor_material"]
+[ext_resource type="Material" path="res://assets/materials/hall_wallpaper_70s.tres" id="3_wall_material"]
+[ext_resource type="Material" path="res://assets/materials/hall_plaster_ceiling.tres" id="4_ceiling_material"]
 
-[sub_resource type="StandardMaterial3D" id="FloorMat"]
-albedo_color = Color(0.31, 0.31, 0.30, 1)
-roughness = 0.94
-
-[sub_resource type="StandardMaterial3D" id="WallMat"]
-albedo_color = Color(0.43, 0.43, 0.41, 1)
-roughness = 0.92
-
-[sub_resource type="StandardMaterial3D" id="CeilingMat"]
+[sub_resource type="StandardMaterial3D" id="NoteMat"]
 albedo_color = Color(0.52, 0.52, 0.50, 1)
 roughness = 0.95
 
@@ -47,91 +42,91 @@ size = Vector3(3, 0.2, 9)
 position = Vector3(0, -0.1, 0)
 use_collision = true
 collision_layer = 1
-material = SubResource("FloorMat")
+material = ExtResource("2_floor_material")
 
 [node name="Ceiling" type="CSGBox3D" parent="Blockout"]
 size = Vector3(3, 0.12, 9)
 position = Vector3(0, 2.66, 0)
 use_collision = false
 collision_layer = 0
-material = SubResource("CeilingMat")
+material = ExtResource("4_ceiling_material")
 
 [node name="WallEastFront" type="CSGBox3D" parent="Blockout"]
 size = Vector3(0.18, 2.6, 2.5)
 position = Vector3(1.59, 1.3, -3.25)
 use_collision = true
 collision_layer = 1
-material = SubResource("WallMat")
+material = ExtResource("3_wall_material")
 
 [node name="WallEastBack" type="CSGBox3D" parent="Blockout"]
 size = Vector3(0.18, 2.6, 2.5)
 position = Vector3(1.59, 1.3, 3.25)
 use_collision = true
 collision_layer = 1
-material = SubResource("WallMat")
+material = ExtResource("3_wall_material")
 
 [node name="WallEastLower" type="CSGBox3D" parent="Blockout"]
 size = Vector3(0.18, 2.6, 1.55)
 position = Vector3(1.59, 1.3, -1.225)
 use_collision = true
 collision_layer = 1
-material = SubResource("WallMat")
+material = ExtResource("3_wall_material")
 
 [node name="WallEastUpper" type="CSGBox3D" parent="Blockout"]
 size = Vector3(0.18, 2.6, 1.55)
 position = Vector3(1.59, 1.3, 1.225)
 use_collision = true
 collision_layer = 1
-material = SubResource("WallMat")
+material = ExtResource("3_wall_material")
 
 [node name="WallWestFront" type="CSGBox3D" parent="Blockout"]
 size = Vector3(0.18, 2.6, 2.5)
 position = Vector3(-1.59, 1.3, -3.25)
 use_collision = true
 collision_layer = 1
-material = SubResource("WallMat")
+material = ExtResource("3_wall_material")
 
 [node name="WallWestLivingSouth" type="CSGBox3D" parent="Blockout"]
 size = Vector3(0.18, 2.6, 0.8)
 position = Vector3(-1.59, 1.3, 2.4)
 use_collision = true
 collision_layer = 1
-material = SubResource("WallMat")
+material = ExtResource("3_wall_material")
 
 [node name="WallWestLivingNorth" type="CSGBox3D" parent="Blockout"]
 size = Vector3(0.18, 2.6, 0.8)
 position = Vector3(-1.59, 1.3, 4.1)
 use_collision = true
 collision_layer = 1
-material = SubResource("WallMat")
+material = ExtResource("3_wall_material")
 
 [node name="WallSouthLeft" type="CSGBox3D" parent="Blockout"]
 size = Vector3(1.05, 2.6, 0.18)
 position = Vector3(-0.975, 1.3, -4.59)
 use_collision = true
 collision_layer = 1
-material = SubResource("WallMat")
+material = ExtResource("3_wall_material")
 
 [node name="WallSouthRight" type="CSGBox3D" parent="Blockout"]
 size = Vector3(1.05, 2.6, 0.18)
 position = Vector3(0.975, 1.3, -4.59)
 use_collision = true
 collision_layer = 1
-material = SubResource("WallMat")
+material = ExtResource("3_wall_material")
 
 [node name="WallNorthLeft" type="CSGBox3D" parent="Blockout"]
 size = Vector3(0.8, 2.6, 0.18)
 position = Vector3(-1.1, 1.3, 4.59)
 use_collision = true
 collision_layer = 1
-material = SubResource("WallMat")
+material = ExtResource("3_wall_material")
 
 [node name="WallNorthRight" type="CSGBox3D" parent="Blockout"]
 size = Vector3(0.8, 2.6, 0.18)
 position = Vector3(1.1, 1.3, 4.59)
 use_collision = true
 collision_layer = 1
-material = SubResource("WallMat")
+material = ExtResource("3_wall_material")
 
 [node name="StairwellBarrier" type="CSGBox3D" parent="Blockout"]
 size = Vector3(1.4, 2.6, 0.16)
@@ -182,7 +177,7 @@ size = Vector3(0.24, 0.02, 0.16)
 position = Vector3(-1.06, 0.86, -3.3)
 use_collision = true
 collision_layer = 1
-material = SubResource("CeilingMat")
+material = SubResource("NoteMat")
 metadata/document_id = &"hall_postit_besnard"
 
 [node name="WallWestMidLower" type="CSGBox3D" parent="Blockout"]
@@ -190,42 +185,42 @@ size = Vector3(0.18, 2.6, 1.55)
 position = Vector3(-1.59, 1.3, -1.225)
 use_collision = true
 collision_layer = 1
-material = SubResource("WallMat")
+material = ExtResource("3_wall_material")
 
 [node name="WallWestMidUpper" type="CSGBox3D" parent="Blockout"]
 size = Vector3(0.18, 2.6, 1.55)
 position = Vector3(-1.59, 1.3, 1.225)
 use_collision = true
 collision_layer = 1
-material = SubResource("WallMat")
+material = ExtResource("3_wall_material")
 
 [node name="StandaloneEastDoorFill" type="CSGBox3D" parent="StandaloneOnly"]
 size = Vector3(0.18, 2.6, 0.9)
 position = Vector3(1.59, 1.3, 0)
 use_collision = false
 collision_layer = 0
-material = SubResource("WallMat")
+material = ExtResource("3_wall_material")
 
 [node name="StandaloneWestKitchenFill" type="CSGBox3D" parent="StandaloneOnly"]
 size = Vector3(0.18, 2.6, 0.9)
 position = Vector3(-1.59, 1.3, 0)
 use_collision = false
 collision_layer = 0
-material = SubResource("WallMat")
+material = ExtResource("3_wall_material")
 
 [node name="StandaloneWestLivingFill" type="CSGBox3D" parent="StandaloneOnly"]
 size = Vector3(0.18, 2.6, 0.9)
 position = Vector3(-1.59, 1.3, 3.25)
 use_collision = false
 collision_layer = 0
-material = SubResource("WallMat")
+material = ExtResource("3_wall_material")
 
 [node name="StandaloneFrontDoorFill" type="CSGBox3D" parent="StandaloneOnly"]
 size = Vector3(1.0, 2.6, 0.18)
 position = Vector3(0, 1.3, -4.59)
 use_collision = false
 collision_layer = 0
-material = SubResource("WallMat")
+material = ExtResource("3_wall_material")
 
 [node name="StairStep1" type="CSGBox3D" parent="StairwellPreview"]
 size = Vector3(1.25, 0.24, 0.36)
@@ -305,22 +300,22 @@ shadow_enabled = true
 position = Vector3(-1.05, 0.38, -3.4)
 
 [node name="hall_anchor_barometer" type="Marker3D" parent="Anchors"]
-position = Vector3(1.36, 1.42, -3)
+position = Vector3(1.44, 1.42, -3)
 
 [node name="hall_anchor_coat_rack" type="Marker3D" parent="Anchors"]
 position = Vector3(-1.1, 0.8, -2.1)
 
 [node name="hall_anchor_key_board" type="Marker3D" parent="Anchors"]
-position = Vector3(-1.37, 1.42, -1.35)
+position = Vector3(-1.44, 1.42, -1.35)
 
 [node name="hall_anchor_mirror" type="Marker3D" parent="Anchors"]
-position = Vector3(1.36, 1.25, -1.3)
+position = Vector3(1.44, 1.25, -1.3)
 
 [node name="hall_anchor_umbrella_stand" type="Marker3D" parent="Anchors"]
 position = Vector3(1.05, 0.3, -3.72)
 
 [node name="hall_anchor_doorbell" type="Marker3D" parent="Anchors"]
-position = Vector3(1.15, 1.1, -4.38)
+position = Vector3(1.15, 1.1, -4.46)
 
 [node name="hall_anchor_answering_machine" type="Marker3D" parent="Anchors"]
 position = Vector3(-1, 0.88, -3.42)
@@ -329,7 +324,7 @@ position = Vector3(-1, 0.88, -3.42)
 position = Vector3(0, 1.2, 4.02)
 
 [node name="hall_anchor_ring_1951" type="Marker3D" parent="Anchors"]
-position = Vector3(-0.82, 0.9, -3.36)
+position = Vector3(-0.66, 0.785, -3.36)
 
 [node name="hall_anchor_console" type="Marker3D" parent="Anchors"]
 position = Vector3(-0.95, 0.33, -2.75)
