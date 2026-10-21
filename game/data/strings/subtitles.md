@@ -42,7 +42,7 @@ Voix en V2 : la V1 est sous-titrée seulement. Aucun point d'exclamation, aucune
 | `SUB_PROGRESS_10` | 3.5 | Dix lignes. La maison ne proteste pas. Pas encore. | 10 objets cochés (r21) |
 | `SUB_CLOCK_30` | 3.5 | J'entends un carillon. C'est l'horloge de l'entrée. | 30 objets, horloge (r02) |
 | `SUB_PHONE_45` | 3.5 | Le téléphone sonne. Il n'y a plus d'abonné, ici. | 45 objets, téléphone (r03) |
-| `SUB_FIRST_MOVED` | 3.5 | Cet objet a bougé. Je l'avais laissé ailleurs. | premier déplacement d'objet (r07) |
+| `SUB_FIRST_MOVED` | 3.5 | Cet objet a bougé. Je l'avais laissé ailleurs. | premier déplacement d'objet (r24, `item_moved`) |
 | `SUB_PROGRESS_58` | 3.5 | Cinquante-huit. Plus que deux lignes à compter. | 58 objets cochés (r22) |
 
 Total : 38 lignes (30 de R-6 + 8 de R-10).
@@ -56,7 +56,7 @@ Total : 38 lignes (30 de R-6 + 8 de R-10).
 | `r21_progress_10` | `progress` = 10 | `SUB_PROGRESS_10` |
 | `r01_study_drawer_opens` | `progress` = 20 (tiroir) | `SUB_DRAWER_OPENS` |
 | `r02_hall_clock_moves` | `progress` = 30 (horloge) | `SUB_CLOCK_30` |
-| `r07_hall_umbrella_moves` | `room_left:hall` (premier déplacement possible) | `SUB_FIRST_MOVED` |
+| `r24_first_moved` | `item_moved` (tout objet, une seule fois) | `SUB_FIRST_MOVED` |
 | `r03_phone_and_cellar` | `progress` = 45 (téléphone, trappe) | `SUB_PHONE_45` puis `SUB_CELLAR_DOOR` |
 | `r04_cellar_entry_presence` | `room_entered:cellar` | `SUB_CELLAR_STAIRS` |
 | `r05_last_eight_in_cellar` | `progress` = 52, dans la cave (Présence) | `SUB_PRESENCE_SEEN` |

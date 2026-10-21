@@ -1,4 +1,4 @@
-# Règles de maison — V1 (23 HouseRule)
+# Règles de maison — V1 (24 HouseRule)
 
 Chargement attendu (Systèmes, S-3) : `data/rules/*.tres` → `HouseDirector.register_rule()`.
 Format : `docs/ARCHITECTURE.md` §6. Seuils V1 : **20 / 45 / 60** (PLAN_HALLOWEEN §2 et §4).
@@ -59,6 +59,6 @@ Action `subtitle:<clé>:<durée>` (ARCHITECTURE §7). Câblage complet : voir `g
 
 - `r19_onboarding_hall` (`room_entered:hall`, once) : les 3 lignes d'onboarding, dans l'ordre mot de Besnard → « Tab : carnet » → contrôles photo. **Exige une file d'émission côté Systèmes** : `SubtitleBox` affiche une ligne à la fois et écrase la précédente ; sans file, seule la 3e ligne serait visible.
 - `r20_first_photo` (`flash_count` = 1), `r21_progress_10`, `r22_progress_58`, `r23_ending_closed_line` (`progress` = 60) : jalons du monologue.
-- Actions `subtitle:` ajoutées aux règles d'événement existantes : `r01` (tiroir, 20), `r02` (horloge, 30), `r03` (téléphone puis trappe, 45 — même exigence de file), `r04` (première descente), `r05` (Présence, 52), `r07` (premier objet déplacé).
-- « Premier objet déplacé » : câblé sur `r07`, le déplacement le plus précoce possible (sortie de l'entrée, 8 objets). Si le joueur a coché le râtelier avant, aucun déplacement n'a lieu à ce moment et la ligne ne joue pas ; un déclencheur `item_moved` global reste demandé à Systèmes (non bloquant).
+- Actions `subtitle:` ajoutées aux règles d'événement existantes : `r01` (tiroir, 20), `r02` (horloge, 30), `r03` (téléphone puis trappe, 45 — même exigence de file), `r04` (première descente), `r05` (Présence, 52) ; premier objet déplacé : `r24` (voir ci-dessous).
+- « Premier objet déplacé » (R-11, 20/10) : rebranché sur le déclencheur `item_moved` livré par S-10 — nouvelle règle `r24_first_moved` (param vide = tout objet, `once`), et l'action `subtitle:` a été retirée de `r07`. La ligne joue donc au premier déplacement réel, quel que soit l'objet (y compris la clé « L. » de `r11`).
 - Fin *Cendres* : aucun déclencheur de règle pour l'interaction « brûler » ; les clés `SUB_BURNING` / `SUB_DAWN` existent et attendent le séquenceur de fin.
